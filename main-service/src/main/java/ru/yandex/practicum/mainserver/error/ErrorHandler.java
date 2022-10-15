@@ -28,7 +28,7 @@ public class ErrorHandler {
         final List<FieldError> errors = e.getBindingResult().getFieldErrors();
         StringBuilder sb = new StringBuilder();
         for (FieldError error : errors) {
-            sb.append(error.getField()).append(" ").append(error.getDefaultMessage()).append(", ");
+            sb.append(error.getField()).append(" ").append(error.getDefaultMessage());
         }
         return new ErrorResponse(sb.toString());
     }

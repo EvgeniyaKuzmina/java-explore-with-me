@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainserver.exception.ArgumentNotValidException;
 import ru.yandex.practicum.mainserver.user.dto.NewUserDto;
 import ru.yandex.practicum.mainserver.user.dto.UserDto;
 import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
@@ -29,40 +28,36 @@ public class UserController {
 
     private static final String FROM = "0";
     private static final String SIZE = "10";
-    private final UserService userServiceImpl;
+    private final UserService service;
 
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public UserController(UserServiceImpl service) {
+        this.service = service;
     }
 
     // создание пользователя
     @PostMapping
     public UserDto createUser(@Valid @RequestBody NewUserDto newUserDto) {
-        if (newUserDto.getEmail() == null || newUserDto.getName() == null) {
-            log.warn("UserController.createUser: Не указан email пользователя или имя пользователя");
-            throw new ArgumentNotValidException("Не указан email пользователя или имя пользователя"); // сделать 403 ошибку
-        }
-        return UserMapper.toUserDto(userServiceImpl.createUser(newUserDto));
+        return UserMapper.toUserDto(service.createUser(newUserDto));
     }
 
     // обновление пользователя
     @PatchMapping(value = {"/{id}"})
     public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long id) {
-        User user = userServiceImpl.updateUser(userDto, id);
+        User user = service.updateUser(userDto, id);
         return UserMapper.toUserDto(user);
     }
 
     // удаление пользователя по id
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable Long id) {
-        userServiceImpl.removeUser(id);
+        service.removeUser(id);
     }
 
     // получение пользователя по Id
     @GetMapping(value = {"/{id}"})
     public UserDto getUserById(@PathVariable Long id) {
-        User user = userServiceImpl.getUserById(id);
+        User user = service.getUserById(id);
         return UserMapper.toUserDto(user);
     }
 
@@ -76,13 +71,12 @@ public class UserController {
         Collection<UserDto> allUsersDto = new ArrayList<>();
 
         if (!ids.isEmpty()) {
-            Collection<User> allUsersByIds = new ArrayList<>();
-            ids.forEach(id -> allUsersByIds.add(userServiceImpl.getUserById(id)));
+            Collection<User> allUsersByIds = service.getAllUsersByIds(ids, pageable);
             allUsersByIds.forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
             return allUsersDto;
         }
 
-        userServiceImpl.getAllUsers(pageable).forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
+        service.getAllUsers(pageable).forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
         return allUsersDto;
     }
 }

@@ -12,6 +12,7 @@ import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
 import ru.yandex.practicum.mainserver.user.model.User;
 import org.springframework.data.domain.Pageable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,14 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
 
     @Override
     public User createUser(NewUserDto userDto) {
         User user = UserMapper.toUserFromNewUserDto(userDto);
         try {
             log.info("Добавлен пользователь {}.", user);
-            return userRepository.save(user);
+            return repository.save(user);
         } catch (DataIntegrityViolationException e) {
             log.error("Пользователь с таким email {} уже существует.", user.getEmail());
             throw new ConflictException(String.format("Пользователь с таким email %s уже существует.",
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             log.info("Добавлен пользователь {}.", updUser);
-            return userRepository.save(updUser);
+            return repository.save(updUser);
         } catch (DataIntegrityViolationException e) {
             log.error("Пользователь с таким email {} уже существует.", updUser.getEmail());
             throw new ConflictException(String.format("Пользователь с таким email %s уже существует.",
@@ -59,18 +60,23 @@ public class UserServiceImpl implements UserService {
     public void removeUser(Long id) {
         getUserById(id); // проверка, что пользователь с указанным id есть
         log.warn("Пользователя с указанным id {} удалён", id);
-        userRepository.deleteById(id);
+        repository.deleteById(id);
 
     }
 
     @Override
     public Collection<User> getAllUsers(Pageable pageable) {
-        return userRepository.findAllUsers(pageable);
+        return repository.findAll(pageable).toList();
+    }
+
+    @Override
+    public Collection<User> getAllUsersByIds(List<Long> ids, Pageable pageable) {
+        return repository.findAllById(ids);
     }
 
     @Override
     public User getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> user = repository.findById(id);
         user.orElseThrow(() -> {
             log.warn("Пользователя с указанным id {} нет", id);
             return new ObjectNotFountException("Пользователя с указанным id " + id + " нет");

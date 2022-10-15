@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainserver.user;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.yandex.practicum.mainserver.user.model.User;
@@ -13,8 +14,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // получение списка пользователей с пагинацией
-    List<User> findAllUsers(Pageable pageable);
+    Page<User> findAll(Pageable pageable);
+  //  List<User> findAllById(List<Long> ids);
 
-    // получение списка пользователей по Id с пагинацией
-    List<User> findAllByIdNotOrderByIdAsc(Long userId, Pageable pageable);
 }

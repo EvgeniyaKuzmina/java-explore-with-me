@@ -11,7 +11,6 @@ import ru.yandex.practicum.mainserver.category.mapper.CategoryMapper;
 import ru.yandex.practicum.mainserver.category.model.Category;
 import ru.yandex.practicum.mainserver.exception.ConflictException;
 import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
-import ru.yandex.practicum.mainserver.user.model.User;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -25,14 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryRepository repository;
 
     @Override
     public Category createCategory(NewCategoryDto categoryDto) {
         Category category = CategoryMapper.toCategoryFromNewCategoryDto(categoryDto);
         try {
             log.info("Добавлена категория {}.", category);
-            return categoryRepository.save(category);
+            return repository.save(category);
         } catch (DataIntegrityViolationException e) {
             log.error("Категория с таким названием {} уже существует.", category.getName());
             throw new ConflictException(String.format("Категория с таким названием %s уже существует.",
@@ -48,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         try {
             log.info("Обновлена категория {}.", category);
-            return categoryRepository.save(category);
+            return repository.save(category);
         } catch (DataIntegrityViolationException e) {
             log.error("Категория с таким названием {} уже существует.", categoryDto.getName());
             throw new ConflictException(String.format("Категория с таким названием %s уже существует.",
@@ -62,9 +61,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = getCategoryById(id); // проверка, что категория с указанным id есть
 
         try {
-            categoryRepository.deleteById(id);
+            repository.deleteById(id);
             log.warn("Категория с указанным id {} удалена", id);
-        } catch(DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             log.error("Категория {} связана с событием.", category.getName());
             throw new ConflictException(String.format("Категория %s связана с событием.",
                     category.getName()));
@@ -74,12 +73,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Collection<Category> getAllCategory(Pageable pageable) {
-        return categoryRepository.findAllCategories(pageable);
+        return repository.findAll(pageable).toList();
     }
 
     @Override
     public Category getCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findById(id);
+        Optional<Category> category = repository.findById(id);
         category.orElseThrow(() -> {
             log.warn("Категории с указанным id {} нет", id);
             return new ObjectNotFountException("Категории с указанным id " + id + " нет");

@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 /**
  * класс для работы с пользователя
@@ -31,6 +32,10 @@ public class User {
     @NotNull
     @Column(name = "email",  nullable = false)
     private String email;
+    @ElementCollection
+    @CollectionTable(name = "compilation_events", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "text")
+    private List<Long> compilationId;
 
     @Override
     public boolean equals(Object o) {

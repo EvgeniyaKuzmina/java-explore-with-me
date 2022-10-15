@@ -6,10 +6,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
+import ru.yandex.practicum.mainserver.category.CategoryServiceImpl;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.category.mapper.CategoryMapper;
 import ru.yandex.practicum.mainserver.category.model.Category;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
@@ -28,15 +30,15 @@ public class CategoryPublicController {
     private final CategoryService categoryService;
 
     @Autowired
-    public CategoryPublicController(CategoryService categoryService) {
+    public CategoryPublicController(CategoryServiceImpl categoryService) {
         this.categoryService = categoryService;
     }
 
 
     // получение категории по Id
-    @GetMapping(value = {"/{id}"})
-    public CategoryDto getCategoryById(@PathVariable Long id) {
-        Category category = categoryService.getCategoryById(id);
+    @GetMapping(value = {"/{catId}"})
+    public CategoryDto getCategoryById(@PathVariable @NotNull Long catId) {
+        Category category = categoryService.getCategoryById(catId);
         return CategoryMapper.toCategoryDto(category);
     }
 

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
+import ru.yandex.practicum.mainserver.category.CategoryServiceImpl;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.category.dto.NewCategoryDto;
 import ru.yandex.practicum.mainserver.category.mapper.CategoryMapper;
@@ -13,18 +14,18 @@ import ru.yandex.practicum.mainserver.category.model.Category;
 import javax.validation.Valid;
 
 /**
- *  класс контроллер для работы с приватным API категорий событий
+ *  класс контроллер для работы с API категорий событий
  */
 
 @RestController
 @RequestMapping(path = "/admin/categories")
 @Slf4j
-public class CategoryPrivateController {
+public class CategoryAdminController {
 
     private final CategoryService categoryService;
 
     @Autowired
-    public CategoryPrivateController(CategoryService categoryService) {
+    public CategoryAdminController(CategoryServiceImpl categoryService) {
         this.categoryService = categoryService;
     }
 

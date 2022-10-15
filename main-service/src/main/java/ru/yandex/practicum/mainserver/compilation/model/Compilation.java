@@ -1,10 +1,12 @@
 package ru.yandex.practicum.mainserver.compilation.model;
 
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 import ru.yandex.practicum.mainserver.event.model.Event;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * класс для работы с подборками событий
@@ -29,7 +31,8 @@ public class Compilation {
     @Column(name = "pinned")
     private Boolean pinned;
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    @ElementCollection
+    @CollectionTable(name = "events", joinColumns = @JoinColumn(name = "compilations_id"))
+    @Column(name = "id")
+    private List<Long> eventsId;
 }
