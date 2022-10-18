@@ -36,7 +36,7 @@ public class EventFullDto {
     private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
     @NotNull
     private Location location;
-    private Long participantLimit;
+    private Integer participantLimit;
     private Boolean requestModeration;
 
 

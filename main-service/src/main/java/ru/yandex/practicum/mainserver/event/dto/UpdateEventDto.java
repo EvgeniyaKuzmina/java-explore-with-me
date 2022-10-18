@@ -27,6 +27,6 @@ public class UpdateEventDto {
 
     private Category category;
     private Boolean paid;
-    private Long participantLimit;
+    private Integer participantLimit;
 
 }

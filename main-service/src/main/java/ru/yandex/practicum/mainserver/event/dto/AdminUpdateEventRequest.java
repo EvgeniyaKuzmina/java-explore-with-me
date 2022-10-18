@@ -23,7 +23,7 @@ public class AdminUpdateEventRequest {
     private LocalDateTime eventDate;
     private Location location;
     private Boolean paid;
-    private Long participantLimit;
+    private Integer participantLimit;
     private Boolean requestModeration;
     private LocalDateTime createdOn;
 

@@ -67,8 +67,8 @@ public class Event {
     @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;
-    private Long confirmedRequests; // Количество одобренных заявок на участие в данном событии
-    private Long participantLimit;
+    private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
+    private Integer participantLimit;
     private Boolean requestModeration;
 
 

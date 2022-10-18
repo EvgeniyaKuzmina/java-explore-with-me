@@ -1,27 +1,21 @@
 package ru.yandex.practicum.mainserver.request;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.mainserver.event.EventService;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.exception.ConflictException;
 import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
-import ru.yandex.practicum.mainserver.request.dto.RequestDto;
 import ru.yandex.practicum.mainserver.request.model.Request;
 import ru.yandex.practicum.mainserver.status.Status;
-import ru.yandex.practicum.mainserver.user.UserRepository;
 import ru.yandex.practicum.mainserver.user.UserService;
-import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
 import ru.yandex.practicum.mainserver.user.model.User;
-
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -43,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventService.getEventById(eventId);
         User user = userService.getUserById(userId);
 
-        validateDate(requests, event, userId,  eventId);
+        validateDate(requests, event, userId, eventId);
 
         Request request = Request.builder()
                 .created(LocalDateTime.now())
@@ -64,7 +58,8 @@ public class RequestServiceImpl implements RequestService {
         }
 
     }
-    private void validateDate(List<Long> requests, Event event, Long userId, Long eventId){
+
+    private void validateDate(List<Long> requests, Event event, Long userId, Long eventId) {
         if (requests.contains(eventId)) {
             log.error("Нельзя добавить повторно запрос на участие в одном и том же событии");
             throw new ConflictException("Нельзя добавить повторно запрос на участие в одном и том же событии");
@@ -93,7 +88,7 @@ public class RequestServiceImpl implements RequestService {
         Request request = getRequestById(requestId);
         if (!request.getRequester().getId().equals(userId)) {
             log.error("Пользователь с id {} не оставлял заявку на участие c id {}", userId, requestId);
-            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие c id %d",userId, requestId));
+            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие c id %d", userId, requestId));
         }
         log.warn("Пользователя с id {} удалил заявку на участие с id {}", userId, requestId);
         request.setStatus(Status.CANCELED);
@@ -118,5 +113,23 @@ public class RequestServiceImpl implements RequestService {
 
         log.warn("Заявка с указанным id {} получена", id);
         return request.get();
+    }
+
+    @Override
+    public List<Request> getRequestsByEventIdAndStatus(Long eventId, Status status) {
+        return repository.findByEventIdAndStatus(eventId, Status.CONFIRMED);
+    }
+
+    @Override
+    public Request updateStatusRequestById(Long id, Status status) {
+        Request request = getRequestById(id);
+        request.setStatus(status);
+        try {
+            log.info("Статус обновлён {}.", request);
+            return repository.save(request);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Внутренняя ошибка сервера.");
+            throw new RuntimeException("Внутренняя ошибка сервера.");
+        }
     }
 }
