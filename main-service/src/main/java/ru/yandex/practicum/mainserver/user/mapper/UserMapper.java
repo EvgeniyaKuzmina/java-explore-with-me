@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainserver.user.mapper;
 
 import ru.yandex.practicum.mainserver.user.dto.NewUserDto;
 import ru.yandex.practicum.mainserver.user.dto.UserDto;
+import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 import ru.yandex.practicum.mainserver.user.model.User;
 
 /**
@@ -12,6 +13,13 @@ public class UserMapper {
         return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .name(user.getName())
+                .build();
+    }
+
+    public static UserShortDto toUserShortDto(User user) {
+        return UserShortDto.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .build();
     }

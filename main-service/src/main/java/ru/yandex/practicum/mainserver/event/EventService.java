@@ -3,6 +3,7 @@ package ru.yandex.practicum.mainserver.event;
 import org.springframework.data.domain.Pageable;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.request.model.Request;
+import ru.yandex.practicum.mainserver.status.Status;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -32,19 +33,10 @@ public interface EventService {
     Event getEventUserById(Long eventId, Long userId);
 
 
-    //подтверждение чужой заявки на участие в событии текущего пользователя
-    Request confirmRequestForEvent(Long eventId, Long userId, Long requestId);
-
-    //отклонение чужой заявки на участие в событии текущего пользователя
-    Request rejectRequestForEvent(Long eventId, Long userId, Long requestId);
-
-    // получение списка запросов на участие в событии текущего пользователя
-    Collection<Request> getRequestsByUserId(Long eventId, Long userId);
-
     // методы для API администратора
 
     // получение списка событий админом по указанным критериям
-    Collection<Event> getAllEventByAdmin(List<Long> usersIds, List<String> states, List<Long> categoriesId,
+    Collection<Event> getAllEventByAdmin(List<Long> usersIds, List<Status> states, List<Long> categoriesId,
                                          LocalDateTime start, LocalDateTime end, Pageable page);
 
     //обновление события админом
@@ -62,8 +54,9 @@ public interface EventService {
     Event getEventById(Long eventId);
 
     // получение списка событий с фильтрацией
-    Collection<Event> getAllEvent(String text, List<Long> categoriesId, Boolean paid, LocalDateTime start,
-                                  LocalDateTime end, String sort, Boolean onlyAvailable, Pageable page);
+    Collection<Event> getAllEvent(String text, List<Long> categoriesId, Boolean paid,
+                                  Integer participantLimit, LocalDateTime start, LocalDateTime end, String sort,
+                                  Pageable page);
 
 }
 

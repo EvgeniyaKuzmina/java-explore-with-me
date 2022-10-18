@@ -2,6 +2,8 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
+import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -26,28 +28,12 @@ public class EventShortDto {
     @NotNull
     private LocalDateTime eventDate;
     @NotNull
-    private User initiator;
+    private UserShortDto initiator;
     @NotNull
-    private Category category;
+    private CategoryDto category;
     private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
     private Integer views;
     private Set<String> comments;
 
-    @Data
-    @Builder
-    public static class User {
-        @NotNull
-        private Long id;
-        @NotNull
-        private String name;
-    }
 
-    @Data
-    @Builder
-    public static class Category {
-        @NotNull
-        private Long id;
-        @NotNull
-        private String name;
-    }
 }

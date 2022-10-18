@@ -2,6 +2,10 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
+import ru.yandex.practicum.mainserver.event.location.LocationDto;
+import ru.yandex.practicum.mainserver.status.Status;
+import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -21,7 +25,7 @@ public class EventFullDto {
     private String description;
     @NotNull
     private String annotation;
-    private String state;
+    private Status state;
     @NotNull
     private Boolean paid;
     private LocalDateTime createdOn;
@@ -29,38 +33,14 @@ public class EventFullDto {
     private LocalDateTime eventDate;
     private LocalDateTime publishedOn;
     private Integer views;
-    private User initiator;
+    private UserShortDto initiator;
     @NotNull
-    private Category category;
+    private CategoryDto category;
     private Set<String> comments;
     private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
     @NotNull
-    private Location location;
+    private LocationDto location;
     private Integer participantLimit;
     private Boolean requestModeration;
-
-
-    @Data
-    @Builder
-    public static class Location {
-        private Float lat;
-        private Float lon;
-    }
-
-    @Data
-    @Builder
-    public static class User {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    @Builder
-    public static class Category {
-        @NotNull
-        private Long id;
-        @NotNull
-        private String name;
-    }
 
 }

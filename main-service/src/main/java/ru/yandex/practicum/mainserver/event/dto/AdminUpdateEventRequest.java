@@ -2,6 +2,8 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
+import ru.yandex.practicum.mainserver.event.location.LocationDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -15,33 +17,17 @@ import java.util.Set;
 @Builder
 public class AdminUpdateEventRequest {
 
-
     private String title;
     private String annotation;
-    private Category category;
+    private CategoryDto category;
     private String description;
     private LocalDateTime eventDate;
-    private Location location;
+    private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
     private LocalDateTime createdOn;
 
-    @Data
-    @Builder
-    public static class Location {
-        private Float lat;
-        private Float lon;
-    }
 
-
-    @Data
-    @Builder
-    public static class Category {
-        @NotNull
-        private Long id;
-        @NotNull
-        private String name;
-    }
 
 }

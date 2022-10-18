@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.category.model.Category;
 
 import javax.validation.constraints.NotNull;
@@ -25,7 +26,7 @@ public class UpdateEventDto {
 
     private LocalDateTime eventDate;
 
-    private Category category;
+    private CategoryDto category;
     private Boolean paid;
     private Integer participantLimit;
 

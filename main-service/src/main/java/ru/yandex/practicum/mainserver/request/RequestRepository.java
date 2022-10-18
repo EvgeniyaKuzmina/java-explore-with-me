@@ -21,4 +21,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     // получение всех заявок по id события с указанным статусом
     List<Request> findByEventIdAndStatus(Long id, Status status);
 
+    // получение всех заявок по id события
+    List<Request> findByEventId(Long id);
+
 }

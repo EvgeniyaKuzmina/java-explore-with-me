@@ -121,8 +121,14 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Request updateStatusRequestById(Long id, Status status) {
-        Request request = getRequestById(id);
+    public List<Request> getRequestsByEventId(Event event, Long userId) {
+        validateUserIdAndEventId(event, userId);
+        return repository.findByEventId(event.getId());
+    }
+
+    @Override
+    public Request updateStatusRequestById(Long requestId, Status status) {
+        Request request = getRequestById(requestId);
         request.setStatus(status);
         try {
             log.info("Статус обновлён {}.", request);
@@ -130,6 +136,55 @@ public class RequestServiceImpl implements RequestService {
         } catch (DataIntegrityViolationException e) {
             log.error("Внутренняя ошибка сервера.");
             throw new RuntimeException("Внутренняя ошибка сервера.");
+        }
+    }
+
+    @Override
+    public Request confirmRequestForEvent(Event event, Long userId, Long requestId) {
+        validateUserIdAndEventId(event, userId);
+        Long eventId = event.getId();
+        getRequestById(requestId); // проверяем что заявка с указанным id существует
+        if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(false)) {
+            log.error("Подтверждение заявки не требуется");
+            return getRequestById(requestId);
+        }
+
+        // получаем количество подтвержденных заявок по событию
+        int countRequestsToEvent = getRequestsByEventIdAndStatus(eventId, Status.CONFIRMED).size();
+        if (event.getParticipantLimit().equals(countRequestsToEvent)) {
+            return rejectRequestForEvent(event, userId, requestId);
+        }
+        Request request = updateStatusRequestById(requestId, Status.CONFIRMED);
+
+        // отменяем все заявки в статусе ожидания, если при подтверждении текущей заявки лимит заявок исчерпан
+        if (event.getParticipantLimit().equals(countRequestsToEvent + 1)) {
+            List<Request> requests = getRequestsByEventIdAndStatus(eventId, Status.PENDING);
+            for (Request r : requests) {
+                rejectRequestForEvent(event, userId, r.getId());
+            }
+        }
+        return request;
+    }
+
+    @Override
+    public Request rejectRequestForEvent(Event event, Long userId, Long requestId) {
+        validateUserIdAndEventId(event, userId);
+        getRequestById(requestId); // проверяем что заявка с указанным id существует
+        return updateStatusRequestById(requestId, Status.REJECTED);
+    }
+
+   /* @Override
+    public Collection<Request> getRequestsByEventId(Event event, Long userId) {
+        validateUserIdAndEventId(event, userId);
+        return getRequestsByEventId(event.getId());
+    }*/
+
+    private void validateUserIdAndEventId(Event event, Long userId) {
+        userService.getUserById(userId); // проверяем что существует пользователь с таким id
+        if (!event.getInitiator().getId().equals(userId)) {
+            log.error("Пользователь с id {} не является инициатором события {}.", userId, event.getId());
+            throw new ConflictException(String.format("Пользователь с id %d не является инициатором события %d.",
+                    userId, event.getId()));
         }
     }
 }

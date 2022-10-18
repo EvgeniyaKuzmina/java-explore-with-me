@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainserver.request;
 
+import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.request.model.Request;
 import ru.yandex.practicum.mainserver.status.Status;
 
@@ -25,8 +26,18 @@ public interface RequestService {
     Request getRequestById(Long id);
 
     // получение всех заявок по id события
-    List<Request> getRequestsByEventIdAndStatus(Long id, Status status);
+    Collection<Request> getRequestsByEventIdAndStatus(Long id, Status status);
 
     // обновление заявки
     Request updateStatusRequestById(Long id, Status status);
+
+    // получение списка всех заявок на id события
+    Collection<Request> getRequestsByEventId(Event event, Long userId);
+
+    //подтверждение чужой заявки на участие в событии текущего пользователя
+    Request confirmRequestForEvent(Event event, Long userId, Long requestId);
+
+    //отклонение чужой заявки на участие в событии текущего пользователя
+    Request rejectRequestForEvent(Event event, Long userId, Long requestId);
+
 }

@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.exception.ConflictException;
-import ru.yandex.practicum.mainserver.request.RequestService;
-import ru.yandex.practicum.mainserver.request.model.Request;
+import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
 import ru.yandex.practicum.mainserver.status.Status;
 import ru.yandex.practicum.mainserver.user.UserService;
 
@@ -30,10 +30,10 @@ public class EventServiceImpl implements EventService {
 
     private final UserService userService;
 
-    private final RequestService requestService;
 
     @Override
     public Event createEvent(Event event) {
+        event.setCreatedOn(LocalDateTime.now());
         try {
             log.info("Добавлено событие {}.", event);
             return repository.save(event);
@@ -56,17 +56,10 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Событие изменить нельзя");
         }
 
-        Optional.ofNullable(updEvent.getTitle()).ifPresent(event::setTitle);
-        Optional.ofNullable(updEvent.getDescription()).ifPresent(event::setDescription);
-        Optional.ofNullable(updEvent.getAnnotation()).ifPresent(event::setAnnotation);
-        Optional.ofNullable(updEvent.getEventDate()).ifPresent(event::setEventDate);
-        Optional.ofNullable(updEvent.getCategory()).ifPresent(event::setCategory);
-        Optional.ofNullable(updEvent.getPaid()).ifPresent(event::setPaid);
-        Optional.ofNullable(updEvent.getParticipantLimit()).ifPresent(event::setParticipantLimit);
-
+        event = updateEvent(updEvent);
         try {
             log.info("Событие обновлено {}.", event);
-            return repository.save(updEvent);
+            return repository.save(event);
         } catch (DataIntegrityViolationException e) {
             log.error("Произошла ошибка при сохранении данных");
             throw new RuntimeException("Произошла ошибка при сохранении данных");
@@ -82,7 +75,13 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Событие отменить нельзя");
         }
         event.setState(Status.CANCELED);
-        return event;
+        try {
+            log.info("Статус события обновлён {}.", event.getState());
+            return repository.save(event);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при сохранении данных");
+            throw new RuntimeException("Произошла ошибка при сохранении данных");
+        }
     }
 
     @Override
@@ -97,83 +96,133 @@ public class EventServiceImpl implements EventService {
         return repository.findByInitiatorIdAndId(eventId, userId);
     }
 
+
     @Override
-    public Request confirmRequestForEvent(Long eventId, Long userId, Long requestId) {
-        validateUserIdAndEventId(eventId, userId);
-        Event event = getEventById(eventId);
-        requestService.getRequestById(requestId); // проверяем что заявка с указанным id существует
-        if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(false)) {
-            log.error("Подтверждение заявки не требуется");
-            return requestService.getRequestById(requestId);
+    public Collection<Event> getAllEventByAdmin(List<Long> usersIds, List<Status> states, List<Long> categoriesId,
+                                                LocalDateTime start, LocalDateTime end, Pageable page) {
+        try {
+            return repository.findByInitiatorIdInAndStateInAndCategoryIdInAndEventDateBetween(usersIds, states, categoriesId,
+                    start, end, page).toList();
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при получении данных");
+            throw new RuntimeException("Произошла ошибка при получении данных");
         }
+    }
 
-        // получаем количество подтвержденных заявок по событию
-        int countRequestsToEvent = requestService.getRequestsByEventIdAndStatus(eventId, Status.CONFIRMED).size();
-        if (event.getParticipantLimit().equals(countRequestsToEvent)) {
-            return rejectRequestForEvent(eventId, userId, requestId);
+    @Override
+    public Event updateEventByAdmin(Event updEvent, Long eventId) {
+        Event event = updateEvent(updEvent);
+
+        Optional.ofNullable(updEvent.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(updEvent.getLocation()).ifPresent(event::setLocation);
+
+        try {
+            log.info("Событие обновлено {}.", event);
+            return repository.save(event);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при сохранении данных");
+            throw new RuntimeException("Произошла ошибка при сохранении данных");
         }
-        Request request = requestService.updateStatusRequestById(requestId, Status.CONFIRMED);
-
-        // отменяем все заявки в статусе ожидания, если при подтверждении текущей заявки лимит заявок исчерпан
-        if (event.getParticipantLimit().equals(countRequestsToEvent + 1)) {
-            List<Request> requests = requestService.getRequestsByEventIdAndStatus(eventId, Status.PENDING);
-           for (Request r : requests) {
-               rejectRequestForEvent(eventId, userId, r.getId());
-           }
-
-        }
-        return request;
     }
 
-    @Override
-    public Request rejectRequestForEvent(Long eventId, Long userId, Long requestId) {
-        validateUserIdAndEventId(eventId, userId);
-        requestService.getRequestById(requestId); // проверяем что заявка с указанным id существует
-        return requestService.updateStatusRequestById(requestId, Status.REJECTED);
-    }
-
-    @Override
-    public Collection<Request> getRequestsByUserId(Long eventId, Long userId) {
-        return null;
-    }
-
-    @Override
-    public Collection<Event> getAllEventByAdmin(List<Long> usersIds, List<String> states, List<Long> categoriesId, LocalDateTime start, LocalDateTime end, Pageable page) {
-        return null;
-    }
-
-    @Override
-    public Event updateEventByAdmin(Event event, Long eventId) {
-        return null;
-    }
 
     @Override
     public Event publishedEventByAdmin(Long eventId) {
-        return null;
+        Event event = getEventById(eventId);
+        if (!event.getState().equals(Status.WAITING) || event.getEventDate().plusHours(1).isAfter(LocalDateTime.now())) {
+            log.error("Нельзя опубликовать событие");
+            throw new ConflictException("Нельзя опубликовать событие");
+        }
+        event.setState(Status.PUBLISHED);
+        event.setPublishedOn(LocalDateTime.now());
+        try {
+            log.info("Статус события обновлён {}.", event.getState());
+            return repository.save(event);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при сохранении данных");
+            throw new RuntimeException("Произошла ошибка при сохранении данных");
+        }
     }
 
     @Override
     public Event rejectedEventByAdmin(Long eventId) {
-        return null;
+        Event event = getEventById(eventId);
+        if (event.getState().equals(Status.PUBLISHED)) {
+            log.error("Нельзя отменить событие");
+            throw new ConflictException("Нельзя отменить событие");
+        }
+        event.setState(Status.REJECTED);
+        try {
+            log.info("Статус события обновлён {}.", event.getState());
+            return repository.save(event);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при сохранении данных");
+            throw new RuntimeException("Произошла ошибка при сохранении данных");
+        }
     }
 
     @Override
     public Event getEventById(Long eventId) {
-        return null;
+        Optional<Event> event = repository.findById(eventId);
+        event.orElseThrow(() -> {
+            log.warn("События с указанным id {} нет", eventId);
+            return new ObjectNotFountException("События с указанным id " + eventId + " нет");
+        });
+
+        log.warn("Событие с указанным id {} получено", eventId);
+        return event.get();
     }
 
     @Override
-    public Collection<Event> getAllEvent(String text, List<Long> categoriesId, Boolean paid, LocalDateTime start, LocalDateTime end, String sort, Boolean onlyAvailable, Pageable page) {
-        return null;
+    public Collection<Event> getAllEvent(String text, List<Long> categoriesId, Boolean paid,
+                                         @Nullable Integer participantLimit, LocalDateTime start, @Nullable LocalDateTime end, String sort,
+                                         Pageable page) {
+        try {
+            if (participantLimit == null && end == null) {
+                return repository.findByStateAndDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategoryIdInAndPaidIsAndEventDateAfter(
+                        Status.PUBLISHED, text, text, categoriesId,
+                        paid, start, page).toList();
+            }
+            if (participantLimit == null) {
+                return repository.findByStateAndDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategoryIdInAndPaidIsAndEventDateBetween(
+                        Status.PUBLISHED, text, text, categoriesId,
+                        paid, start, end, page).toList();
+            }
+            if (end == null) {
+                return repository.findByStateAndDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategoryIdInAndPaidIsAndParticipantLimitLessThanAndEventDateAfter(
+                        Status.PUBLISHED, text, text, categoriesId,
+                        paid, participantLimit, start, page).toList();
+            }
+            return repository.findByStateAndDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategoryIdInAndPaidIsAndParticipantLimitLessThanAndEventDateBetween(
+                    Status.PUBLISHED, text, text, categoriesId,
+                    paid, participantLimit, start, end, page).toList();
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("Произошла ошибка при получении данных");
+            throw new RuntimeException("Произошла ошибка при получении данных");
+        }
     }
 
     private void validateUserIdAndEventId(Long eventId, Long userId) {
         userService.getUserById(userId); // проверяем что существует пользователь с таким id
         Event event = getEventById(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("Пользователь с id {} не является инициатором события {}.", userId, eventId);
+            log.error("Пользователь с id {} не является инициатором события {}.", userId, event.getId());
             throw new ConflictException(String.format("Пользователь с id %d не является инициатором события %d.",
-                    userId, eventId));
+                    userId, event.getId()));
         }
     }
+
+    private Event updateEvent(Event updEvent) {
+        Event event = getEventById(updEvent.getId());
+        Optional.ofNullable(updEvent.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(updEvent.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updEvent.getAnnotation()).ifPresent(event::setAnnotation);
+        Optional.ofNullable(updEvent.getEventDate()).ifPresent(event::setEventDate);
+        Optional.ofNullable(updEvent.getCategory()).ifPresent(event::setCategory);
+        Optional.ofNullable(updEvent.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(updEvent.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        return event;
+    }
+
 }
