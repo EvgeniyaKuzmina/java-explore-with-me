@@ -14,7 +14,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // получение списка пользователей с пагинацией
-    Page<User> findAll(Pageable pageable);
-  //  List<User> findAllById(List<Long> ids);
+    Page<User> findByIdIn(List<Long> ids, Pageable pageable);
+
 
 }

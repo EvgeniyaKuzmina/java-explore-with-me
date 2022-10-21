@@ -3,6 +3,7 @@ package ru.yandex.practicum.mainserver.category.controller;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
 import ru.yandex.practicum.mainserver.category.CategoryServiceImpl;
@@ -20,32 +21,35 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/admin/categories")
 @Slf4j
+@Validated
 public class CategoryAdminController {
 
-    private final CategoryService categoryService;
+    private final CategoryService service;
 
     @Autowired
-    public CategoryAdminController(CategoryServiceImpl categoryService) {
-        this.categoryService = categoryService;
+    public CategoryAdminController(CategoryServiceImpl service) {
+        this.service = service;
     }
 
     // создание категории
     @PostMapping
-    public CategoryDto createUser(@Valid @RequestBody NewCategoryDto categoryDto) {
-        return CategoryMapper.toCategoryDto(categoryService.createCategory(categoryDto));
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto categoryDto) {
+        Category category = CategoryMapper.toCategoryFromNewCategoryDto(categoryDto);
+        log.warn(category.toString());
+        return CategoryMapper.toCategoryDto(service.createCategory(category));
     }
 
     // обновление категории
     @PatchMapping
-    public CategoryDto updateUser(@Valid @RequestBody CategoryDto categoryDto) {
-        Category category = categoryService.updateCategory(categoryDto);
+    public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
+        Category category = service.updateCategory(categoryDto);
         return CategoryMapper.toCategoryDto(category);
     }
 
     // удаление категории по id
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable @NonNull Long id) {
-        categoryService.removeCategory(id);
+        service.removeCategory(id);
     }
 
 

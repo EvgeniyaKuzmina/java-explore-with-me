@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainserver.compilation.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -13,8 +13,12 @@ import java.util.Set;
  * класс DTO для подборки событий
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CompilationDto {
 
     @NotNull

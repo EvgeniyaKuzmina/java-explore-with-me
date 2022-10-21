@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 
@@ -14,8 +14,12 @@ import java.util.Set;
  * класс DTO для получения короткой информации о событии
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventShortDto {
     @Id
     private Long id;
@@ -26,7 +30,7 @@ public class EventShortDto {
     @NotNull
     private Boolean paid;
     @NotNull
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotNull
     private UserShortDto initiator;
     @NotNull

@@ -61,7 +61,14 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>10.2</version>
+						</dependency>
+						<dependency>
+							<groupId>org.hibernate</groupId>
+							<artifactId>hibernate-core</artifactId>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.datatype</groupId>
+							<artifactId>jackson-datatype-jsr310</artifactId>
 						</dependency>
 					</dependencies>
 				</plugin>

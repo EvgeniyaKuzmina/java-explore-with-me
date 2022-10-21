@@ -17,7 +17,7 @@ import java.util.Collection;
 public interface CategoryService {
 
     // создание категории
-    Category createCategory(NewCategoryDto categoryDto);
+    Category createCategory(Category category);
 
     //обновление категории
     Category updateCategory(CategoryDto categoryDto);

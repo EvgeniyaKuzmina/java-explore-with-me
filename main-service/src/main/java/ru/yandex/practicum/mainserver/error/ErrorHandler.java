@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.mainserver.exception.ArgumentNotValidException;
 import ru.yandex.practicum.mainserver.exception.ConflictException;
+import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
 import ru.yandex.practicum.mainserver.exception.ValidationException;
 
 import javax.validation.ConstraintViolationException;
@@ -55,6 +56,12 @@ public class ErrorHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlerIllegalArgumentException(IllegalArgumentException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(ObjectNotFountException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIllegalArgumentException(ObjectNotFountException e) {
         return new ErrorResponse(e.getMessage());
     }
 

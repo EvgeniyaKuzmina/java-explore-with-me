@@ -1,7 +1,6 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.category.model.Category;
 
@@ -12,8 +11,11 @@ import java.time.LocalDateTime;
  * класс DTO для работы с обновлением события
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class UpdateEventDto {
     @NotNull
     private Long id;
@@ -24,7 +26,7 @@ public class UpdateEventDto {
 
     private String annotation;
 
-    private LocalDateTime eventDate;
+    private String eventDate;
 
     private CategoryDto category;
     private Boolean paid;

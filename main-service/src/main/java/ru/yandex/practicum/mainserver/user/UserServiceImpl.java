@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> getAllUsersByIds(List<Long> ids, Pageable pageable) {
-        return repository.findAllById(ids);
+        return repository.findByIdIn(ids, pageable).toList();
     }
 
     @Override

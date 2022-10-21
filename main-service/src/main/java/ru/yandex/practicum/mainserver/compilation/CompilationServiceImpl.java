@@ -31,14 +31,15 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public Compilation createCompilation(NewCompilationDto compilationDto) {
         Compilation compilation = CompilationMapper.toCompilationFromNewCompilationDto(compilationDto);
-        try {
+        log.info(compilation.toString());
+        // try {
             log.info("Добавлена подборка {}.", compilation);
             return repository.save(compilation);
-        } catch (DataIntegrityViolationException e) {
+        /*} catch (DataIntegrityViolationException e) {
             log.error("Подборка с таким названием {} уже существует.", compilation.getTitle());
             throw new ConflictException(String.format("Подборка с таким названием %s уже существует.",
                     compilation.getTitle()));
-        }
+        }*/
     }
 
     @Override

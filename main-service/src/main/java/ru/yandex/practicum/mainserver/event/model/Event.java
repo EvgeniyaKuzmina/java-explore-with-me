@@ -9,6 +9,7 @@ import ru.yandex.practicum.mainserver.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Set;
 
@@ -64,14 +65,27 @@ public class Event {
     @Column(name = "text")
     private Set<String> comments;
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "location_id")
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name = "location_id", nullable = false)
     private Location location;
+    @Column(name = "confirmed_requests")
     private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
+    @Column(name = "participant_limit")
     private Integer participantLimit;
+    @Column(name = "request_moderation")
     private Boolean requestModeration;
+    @JoinColumn(name = "compilations_id")
+    private Long compilationsId;
+
+    public void setEventDate(String eventDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.eventDate = LocalDateTime.parse(eventDate, formatter);
+    }
 
 
+    public void setEventDate(LocalDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

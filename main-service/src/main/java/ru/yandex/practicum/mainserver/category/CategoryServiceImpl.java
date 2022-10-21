@@ -27,8 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
 
     @Override
-    public Category createCategory(NewCategoryDto categoryDto) {
-        Category category = CategoryMapper.toCategoryFromNewCategoryDto(categoryDto);
+    public Category createCategory(Category category) {
+
         try {
             log.info("Добавлена категория {}.", category);
             return repository.save(category);
@@ -81,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
         Optional<Category> category = repository.findById(id);
         category.orElseThrow(() -> {
             log.warn("Категории с указанным id {} нет", id);
-            return new ObjectNotFountException("Категории с указанным id " + id + " нет");
+            throw new ObjectNotFountException("Категории с указанным id " + id + " нет");
         });
 
         log.warn("Категория с указанным id {} получена", id);

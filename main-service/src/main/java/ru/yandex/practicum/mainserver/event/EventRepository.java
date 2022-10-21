@@ -2,7 +2,9 @@ package ru.yandex.practicum.mainserver.event;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.status.Status;
 
@@ -27,6 +29,36 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                                                                 LocalDateTime rangeStart,
                                                                                 LocalDateTime rangeEnd,
                                                                                 Pageable pageable);
+    /**/
+
+    // получение списка событий (публичный запрос) по указанным параметрам
+
+    //criteria
+
+    //QueryDSL
+    /*@Query("SELECT e FROM Event e WHERE " +
+            "(UPPER (e.description) LIKE %:text% OR UPPER (e.annotation) LIKE %:text%) " +
+            "AND e.confirmedRequests < e.participantLimit " +
+            "AND e.category in :categoriesId  " +
+            "AND e.paid = :paid  " +
+            "AND (e.eventDate > :rangeStart AND e.eventDate < :rangeEnd)" +
+            "AND e.state = 'PUBLISHED' " +
+            "ORDER BY :sort")
+    Page<Event> getAllEventsPublicAPI(EventParam param,
+                                      Pageable pageable);*/
+
+    Page<Event> findAll(Specification<Event> specification, Pageable pageable);
+    /*@Query("SELECT e FROM Event e WHERE " +
+            "UPPER (e.description) LIKE '%param.getText().toUpperCase()%' " +
+            "OR UPPER (e.annotation) LIKE '%param.getText().toUpperCase()%' " +
+    " ")*/
+  /*  Page<Event> getAllEventPublicAPI(EventParam param,
+                                     Pageable pageable);*/
+    //SessionFactory sessionFactory = HibernateUtil.getSessionFactoryOptions();
+    //Criteria criteria = session.createCriteria(Event.class);
+    // Session session = HibernateUtil.getHibernateSession();
+    // CriteriaBuilder cb = session.getCriteriaBuilder();
+
 
     // получение списка событий (публичный запрос) по указанным параметрам
     // (с датой проведения между указанными датами), только доступные для записи

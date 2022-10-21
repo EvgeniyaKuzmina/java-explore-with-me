@@ -1,19 +1,20 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import ru.yandex.practicum.mainserver.category.model.Category;
+import lombok.*;
+import ru.yandex.practicum.mainserver.event.location.LocationDto;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 
 /**
  * класс DTO для создания нового события
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class NewEventDto {
 
     @NotNull
@@ -23,20 +24,14 @@ public class NewEventDto {
     @NotNull
     private String annotation;
     @NotNull
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotNull
-    private Category category;
+    private Long category;
     private Boolean paid;
     private Boolean requestModeration;
     private Integer participantLimit;
     @NotNull
-    private Location location;
+    private LocationDto location;
 
 
-    @Data
-    @Builder
-    public static class Location {
-        private Float lat;
-        private Float lon;
-    }
 }

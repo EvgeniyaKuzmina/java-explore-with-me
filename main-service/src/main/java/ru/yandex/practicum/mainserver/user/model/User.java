@@ -32,10 +32,7 @@ public class User {
     @NotNull
     @Column(name = "email",  nullable = false)
     private String email;
-    @ElementCollection
-    @CollectionTable(name = "compilation_events", joinColumns = @JoinColumn(name = "event_id"))
-    @Column(name = "text")
-    private List<Long> compilationId;
+
 
     @Override
     public boolean equals(Object o) {

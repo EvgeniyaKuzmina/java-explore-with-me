@@ -19,20 +19,17 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Table(name = "compilations_events", schema = "public")
+@Table(name = "compilations", schema = "public")
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    @Column(name = "title")
+    @Column(name = "title",  nullable = false)
     private String title;
-    @NotNull
     @Column(name = "pinned")
     private Boolean pinned;
     @NotNull
-    @ElementCollection
-    @CollectionTable(name = "events", joinColumns = @JoinColumn(name = "compilations_id"))
-    @Column(name = "id")
-    private List<Long> eventsId;
+    @Column(name = "compilation_event_id")
+    private Long compilationEventId;
 }

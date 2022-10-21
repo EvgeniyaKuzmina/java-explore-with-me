@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.event.location.LocationDto;
 import ru.yandex.practicum.mainserver.status.Status;
@@ -9,14 +9,19 @@ import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 /**
  * класс DTO для получения полной информации о событии
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventFullDto {
 
     private Long id;
@@ -28,10 +33,10 @@ public class EventFullDto {
     private Status state;
     @NotNull
     private Boolean paid;
-    private LocalDateTime createdOn;
+    private String createdOn;
     @NotNull
-    private LocalDateTime eventDate;
-    private LocalDateTime publishedOn;
+    private String eventDate;
+    private String publishedOn;
     private Integer views;
     private UserShortDto initiator;
     @NotNull
@@ -42,5 +47,20 @@ public class EventFullDto {
     private LocationDto location;
     private Integer participantLimit;
     private Boolean requestModeration;
+
+    public void setPublishedOn(LocalDateTime publishedOn) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.publishedOn = publishedOn.format(formatter);
+    }
+    public void setCreatedOn(LocalDateTime createdOn) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.createdOn = createdOn.format(formatter);
+    }
+
+    public void setEventDate(LocalDateTime eventDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.eventDate = eventDate.format(formatter);
+    }
+
 
 }

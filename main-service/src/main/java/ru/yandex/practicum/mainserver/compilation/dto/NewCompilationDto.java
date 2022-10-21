@@ -1,7 +1,6 @@
 package ru.yandex.practicum.mainserver.compilation.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.List;
  * класс DTO для создания новой подборки событий
  */
 
-@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class NewCompilationDto {
 
     private List<Long> events;

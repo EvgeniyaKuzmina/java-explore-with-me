@@ -142,7 +142,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Request confirmRequestForEvent(Event event, Long userId, Long requestId) {
         validateUserIdAndEventId(event, userId);
-        Long eventId = event.getId();
         getRequestById(requestId); // проверяем что заявка с указанным id существует
         if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(false)) {
             log.error("Подтверждение заявки не требуется");
@@ -150,15 +149,24 @@ public class RequestServiceImpl implements RequestService {
         }
 
         // получаем количество подтвержденных заявок по событию
-        int countRequestsToEvent = getRequestsByEventIdAndStatus(eventId, Status.CONFIRMED).size();
-        if (event.getParticipantLimit().equals(countRequestsToEvent)) {
+        Integer confirmedRequests = event.getConfirmedRequests();
+        if (confirmedRequests == null) {
+            confirmedRequests = 0;
+        }
+
+        if (event.getParticipantLimit().equals(confirmedRequests)) {
+            log.info("Все места на событие заняты, заявка отклонена ");
             return rejectRequestForEvent(event, userId, requestId);
         }
+
         Request request = updateStatusRequestById(requestId, Status.CONFIRMED);
+        ++confirmedRequests;
+        event.setConfirmedRequests(confirmedRequests);
+        eventService.updateEvent(event);
 
         // отменяем все заявки в статусе ожидания, если при подтверждении текущей заявки лимит заявок исчерпан
-        if (event.getParticipantLimit().equals(countRequestsToEvent + 1)) {
-            List<Request> requests = getRequestsByEventIdAndStatus(eventId, Status.PENDING);
+        if (event.getParticipantLimit().equals(confirmedRequests)) {
+            List<Request> requests = getRequestsByEventIdAndStatus(event.getId(), Status.PENDING);
             for (Request r : requests) {
                 rejectRequestForEvent(event, userId, r.getId());
             }

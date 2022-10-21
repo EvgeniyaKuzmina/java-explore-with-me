@@ -1,7 +1,6 @@
 package ru.yandex.practicum.mainserver.category.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -9,8 +8,12 @@ import javax.validation.constraints.NotNull;
  * класс DTO для создания новой категории
  */
 
-@Data
+
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class NewCategoryDto {
     @NotNull
     private String name;

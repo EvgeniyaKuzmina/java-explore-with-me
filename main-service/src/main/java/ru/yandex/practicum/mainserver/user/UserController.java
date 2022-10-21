@@ -63,17 +63,17 @@ public class UserController {
 
     // получение списка всех пользователей
     @GetMapping
-    public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
+    public Collection<UserDto> getAllUsers(@RequestParam (required = false) List<Long> ids,
                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<UserDto> allUsersDto = new ArrayList<>();
 
-        if (!ids.isEmpty()) {
+        if (ids != null) {
             Collection<User> allUsersByIds = service.getAllUsersByIds(ids, pageable);
             allUsersByIds.forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
-            return allUsersDto;
+            //return allUsersDto;
         }
 
         service.getAllUsers(pageable).forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
