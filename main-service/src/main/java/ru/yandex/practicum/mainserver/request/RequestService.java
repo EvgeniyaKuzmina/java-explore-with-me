@@ -5,7 +5,6 @@ import ru.yandex.practicum.mainserver.request.model.Request;
 import ru.yandex.practicum.mainserver.status.Status;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * класс описывающий методы для работы с запросами на участие в событиях
@@ -14,7 +13,7 @@ import java.util.List;
 public interface RequestService {
 
     // добавление нового запроса
-    Request createRequest(Long userID, Long eventId);
+    Request createRequest(Long userId, Long eventId);
 
     // отмена своего запроса на участие
     Request cancelRequest(Long userId, Long requestId);
@@ -22,16 +21,16 @@ public interface RequestService {
     // получение списка всех заявок на участие
     Collection<Request> getAllRequestsByUserId(Long userId);
 
-    // получение заявки по id
+    // получение заявки по eventId
     Request getRequestById(Long id);
 
-    // получение всех заявок по id события
+    // получение всех заявок по eventId события
     Collection<Request> getRequestsByEventIdAndStatus(Long id, Status status);
 
     // обновление заявки
     Request updateStatusRequestById(Long id, Status status);
 
-    // получение списка всех заявок на id события
+    // получение списка всех заявок на eventId события
     Collection<Request> getRequestsByEventId(Event event, Long userId);
 
     //подтверждение чужой заявки на участие в событии текущего пользователя

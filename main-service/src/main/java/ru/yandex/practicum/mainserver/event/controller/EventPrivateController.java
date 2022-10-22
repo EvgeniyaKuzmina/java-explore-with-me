@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
-import ru.yandex.practicum.mainserver.category.CategoryServiceImpl;
 import ru.yandex.practicum.mainserver.category.model.Category;
 import ru.yandex.practicum.mainserver.event.EventService;
 import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
@@ -19,7 +18,6 @@ import ru.yandex.practicum.mainserver.request.RequestService;
 import ru.yandex.practicum.mainserver.request.dto.RequestDto;
 import ru.yandex.practicum.mainserver.request.mapper.RequestMapper;
 import ru.yandex.practicum.mainserver.request.model.Request;
-import ru.yandex.practicum.mainserver.status.Status;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -69,7 +67,8 @@ public class EventPrivateController {
     // изменение события
     @PatchMapping
     public EventFullDto updateEvent(@Valid @RequestBody UpdateEventDto eventDto, @PathVariable Long userId) {
-        Event event = EventMapper.toEventFromUpdateDto(eventDto);
+        Category category = categoryService.getCategoryById(eventDto.getCategory());
+        Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
 
         return EventMapper.toEventFullDto(event);
@@ -87,11 +86,12 @@ public class EventPrivateController {
         return eventsDto;
     }
 
-    // получение информации о событии по id, добавленным текущим пользователем
+    // получение информации о событии по eventId, добавленным текущим пользователем
     @GetMapping(value = "/{eventId}")
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
 
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
+        log.info(event.toString());
         return EventMapper.toEventFullDto(event);
     }
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
 import ru.yandex.practicum.mainserver.event.model.EventParam;
 import ru.yandex.practicum.mainserver.event.EventService;
 import ru.yandex.practicum.mainserver.event.dto.EventShortDto;
@@ -52,17 +53,18 @@ public class EventPublicController {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> events = service.getEventsByPublicParams(param, pageable);
+        log.info(events.toString());
         Collection<EventShortDto> eventsShortDto = new ArrayList<>();
         events.forEach(e -> eventsShortDto.add(EventMapper.toEventShortDto(e)));
         return eventsShortDto;
     }
 
 
-    // получение информации о событии по его id
+    // получение подробной информации о событии по его eventId
     @GetMapping(value = {"/{id}"})
-    public EventShortDto getUserById(@PathVariable Long id) {
+    public EventFullDto getUserById(@PathVariable Long id) {
         Event event = service.getEventById(id);
-        return EventMapper.toEventShortDto(event);
+        return EventMapper.toEventFullDto(event);
     }
 
     // преобразование параметров запроса в объект EventParam
@@ -74,13 +76,13 @@ public class EventPublicController {
                                    Boolean onlyAvailable,
                                    String sort) {
 
-
         EventParam param = new EventParam();
         Optional.ofNullable(text).ifPresent(param::setText);
         Optional.ofNullable(categoriesId).ifPresent(param::setCategoriesId);
         Optional.ofNullable(paid).ifPresent(param::setPaid);
+
         if (rangeStart != null) {
-            Optional.of(rangeStart).ifPresent(param::setRangeStart);
+            param.setRangeStart(rangeStart);
         } else {
             param.setRangeStart(LocalDateTime.now());
         }
@@ -88,8 +90,6 @@ public class EventPublicController {
         Optional.ofNullable(onlyAvailable).ifPresent(param::setOnlyAvailable);
         Optional.ofNullable(sort).ifPresent(param::setSort);
 
-
         return param;
-
     }
 }

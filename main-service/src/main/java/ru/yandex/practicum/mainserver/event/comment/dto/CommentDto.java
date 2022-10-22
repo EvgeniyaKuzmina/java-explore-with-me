@@ -3,9 +3,9 @@ package ru.yandex.practicum.mainserver.event.comment.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * класс DTO для работы с комментариями
@@ -21,6 +21,9 @@ public class CommentDto {
     @NotNull
     private Long event_id;
     private Long author_id;
-    private LocalDateTime creat;
-
+    private String creat;
+    public void setCreat(LocalDateTime creat) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.creat = creat.format(formatter);
+    }
 }

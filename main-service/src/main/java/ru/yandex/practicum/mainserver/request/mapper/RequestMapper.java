@@ -3,16 +3,19 @@ package ru.yandex.practicum.mainserver.request.mapper;
 import ru.yandex.practicum.mainserver.request.dto.RequestDto;
 import ru.yandex.practicum.mainserver.request.model.Request;
 
+import java.util.Optional;
+
 public class RequestMapper {
 
     public static RequestDto toRequestDto(Request request) {
-        return RequestDto.builder()
+        RequestDto requestDto = RequestDto.builder()
                 .id(request.getId())
                 .status(request.getStatus())
-                .created(request.getCreated())
-                .requesterId(request.getRequester().getId())
-                .eventId(request.getEvent().getId())
+                .requester(request.getRequester().getId())
+                .event(request.getEvent().getId())
                 .build();
+        Optional.ofNullable(request.getCreated()).ifPresent(requestDto::setCreated);
+        return requestDto;
     }
 
 }

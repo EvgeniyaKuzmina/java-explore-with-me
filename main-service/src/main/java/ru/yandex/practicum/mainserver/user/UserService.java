@@ -1,12 +1,9 @@
 package ru.yandex.practicum.mainserver.user;
 
 import org.springframework.data.domain.Pageable;
-import ru.yandex.practicum.mainserver.user.dto.NewUserDto;
-import ru.yandex.practicum.mainserver.user.dto.UserDto;
 import ru.yandex.practicum.mainserver.user.model.User;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * класс описывающий методы для работы с пользователем
@@ -16,19 +13,20 @@ import java.util.List;
 public interface UserService {
 
     // создание пользователя
-    User createUser(NewUserDto userDto);
+    User createUser(User user);
 
     //обновление пользователя
-    User updateUser(UserDto userDto, Long id);
+    User updateUser(User user, Long id);
 
-    // удаление пользователя по id
+    // удаление пользователя по eventId
     void removeUser(Long id);
 
     // получение списка всех пользователей
     Collection<User> getAllUsers(Pageable pageable);
-    // получение списка всех пользователей c указанными id
-    Collection<User> getAllUsersByIds(List<Long> ids, Pageable pageable);
 
-    // получение пользователя по id
+    // получение списка всех пользователей c указанными eventId
+    Collection<User> getAllUsersByIds(Collection<Long> ids, Pageable pageable);
+
+    // получение пользователя по eventId
     User getUserById(Long id);
 }

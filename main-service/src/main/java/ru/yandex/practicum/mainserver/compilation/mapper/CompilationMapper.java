@@ -1,41 +1,37 @@
 package ru.yandex.practicum.mainserver.compilation.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.mainserver.compilation.dto.CompilationDto;
 import ru.yandex.practicum.mainserver.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.mainserver.compilation.model.Compilation;
+import ru.yandex.practicum.mainserver.event.dto.EventShortDto;
+import ru.yandex.practicum.mainserver.event.mapper.EventMapper;
+import ru.yandex.practicum.mainserver.event.model.Event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 public class CompilationMapper {
 
 
     public static CompilationDto toCompilationDto(Compilation compilation) {
-        //List<Event> events = new ArrayList<>();
-       // compilation.getEventsId().forEach(e -> events.add(e.getId()));
+        List<EventShortDto> eventsDto = new ArrayList<>();
+        compilation.getEvents().forEach(e -> eventsDto.add(EventMapper.toEventShortDto(e)));
         return CompilationDto.builder()
+                .id(compilation.getId())
                 .title(compilation.getTitle())
                 .pinned(compilation.getPinned())
-                //.event(compilation)
+                .events(eventsDto)
                 .build();
     }
 
-
-    public static Compilation toCompilation(CompilationDto compilationDto) {
-        List<Long> events = new ArrayList<>();
-        compilationDto.getEvents().forEach(e -> events.add(e.getId()));
+    public static Compilation toCompilationFromNewCompilationDto(NewCompilationDto compilationDto, Collection<Event> events) {
         return Compilation.builder()
                 .title(compilationDto.getTitle())
                 .pinned(compilationDto.getPinned())
-                .eventsId(events)
-                .build();
-    }
-
-    public static Compilation toCompilationFromNewCompilationDto(NewCompilationDto compilationDto) {
-        return Compilation.builder()
-                .title(compilationDto.getTitle())
-                .pinned(compilationDto.getPinned())
-                .eventsId(compilationDto.getEvents())
+                .events(events)
                 .build();
     }
 }

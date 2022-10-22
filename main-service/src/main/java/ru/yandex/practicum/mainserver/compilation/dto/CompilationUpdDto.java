@@ -2,9 +2,6 @@ package ru.yandex.practicum.mainserver.compilation.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

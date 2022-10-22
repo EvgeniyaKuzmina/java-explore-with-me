@@ -5,14 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.mainserver.compilation.dto.NewCompilationDto;
-import ru.yandex.practicum.mainserver.compilation.mapper.CompilationMapper;
 import ru.yandex.practicum.mainserver.compilation.model.Compilation;
+import ru.yandex.practicum.mainserver.event.EventService;
+import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.exception.ConflictException;
 import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,28 +26,30 @@ import java.util.Optional;
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository repository;
+    private final EventService eventService;
 
     @Override
-    public Compilation createCompilation(NewCompilationDto compilationDto) {
-        Compilation compilation = CompilationMapper.toCompilationFromNewCompilationDto(compilationDto);
-        log.info(compilation.toString());
-        // try {
-            log.info("Добавлена подборка {}.", compilation);
+    public Compilation createCompilation(Compilation compilation) {
+
+        //Collection<Event> events = eventService.getAllEventByIds(compilation.getEvents());
+
+        try {
+            log.info("CompilationServiceImpl: createCompilation — Добавлена подборка {}.", compilation);
             return repository.save(compilation);
-        /*} catch (DataIntegrityViolationException e) {
-            log.error("Подборка с таким названием {} уже существует.", compilation.getTitle());
+        } catch (DataIntegrityViolationException e) {
+            log.error("CompilationServiceImpl: createCompilation — Подборка с таким названием {} уже существует.", compilation.getTitle());
             throw new ConflictException(String.format("Подборка с таким названием %s уже существует.",
                     compilation.getTitle()));
-        }*/
+        }
     }
 
     @Override
     public Compilation updateCompilation(Compilation compilation, Long id) {
         try {
-            log.info("Обновлена подборка {}.", compilation);
+            log.info("CompilationServiceImpl: updateCompilation — Обновлена подборка {}.", compilation);
             return repository.save(compilation);
         } catch (DataIntegrityViolationException e) {
-            log.error("Подборка с таким названием {} уже существует.", compilation.getTitle());
+            log.error("CompilationServiceImpl: updateCompilation — Подборка с таким названием {} уже существует.", compilation.getTitle());
             throw new ConflictException(String.format("Подборка с таким названием %s уже существует.",
                     compilation.getTitle()));
         }
@@ -56,28 +57,29 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public Compilation addEventToCompilation(Long eventId, Long compId) {
-        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным id есть
+        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
 
-        List<Long> eventsId = compilation.getEventsId();
+        Event event = eventService.getEventById(eventId);
+        Collection<Event> events = compilation.getEvents();
 
-        compilation.getEventsId().forEach(id -> {
-            if (Objects.equals(id, eventId)) {
-                log.error("В указанной подборке уже есть событие с id {}.", id);
-                throw new ConflictException(String.format("В указанной подборке уже есть событие с id %d.", id));
+        events.forEach(e -> {
+            if (Objects.equals(e.getId(), eventId)) {
+                log.error("CompilationServiceImpl: addEventToCompilation — В указанной подборке уже есть событие с eventId {}.", eventId);
+                throw new ConflictException(String.format("В указанной подборке уже есть событие с eventId %d.", eventId));
             }
         });
-        eventsId.add(eventId);
-        compilation.setEventsId(eventsId);
+        events.add(event);
+        compilation.setEvents(events);
 
         return updateCompilation(compilation, compId);
     }
 
     @Override
     public Compilation pinCompilation(Boolean pin, Long compId) {
-        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным id есть
+        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
 
         if (compilation.getPinned().equals(pin)) {
-            log.error("Подборка уже закреплена на главной странице");
+            log.error("CompilationServiceImpl: pinCompilation — Подборка уже закреплена на главной странице");
             throw new ConflictException("Подборка уже закреплена на главной странице");
         }
         compilation.setPinned(pin);
@@ -87,12 +89,12 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public Compilation unpinCompilation(Boolean pin, Long compId) {
-        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным id есть
+        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
         // обновляем данные
 
         if (compilation.getPinned().equals(pin)) {
-            log.error("Подборка уже откреплена с главной страницы");
-            throw new ConflictException("Подборка уже откреплена с главной страницы");
+            log.error("CompilationServiceImpl: unpinCompilation — Подборка не закреплена на главной странице");
+            throw new ConflictException("Подборка не закреплена на главной странице");
         }
         compilation.setPinned(pin);
 
@@ -101,25 +103,27 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public Compilation deleteEventFromCompilation(Long eventId, Long compId) {
-        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным id есть
+        Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
 
-        List<Long> eventsId = compilation.getEventsId();
-        compilation.getEventsId().forEach(id -> {
-            if (!Objects.equals(id, eventId)) {
-                log.error("В указанной подборке нет события с id {}.", id);
-                throw new ConflictException(String.format("В указанной подборке нет события с id %d.", id));
+        Event event = eventService.getEventById(eventId);
+        Collection<Event> events = compilation.getEvents();
+
+        events.forEach(e -> {
+            if (!Objects.equals(e.getId(), eventId)) {
+                log.error("CompilationServiceImpl: deleteEventFromCompilation — В указанной подборке нет события с eventId {}.", eventId);
+                throw new ConflictException(String.format("В указанной подборке нет события с eventId %d.", eventId));
             }
         });
-        eventsId.remove(eventId);
-        compilation.setEventsId(eventsId);
+        events.remove(event);
+        compilation.setEvents(events);
 
         return updateCompilation(compilation, compId);
     }
 
     @Override
     public void removeCompilation(Long id) {
-        getCompilationById(id); // проверка, что пользователь с указанным id есть
-        log.warn("Подборка с указанным id {} удалена", id);
+        getCompilationById(id); // проверка, что пользователь с указанным eventId есть
+        log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным eventId {} удалена", id);
         repository.deleteById(id);
     }
 
@@ -137,11 +141,11 @@ public class CompilationServiceImpl implements CompilationService {
     public Compilation getCompilationById(Long id) {
         Optional<Compilation> compilation = repository.findById(id);
         compilation.orElseThrow(() -> {
-            log.warn("Подборки с указанным id {} нет", id);
-            return new ObjectNotFountException("Подборки с указанным id " + id + " нет");
+            log.warn("CompilationServiceImpl: getCompilationById — Подборки с указанным id {} нет", id);
+            return new ObjectNotFountException("Подборки с указанным eventId " + id + " нет");
         });
 
-        log.warn("Подборка с указанным id {} получена", id);
+        log.warn("CompilationServiceImpl: getCompilationById — Подборка с указанным id {} получена", id);
         return compilation.get();
     }
 }

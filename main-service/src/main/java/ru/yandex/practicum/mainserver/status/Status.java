@@ -3,17 +3,14 @@ package ru.yandex.practicum.mainserver.status;
 import java.util.Optional;
 
 public enum Status {
-    WAITING ("WAITING"),
-    REJECTED ("REJECTED"),
-    PUBLISHED ("PUBLISHED"),
-    PENDING ("PENDING"),
-    CONFIRMED ("CONFIRMED"),
-    CANCELED ("CANCELED");
 
-    private final String status;
+    REJECTED("REJECTED"),
+    PUBLISHED("PUBLISHED"),
+    PENDING("PENDING"),
+    CONFIRMED("CONFIRMED"),
+    CANCELED("CANCELED");
 
     Status(String status) {
-        this.status = status;
     }
 
     public static Optional<Status> from(String stringState) {

@@ -12,6 +12,8 @@ import ru.yandex.practicum.mainserver.compilation.model.Compilation;
 
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
+
     Page<Compilation> findAll(Pageable pageable);
+
     Page<Compilation> findByPinnedIs(Boolean pinned, Pageable pageable);
 }

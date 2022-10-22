@@ -38,17 +38,19 @@ public class UserController {
     // создание пользователя
     @PostMapping
     public UserDto createUser(@Valid @RequestBody NewUserDto newUserDto) {
-        return UserMapper.toUserDto(service.createUser(newUserDto));
+        User user = UserMapper.toUserFromNewUserDto(newUserDto);
+        return UserMapper.toUserDto(service.createUser(user));
     }
 
     // обновление пользователя
     @PatchMapping(value = {"/{id}"})
     public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long id) {
-        User user = service.updateUser(userDto, id);
+        User user = UserMapper.toUser(userDto);
+        user = service.updateUser(user, id);
         return UserMapper.toUserDto(user);
     }
 
-    // удаление пользователя по id
+    // удаление пользователя по eventId
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable Long id) {
         service.removeUser(id);
@@ -63,7 +65,7 @@ public class UserController {
 
     // получение списка всех пользователей
     @GetMapping
-    public Collection<UserDto> getAllUsers(@RequestParam (required = false) List<Long> ids,
+    public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
         int page = from / size;
@@ -73,10 +75,11 @@ public class UserController {
         if (ids != null) {
             Collection<User> allUsersByIds = service.getAllUsersByIds(ids, pageable);
             allUsersByIds.forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
-            //return allUsersDto;
+            return allUsersDto;
         }
 
         service.getAllUsers(pageable).forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
+
         return allUsersDto;
     }
 }

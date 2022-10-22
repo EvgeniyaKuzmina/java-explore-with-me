@@ -12,16 +12,16 @@ import java.util.List;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    //получение id событий по id пользователя
+    //получение eventId событий по eventId пользователя
     List<Long> findEventIdByRequesterId(Long id);
 
-    // получение всех заявок по id пользователя
+    // получение всех заявок по eventId пользователя
     List<Request> findByRequesterId(Long id);
 
-    // получение всех заявок по id события с указанным статусом
+    // получение всех заявок по eventId события с указанным статусом
     List<Request> findByEventIdAndStatus(Long id, Status status);
 
-    // получение всех заявок по id события
+    // получение всех заявок по eventId события
     List<Request> findByEventId(Long id);
 
 }

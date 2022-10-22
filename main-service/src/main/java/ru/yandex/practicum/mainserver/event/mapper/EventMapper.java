@@ -11,23 +11,20 @@ import java.util.Optional;
 
 public class EventMapper {
 
-    /*@Autowired
-    public CategoryAdminController(CategoryServiceImpl service) {
-        this.service = service;
-    }*/
-
     public static EventShortDto toEventShortDto(Event event) {
-        return EventShortDto.builder()
+        EventShortDto eventDto = EventShortDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
                 .annotation(event.getAnnotation())
                 .paid(event.getPaid())
                 .initiator(UserMapper.toUserShortDto(event.getInitiator()))
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
+                .confirmedRequests(event.getConfirmedRequest())
                 .views(event.getViews())
                 .comments(event.getComments())
                 .build();
+        Optional.ofNullable(event.getEventDate()).ifPresent(eventDto::setEventDate);
+        return eventDto;
     }
 
     public static EventFullDto toEventFullDto(Event event) {
@@ -41,7 +38,7 @@ public class EventMapper {
                 .location(LocationMapper.toLocationDto(event.getLocation()))
                 .initiator(UserMapper.toUserShortDto(event.getInitiator()))
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
+                .confirmedRequests(event.getConfirmedRequest())
                 .views(event.getViews())
                 .comments(event.getComments())
                 .participantLimit(event.getParticipantLimit())
@@ -53,30 +50,30 @@ public class EventMapper {
         return ev;
     }
 
-    public static Event toEventFromAdminUpdDto(AdminUpdateEventRequest eventDto) {
+    public static Event toEventFromAdminUpdDto(AdminUpdateEventRequest eventDto, Category category) {
         Event event = Event.builder()
                 .title(eventDto.getTitle())
                 .annotation(eventDto.getAnnotation())
                 .description(eventDto.getDescription())
                 .paid(eventDto.getPaid())
                 .createdOn(eventDto.getCreatedOn())
-                .location(LocationMapper.toLocation(eventDto.getLocation()))
-                .category(CategoryMapper.toCategory(eventDto.getCategory()))
+                .category(category)
                 .participantLimit(eventDto.getParticipantLimit())
                 .requestModeration(eventDto.getRequestModeration())
                 .build();
         Optional.ofNullable(eventDto.getEventDate()).ifPresent(event::setEventDate);
+        Optional.ofNullable(eventDto.getLocation()).ifPresent(dto -> event.setLocation(LocationMapper.toLocation(eventDto.getLocation())));
         return event;
     }
 
-    public static Event toEventFromUpdateDto(UpdateEventDto eventDto) {
+    public static Event toEventFromUpdateDto(UpdateEventDto eventDto, Category category) {
         Event event = Event.builder()
-                .id(eventDto.getId())
+                .id(eventDto.getEventId())
                 .title(eventDto.getTitle())
                 .annotation(eventDto.getAnnotation())
                 .description(eventDto.getDescription())
                 .paid(eventDto.getPaid())
-                .category(CategoryMapper.toCategory(eventDto.getCategory()))
+                .category(category)
                 .participantLimit(eventDto.getParticipantLimit())
                 .build();
         Optional.ofNullable(eventDto.getEventDate()).ifPresent(event::setEventDate);

@@ -15,7 +15,7 @@ import ru.yandex.practicum.mainserver.category.model.Category;
 import javax.validation.Valid;
 
 /**
- *  класс контроллер для работы с API категорий событий
+ * класс контроллер для работы с API категорий событий
  */
 
 @RestController
@@ -42,11 +42,12 @@ public class CategoryAdminController {
     // обновление категории
     @PatchMapping
     public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        Category category = service.updateCategory(categoryDto);
+        Category category = CategoryMapper.toCategory(categoryDto);
+        category = service.updateCategory(category);
         return CategoryMapper.toCategoryDto(category);
     }
 
-    // удаление категории по id
+    // удаление категории по eventId
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable @NonNull Long id) {
         service.removeCategory(id);

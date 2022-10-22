@@ -3,11 +3,8 @@ package ru.yandex.practicum.mainserver.event;
 import org.springframework.data.domain.Pageable;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.event.model.EventParam;
-import ru.yandex.practicum.mainserver.status.Status;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * класс описывающий методы для работы с событиями
@@ -29,14 +26,10 @@ public interface EventService {
     // получение списка всех событий текущего пользователя
     Collection<Event> getAllEventsByInitiatorId(Long userId, Pageable page);
 
-    // получение события текущего пользователя по id
+    // получение события текущего пользователя по eventId
     Event getEventByIdAndInitiatorId(Long eventId, Long userId);
 
     // методы для API администратора
-
-    // получение списка событий админом по указанным критериям
-    Collection<Event> getAllEventByAdmin(List<Long> usersIds, List<Status> states, List<Long> categoriesId,
-                                         LocalDateTime start, LocalDateTime end, Pageable page);
 
     //обновление события админом
     Event updateEventByAdmin(Event event, Long eventId);
@@ -49,17 +42,12 @@ public interface EventService {
 
     // методы для публичного API
 
-    // получение события по id
+    // получение события по eventId
     Event getEventById(Long eventId);
 
-//    Collection<Event> getAllEvent(EventParam param, Pageable page);
-    // получение списка событий с фильтрацией
-/*    Collection<Event> getAllEvent(String text, List<Long> categoriesId, Boolean paid,
-                                  Integer participantLimit, LocalDateTime start, LocalDateTime end, String sort,
-                                  Pageable page);*/
-
     // обновление всех полей события
-    Event updateEvent(Event updEvent);
+    Event updateEvent(Event updEvent, Long eventId);
+
     // получение списка событий публичным API
     Collection<Event> getEventsByPublicParams(EventParam param, Pageable pageable);
 

@@ -69,13 +69,11 @@ public class Event {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
     @Column(name = "confirmed_requests")
-    private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
+    private Integer confirmedRequest; // Количество одобренных заявок на участие в данном событии
     @Column(name = "participant_limit")
     private Integer participantLimit;
     @Column(name = "request_moderation")
     private Boolean requestModeration;
-    @JoinColumn(name = "compilations_id")
-    private Long compilationsId;
 
     public void setEventDate(String eventDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

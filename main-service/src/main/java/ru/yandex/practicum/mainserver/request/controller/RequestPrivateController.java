@@ -36,14 +36,14 @@ public class RequestPrivateController {
     }
 
     // отмена своего запроса на участие
-    @DeleteMapping(value = {"/{requestId}/cancel"})
+    @PatchMapping(value = {"/{requestId}/cancel"})
     public RequestDto deleteEventFromCompilation(@Valid @PathVariable @NotNull Long userId, @PathVariable @NotNull Long requestId) {
         Request request = service.cancelRequest(userId, requestId);
         return RequestMapper.toRequestDto(request);
     }
 
 
-    // получение списка всех заявок на участие по id пользователя
+    // получение списка всех заявок на участие по eventId пользователя
     @GetMapping
     public Collection<RequestDto> getAllRequestsByUserId(@PathVariable @NotNull Long userId) {
 

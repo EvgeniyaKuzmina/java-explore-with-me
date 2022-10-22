@@ -1,6 +1,5 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.event.location.LocationDto;
@@ -21,7 +20,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventFullDto {
 
     private Long id;
@@ -52,6 +50,7 @@ public class EventFullDto {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.publishedOn = publishedOn.format(formatter);
     }
+
     public void setCreatedOn(LocalDateTime createdOn) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.createdOn = createdOn.format(formatter);

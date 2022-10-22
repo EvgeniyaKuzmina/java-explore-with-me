@@ -1,6 +1,5 @@
 package ru.yandex.practicum.mainserver.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
 import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
@@ -8,6 +7,7 @@ import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 /**
@@ -19,7 +19,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventShortDto {
     @Id
     private Long id;
@@ -35,9 +34,12 @@ public class EventShortDto {
     private UserShortDto initiator;
     @NotNull
     private CategoryDto category;
-    private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
+    private Integer confirmedRequests;
     private Integer views;
     private Set<String> comments;
 
-
+    public void setEventDate(LocalDateTime eventDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.eventDate = eventDate.format(formatter);
+    }
 }

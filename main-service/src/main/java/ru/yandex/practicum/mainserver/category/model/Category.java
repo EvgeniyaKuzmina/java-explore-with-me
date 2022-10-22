@@ -2,8 +2,6 @@ package ru.yandex.practicum.mainserver.category.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.hibernate.Hibernate;
-import ru.yandex.practicum.mainserver.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

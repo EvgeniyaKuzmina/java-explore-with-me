@@ -9,8 +9,12 @@ import ru.yandex.practicum.mainserver.compilation.dto.CompilationDto;
 import ru.yandex.practicum.mainserver.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.mainserver.compilation.mapper.CompilationMapper;
 import ru.yandex.practicum.mainserver.compilation.model.Compilation;
+import ru.yandex.practicum.mainserver.event.EventService;
+import ru.yandex.practicum.mainserver.event.model.Event;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * класс контроллер для работы с API подборками событий
@@ -23,15 +27,21 @@ public class CompilationAdminController {
 
     private final CompilationService service;
 
+    private final EventService eventService;
+
     @Autowired
-    public CompilationAdminController(CompilationServiceImpl service) {
+    public CompilationAdminController(CompilationServiceImpl service, EventService eventService) {
         this.service = service;
+        this.eventService = eventService;
     }
 
     // создание подборки
     @PostMapping
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto compilationDto) {
-        return CompilationMapper.toCompilationDto(service.createCompilation(compilationDto));
+        Collection<Event> events = new ArrayList<>();
+        compilationDto.getEvents().forEach(id -> events.add(eventService.getEventById(id)));
+        Compilation compilation = CompilationMapper.toCompilationFromNewCompilationDto(compilationDto, events);
+        return CompilationMapper.toCompilationDto(service.createCompilation(compilation));
     }
 
     // добавить событие в подборку
@@ -62,13 +72,12 @@ public class CompilationAdminController {
         return CompilationMapper.toCompilationDto(compilation);
     }
 
-    // удаление пользователя по id
+    // удаление подборки по eventId
     @DeleteMapping(value = {"/{id}"})
-    public void removeUser(@PathVariable Long id) {
+    public void removeCompilation(@PathVariable Long id) {
         service.removeCompilation(id);
     }
 
-    // получение пользователя по Id
 
 
 }

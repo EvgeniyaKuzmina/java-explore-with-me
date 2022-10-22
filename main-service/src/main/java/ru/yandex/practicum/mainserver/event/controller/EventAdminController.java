@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.mainserver.category.CategoryService;
+import ru.yandex.practicum.mainserver.category.model.Category;
 import ru.yandex.practicum.mainserver.event.EventService;
 import ru.yandex.practicum.mainserver.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
@@ -16,7 +18,6 @@ import ru.yandex.practicum.mainserver.event.model.EventParam;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,10 +35,12 @@ public class EventAdminController {
     private static final String FROM = "0";
     private static final String SIZE = "10";
     private final EventService service;
+    private final CategoryService categoryService;
 
     @Autowired
-    public EventAdminController(EventService service) {
+    public EventAdminController(EventService service, CategoryService categoryService) {
         this.service = service;
+        this.categoryService = categoryService;
     }
 
     // получение полной информации обо всех событиях подходящих под переданные условия
@@ -63,7 +66,8 @@ public class EventAdminController {
     // изменение события админом
     @PutMapping(value = {"/{eventId}"})
     public EventFullDto updateEventByAdmin(@Valid @RequestBody AdminUpdateEventRequest eventDto, @PathVariable Long eventId) {
-        Event event = EventMapper.toEventFromAdminUpdDto(eventDto);
+        Category category = categoryService.getCategoryById(eventDto.getCategory());
+        Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
         return EventMapper.toEventFullDto(event);
     }

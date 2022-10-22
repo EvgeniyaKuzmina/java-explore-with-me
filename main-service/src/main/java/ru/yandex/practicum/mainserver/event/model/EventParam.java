@@ -1,32 +1,28 @@
 package ru.yandex.practicum.mainserver.event.model;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestParam;
+import lombok.ToString;
 import ru.yandex.practicum.mainserver.status.Status;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 public class EventParam {
 
     private String text;
 
-    private List<Long> categoriesId;
+    private List<Long> categoriesId = new ArrayList<>();
 
-    private List<Long> usersId;
-    private List<Status> states;
+    private List<Long> usersId = new ArrayList<>();
+    private List<Status> states = new ArrayList<>();
 
     private Boolean paid;
 
@@ -37,10 +33,6 @@ public class EventParam {
     private Boolean onlyAvailable;
 
     private String sort;
-    /*public void setRangeStart (LocalDateTime rangeStart) {
-        this.rangeStart = Objects.requireNonNullElseGet(rangeStart, LocalDateTime::now);
-
-    }*/
 
     public void setRangeStart(String rangeStart) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -51,23 +43,18 @@ public class EventParam {
         this.rangeStart = rangeStart;
     }
 
-    public void setRangeEnd(LocalDateTime rangeEnd) {
-        this.rangeEnd = rangeEnd;
-    }
 
     public void setRangeEnd(String rangeEnd) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.rangeEnd = LocalDateTime.parse(rangeEnd, formatter);
     }
 
-    public void setStates (List<String> states) {
+    public void setStates(List<String> states) {
         for (String s : states) {
             this.states.add(Status.from(s).orElseThrow(() -> {
                 throw new IllegalArgumentException("Unknown state: " + s);
             }));
         }
-
-
     }
 
 }
