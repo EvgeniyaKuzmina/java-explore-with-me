@@ -17,14 +17,14 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CommentDto {
+public class CommentShortDto {
+
 
     private Long id;
 
     private String text;
 
     private UserShortDto author;
-    private EventShortDto event;
     private String creat;
     public void setCreat(LocalDateTime creat) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

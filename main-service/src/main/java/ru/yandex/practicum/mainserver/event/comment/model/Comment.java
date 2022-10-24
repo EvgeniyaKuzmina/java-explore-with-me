@@ -7,6 +7,8 @@ import ru.yandex.practicum.mainserver.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * класс для работы с комментариями
@@ -36,6 +38,26 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
     @Column(name = "created", nullable = false)
-    private LocalDateTime creat;
+    private LocalDateTime created;
 
+    public void setCreated(String created) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.created = LocalDateTime.parse(created, formatter);
+    }
+
+    public void setCreat(LocalDateTime created) {
+        this.created = created;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return text.equals(comment.text) && event.equals(comment.event) && author.equals(comment.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text, event, author);
+    }
 }

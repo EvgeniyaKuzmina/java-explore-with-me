@@ -2,11 +2,16 @@ package ru.yandex.practicum.mainserver.event.mapper;
 
 import ru.yandex.practicum.mainserver.category.mapper.CategoryMapper;
 import ru.yandex.practicum.mainserver.category.model.Category;
+import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
+import ru.yandex.practicum.mainserver.event.comment.mapper.CommentMapper;
+import ru.yandex.practicum.mainserver.event.comment.model.Comment;
 import ru.yandex.practicum.mainserver.event.dto.*;
 import ru.yandex.practicum.mainserver.event.location.mapper.LocationMapper;
 import ru.yandex.practicum.mainserver.event.model.Event;
 import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 public class EventMapper {
@@ -21,13 +26,14 @@ public class EventMapper {
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequest())
                 .views(event.getViews())
-                .comments(event.getComments())
                 .build();
         Optional.ofNullable(event.getEventDate()).ifPresent(eventDto::setEventDate);
         return eventDto;
     }
 
-    public static EventFullDto toEventFullDto(Event event) {
+    public static EventFullDto toEventFullDto(Event event, Collection<Comment> comments) {
+        Collection<CommentShortDto> commentDto = new ArrayList<>();
+        comments.forEach(c -> commentDto.add(CommentMapper.toCommentShortDto(c)));
         EventFullDto ev = EventFullDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
@@ -40,7 +46,7 @@ public class EventMapper {
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequest())
                 .views(event.getViews())
-                .comments(event.getComments())
+                .comments(commentDto)
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
                 .build();

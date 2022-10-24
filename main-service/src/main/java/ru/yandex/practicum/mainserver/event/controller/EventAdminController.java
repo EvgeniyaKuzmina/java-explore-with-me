@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
 import ru.yandex.practicum.mainserver.category.model.Category;
 import ru.yandex.practicum.mainserver.event.EventService;
+import ru.yandex.practicum.mainserver.event.comment.CommentService;
+import ru.yandex.practicum.mainserver.event.comment.model.Comment;
 import ru.yandex.practicum.mainserver.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
 import ru.yandex.practicum.mainserver.event.mapper.EventMapper;
@@ -36,11 +38,13 @@ public class EventAdminController {
     private static final String SIZE = "10";
     private final EventService service;
     private final CategoryService categoryService;
+    private final CommentService commentService;
 
     @Autowired
-    public EventAdminController(EventService service, CategoryService categoryService) {
+    public EventAdminController(EventService service, CategoryService categoryService, CommentService commentService) {
         this.service = service;
         this.categoryService = categoryService;
+        this.commentService = commentService;
     }
 
     // получение полной информации обо всех событиях подходящих под переданные условия
@@ -59,7 +63,11 @@ public class EventAdminController {
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> events = service.getEventsByAdminParams(param, pageable);
         Collection<EventFullDto> eventFullDto = new ArrayList<>();
-        events.forEach(e -> eventFullDto.add(EventMapper.toEventFullDto(e)));
+
+        events.forEach(e -> {
+            Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(e.getId());
+            eventFullDto.add(EventMapper.toEventFullDto(e, comments));
+        });
         return eventFullDto;
     }
 
@@ -69,21 +77,24 @@ public class EventAdminController {
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // публикация события
     @PatchMapping(value = {"/{eventId}/publish"})
     public EventFullDto publishEvent(@PathVariable Long eventId) {
         Event event = service.publishedEventByAdmin(eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // отклонение события
     @PatchMapping(value = {"/{eventId}/reject"})
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
         Event event = service.rejectedEventByAdmin(eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
 

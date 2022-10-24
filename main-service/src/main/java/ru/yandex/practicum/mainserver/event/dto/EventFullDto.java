@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
+import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
 import ru.yandex.practicum.mainserver.event.location.LocationDto;
 import ru.yandex.practicum.mainserver.status.Status;
 import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -39,7 +41,8 @@ public class EventFullDto {
     private UserShortDto initiator;
     @NotNull
     private CategoryDto category;
-    private Set<String> comments;
+    //private Set<String> comments;
+    private Collection<CommentShortDto> comments;
     private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
     @NotNull
     private LocationDto location;

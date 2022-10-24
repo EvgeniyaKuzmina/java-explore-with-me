@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.category.CategoryService;
 import ru.yandex.practicum.mainserver.category.model.Category;
 import ru.yandex.practicum.mainserver.event.EventService;
+import ru.yandex.practicum.mainserver.event.comment.CommentService;
+import ru.yandex.practicum.mainserver.event.comment.model.Comment;
 import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
 import ru.yandex.practicum.mainserver.event.dto.NewEventDto;
 import ru.yandex.practicum.mainserver.event.dto.UpdateEventDto;
@@ -40,12 +42,14 @@ public class EventPrivateController {
     private final EventService service;
     private final RequestService requestService;
     private final CategoryService categoryService;
+    private final CommentService commentService;
 
     @Autowired
-    public EventPrivateController(EventService service, RequestService requestService, CategoryService categoryService) {
+    public EventPrivateController(EventService service, RequestService requestService, CategoryService categoryService, CommentService commentService) {
         this.service = service;
         this.requestService = requestService;
         this.categoryService = categoryService;
+        this.commentService =commentService;
     }
 
     // создание события
@@ -60,8 +64,8 @@ public class EventPrivateController {
         }
 
         event = service.createEvent(event, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // изменение события
@@ -70,8 +74,8 @@ public class EventPrivateController {
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // получение событий, добавленных текущим пользователем
@@ -82,7 +86,10 @@ public class EventPrivateController {
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> event = service.getAllEventsByInitiatorId(userId, pageable);
         Collection<EventFullDto> eventsDto = new ArrayList<>();
-        event.forEach(e -> eventsDto.add(EventMapper.toEventFullDto(e)));
+        event.forEach(e -> {
+            Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(e.getId());
+            eventsDto.add(EventMapper.toEventFullDto(e, comments));
+        });
         return eventsDto;
     }
 
@@ -91,16 +98,16 @@ public class EventPrivateController {
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
 
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
-        log.info(event.toString());
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // отмена события добавленного текущим пользователем
     @PatchMapping(value = "/{eventId}")
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
         Event event = service.cancelEventByInitiator(eventId, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     // получение информации о запросах на участие в событии текущего пользователя

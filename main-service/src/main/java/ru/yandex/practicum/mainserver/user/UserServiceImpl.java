@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Long id) {
-        getUserById(id); // проверка, что пользователь с указанным eventId есть
-        log.info("UserServiceImpl: removeUser — Пользователя с указанным eventId {} удалён", id);
+        getUserById(id); // проверка, что пользователь с указанным id есть
+        log.info("UserServiceImpl: removeUser — Пользователя с указанным id {} удалён", id);
         repository.deleteById(id);
 
     }
