@@ -10,8 +10,8 @@ import java.util.Collection;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // получение списка комментариев по id создателя комментария, отсортированные по дате создания по убыванию
-    Collection<Comment> findByAuthorIdOrderByCreatedDesc(Long itemId);
+    Collection<Comment> findByEventIdOrderByCreatedDesc(Long itemId);
 
     // получение списка комментариев по id создателя комментария, отсортированные по дате создания по убыванию с пагинацией
-    Page<Comment> findByAuthorIdOrderByCreatedDesc(Long itemId, Pageable pageable);
+    Page<Comment> findByEventIdOrderByCreatedDesc(Long itemId, Pageable pageable);
 }

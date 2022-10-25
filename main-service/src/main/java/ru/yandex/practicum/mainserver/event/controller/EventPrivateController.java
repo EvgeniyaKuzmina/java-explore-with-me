@@ -49,7 +49,7 @@ public class EventPrivateController {
         this.service = service;
         this.requestService = requestService;
         this.categoryService = categoryService;
-        this.commentService =commentService;
+        this.commentService = commentService;
     }
 
     // создание события

@@ -2,15 +2,12 @@ package ru.yandex.practicum.mainserver.event.dto;
 
 import lombok.*;
 import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
 import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * класс DTO для получения короткой информации о событии
@@ -38,8 +35,6 @@ public class EventShortDto {
     private CategoryDto category;
     private Integer confirmedRequests;
     private Integer views;
-    private Set<String> comments;
-   // private Collection<CommentShortDto> comments;
 
     public void setEventDate(LocalDateTime eventDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

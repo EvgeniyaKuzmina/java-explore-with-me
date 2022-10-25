@@ -23,8 +23,8 @@ public interface CommentService {
     Collection<Comment> findAllByEventIdOrderByCreatDesc(Long eventId);
 
     // удаление комментария
-    void removeComment(Long commentId);
+    void removeComment(Long commentId, Long userId);
 
     // получение комментария по id
-    Comment getCommentById(Long commentId);
+    Comment getCommentById(Long commentId, Long userId);
 }

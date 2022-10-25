@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainserver.event.comment.CommentService;
 import ru.yandex.practicum.mainserver.event.comment.dto.CommentDto;
 import ru.yandex.practicum.mainserver.event.comment.mapper.CommentMapper;
@@ -25,7 +22,7 @@ import java.util.Collection;
  */
 
 @RestController
-@RequestMapping(path = "/comments")
+@RequestMapping(path = "events/{eventId}/comments")
 @Slf4j
 public class CommentPublicController {
 
@@ -41,7 +38,7 @@ public class CommentPublicController {
 
     // получение списка всех комментариев по id события
     @GetMapping
-    public Collection<CommentDto> getAllCommentsByEventId(@RequestParam Long eventId,
+    public Collection<CommentDto> getAllCommentsByEventId(@PathVariable Long eventId,
                                                           @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                           @RequestParam(defaultValue = SIZE) @Positive Integer size) {
 

@@ -7,7 +7,6 @@ import ru.yandex.practicum.mainserver.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -30,7 +29,6 @@ public class Comment {
     @NotNull
     @Column(name = "text", nullable = false)
     private String text;
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
@@ -40,14 +38,6 @@ public class Comment {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    public void setCreated(String created) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.created = LocalDateTime.parse(created, formatter);
-    }
-
-    public void setCreat(LocalDateTime created) {
-        this.created = created;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

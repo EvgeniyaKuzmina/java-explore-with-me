@@ -173,7 +173,7 @@ public class EventServiceImpl implements EventService {
             return new ObjectNotFountException("События с указанным eventId " + eventId + " нет");
         });
 
-        log.warn("EventServiceImpl: getEventById — Событие с указанным eventId {} получено", eventId);
+        log.info("EventServiceImpl: getEventById — Событие с указанным eventId {} получено", eventId);
         return event.get();
     }
 
