@@ -5,17 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
-import ru.yandex.practicum.mainservice.event.model.EventParam;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
 import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
 import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.event.model.EventParam;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * класс контроллер для работы с публичным API событий
@@ -39,16 +42,16 @@ public class EventPublicController {
     // получение списка всех событий на участие
     @GetMapping
     public Collection<EventShortDto> getAllEvent(@RequestParam(required = false) String text,
-                                                @RequestParam(name = "categories", required = false) List<Long> categoriesId,
-                                                @RequestParam(required = false) Boolean paid,
-                                                @RequestParam(required = false) String rangeStart,
-                                                @RequestParam(required = false) String rangeEnd,
-                                                @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-                                                @RequestParam(required = false) String sort,
-                                                @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
-                                                @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+                                                 @RequestParam(name = "categories", required = false) List<Long> categoriesId,
+                                                 @RequestParam(required = false) Boolean paid,
+                                                 @RequestParam(required = false) String rangeStart,
+                                                 @RequestParam(required = false) String rangeEnd,
+                                                 @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                 @RequestParam(required = false) String sort,
+                                                 @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
+                                                 @RequestParam(defaultValue = SIZE) @Positive Integer size) {
 
-        EventParam param =  creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
+        EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
@@ -68,13 +71,13 @@ public class EventPublicController {
     }
 
     // преобразование параметров запроса в объект EventParam
-    private EventParam creatParam (String text,
-                                   List<Long> categoriesId,
-                                   Boolean paid,
-                                   String rangeStart,
-                                   String rangeEnd,
-                                   Boolean onlyAvailable,
-                                   String sort) {
+    private EventParam creatParam(String text,
+                                  List<Long> categoriesId,
+                                  Boolean paid,
+                                  String rangeStart,
+                                  String rangeEnd,
+                                  Boolean onlyAvailable,
+                                  String sort) {
 
         EventParam param = new EventParam();
         Optional.ofNullable(text).ifPresent(param::setText);

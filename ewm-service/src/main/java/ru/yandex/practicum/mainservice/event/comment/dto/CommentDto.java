@@ -19,9 +19,10 @@ public class CommentDto {
     @NotNull
     private String text;
     @NotNull
-    private Long event_id;
-    private Long author_id;
+    private Long eventId;
+    private Long authorId;
     private String creat;
+
     public void setCreat(LocalDateTime creat) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.creat = creat.format(formatter);

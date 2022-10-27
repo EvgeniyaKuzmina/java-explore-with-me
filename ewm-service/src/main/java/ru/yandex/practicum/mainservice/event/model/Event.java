@@ -64,7 +64,7 @@ public class Event {
     @Column(name = "text")
     private Set<String> comments;
     @NotNull
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
     @Column(name = "confirmed_requests")
@@ -79,10 +79,10 @@ public class Event {
         this.eventDate = LocalDateTime.parse(eventDate, formatter);
     }
 
-
     public void setEventDate(LocalDateTime eventDate) {
         this.eventDate = eventDate;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -28,7 +28,7 @@ services:
     build: ewm-service
     ports:
       - "8080:8080"
-    depends_on:
+    depends_on: 
       - ewm-db
     environment:
         - STATS_SERVER_URL=http://stats-server:9090

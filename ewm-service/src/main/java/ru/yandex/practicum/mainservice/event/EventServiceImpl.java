@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
-    private final static String EVENT_DATE = "EVENT_DATE";
-    private final static String VIEWS = "VIEWS";
+    private static final String EVENT_DATE = "EVENT_DATE";
+    private static final String VIEWS = "VIEWS";
 
     private final EventRepository repository;
 
@@ -315,9 +315,9 @@ public class EventServiceImpl implements EventService {
     // сортировка событий
     private Collection<Event> makeSort(String sort, Specification<Event> specification, Pageable pageable) {
         if (sort != null) {
-            switch((sort)) {
+            switch (sort) {
                 case EVENT_DATE:
-                    return  repository.findAll(specification, pageable).stream()
+                    return repository.findAll(specification, pageable).stream()
                             .sorted(Comparator.comparing(Event::getEventDate))
                             .collect(Collectors.toList());
                 case VIEWS:

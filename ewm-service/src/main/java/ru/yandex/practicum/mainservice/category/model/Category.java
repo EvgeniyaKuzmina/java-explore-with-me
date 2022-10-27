@@ -1,6 +1,5 @@
 package ru.yandex.practicum.mainservice.category.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
