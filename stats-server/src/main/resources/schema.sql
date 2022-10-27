@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS statistic
     app       VARCHAR(7000),
     uri       VARCHAR(1000),
     ip        VARCHAR(1000),
-    timestamp TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
+    timestamp TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT pk_statistic PRIMARY KEY (id)
 );
 

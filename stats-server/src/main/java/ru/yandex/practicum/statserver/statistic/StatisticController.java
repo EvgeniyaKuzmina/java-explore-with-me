@@ -8,6 +8,7 @@ import ru.yandex.practicum.statserver.statistic.dto.ViewStats;
 import ru.yandex.practicum.statserver.statistic.model.Statistic;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -34,9 +35,9 @@ public class StatisticController {
 
     // получение истории просмотров
     @GetMapping(value = "/stats")
-    public Collection<ViewStats> getUserById(@RequestHeader String start, @RequestHeader String end,
-                                             @RequestHeader(required = false) Collection<String> uris,
-                                             @RequestHeader(defaultValue = "false") Boolean unique) {
+    public Collection<ViewStats> getUserById(@RequestParam String start, @RequestParam String end,
+                                             @RequestParam(required = false) Collection<String> uris,
+                                             @RequestParam(defaultValue = "false") Boolean unique) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
         LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);

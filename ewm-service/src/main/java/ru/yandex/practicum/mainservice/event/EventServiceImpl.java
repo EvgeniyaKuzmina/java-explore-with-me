@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.mainservice.client.EventClient;
 import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.event.model.EventParam;
 import ru.yandex.practicum.mainservice.exception.ArgumentNotValidException;
@@ -36,6 +37,8 @@ public class EventServiceImpl implements EventService {
     private final EventRepository repository;
 
     private final UserService userService;
+
+    private final EventClient client;
 
 
     // создание события
