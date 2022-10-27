@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+
 /**
  * класс для работы с пользователя
  */
@@ -25,13 +26,12 @@ public class User {
     @Column(name = "id")
     private Long id;
     @NotNull
-    @Column(name = "name",  nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
     @Email
     @NotNull
-    @Column(name = "email",  nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
-
 
     @Override
     public boolean equals(Object o) {
