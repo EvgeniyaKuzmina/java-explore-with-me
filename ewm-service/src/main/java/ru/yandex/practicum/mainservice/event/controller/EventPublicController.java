@@ -1,14 +1,11 @@
 package ru.yandex.practicum.mainservice.event.controller;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainservice.client.EndpointHit;
 import ru.yandex.practicum.mainservice.client.EventClient;
 import ru.yandex.practicum.mainservice.event.EventService;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
@@ -20,10 +17,7 @@ import ru.yandex.practicum.mainservice.event.model.EventParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,15 +71,10 @@ public class EventPublicController {
 
     // получение подробной информации о событии по его eventId
     @GetMapping(value = {"/{id}"})
-    public EventFullDto getUserById(@PathVariable Long id, HttpServletRequest request) throws UnsupportedEncodingException {
-        EndpointHit endpointHit = EndpointHit.builder()
-                .ip(request.getRemoteAddr())
-                .uri(request.getRequestURI())
-                .timestamp(encodingTime())
-                .build();
+    public EventFullDto getUserById(@PathVariable Long id, HttpServletRequest request) {
 
         Event event = service.getEventById(id);
-        client.addStatistic(endpointHit); // сохранение статистики в сервисе статистики
+        client.addStatistic(request); // сохранение статистики в сервисе статистики
         return EventMapper.toEventFullDto(event);
     }
 
@@ -115,10 +104,5 @@ public class EventPublicController {
         return param;
     }
 
-    private byte[] encodingTime() {
-        LocalDateTime timestamp = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String timestampStr  = timestamp.format(formatter);
-        return timestampStr.getBytes(StandardCharsets.UTF_8);
-    }
+
 }

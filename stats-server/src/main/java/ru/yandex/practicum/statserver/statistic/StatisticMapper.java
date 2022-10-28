@@ -1,11 +1,13 @@
 package ru.yandex.practicum.statserver.statistic;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.statserver.statistic.dto.EndpointHit;
 import ru.yandex.practicum.statserver.statistic.model.Statistic;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class StatisticMapper {
     public static Statistic toStatistic(EndpointHit endpointHit) {
         Statistic statistic =  Statistic.builder()
@@ -13,8 +15,7 @@ public class StatisticMapper {
                 .ip(endpointHit.getIp())
                 .uri(endpointHit.getUri())
                 .build();
-        String timestamp = new String(endpointHit.getTimestamp().getBytes(), StandardCharsets.UTF_8);
-        statistic.setTimestamp(timestamp);
+        statistic.setTimestamp(endpointHit.getTimestamp());
         return statistic;
     }
 }

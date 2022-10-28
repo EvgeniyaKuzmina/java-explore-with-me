@@ -10,6 +10,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -21,7 +24,7 @@ public class EventClient extends BaseClient {
     private static final String APP = "ewm-main-service";
 
     @Autowired
-    public EventClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
+    public EventClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
@@ -32,8 +35,13 @@ public class EventClient extends BaseClient {
     }
 
     // сохранение информации о запросе в сервисе статистики
-    public void addStatistic(EndpointHit endpointHit) {
-        endpointHit.setApp(APP);
+    public void addStatistic(HttpServletRequest request) {
+        EndpointHit endpointHit = EndpointHit.builder()
+                .ip(request.getRemoteAddr())
+                .uri(request.getRequestURI())
+                .timestamp(encodingTime())
+                .app(APP)
+                .build();
         post("/hit", endpointHit);
     }
 
@@ -55,6 +63,12 @@ public class EventClient extends BaseClient {
         return parseResponseEntityToViewStats(response);
 
 
+    }
+
+    private String encodingTime() {
+        LocalDateTime timestamp = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd%20HH:mm:ss");
+        return timestamp.format(formatter);
     }
 
     private Collection<ViewStats> parseResponseEntityToViewStats(ResponseEntity<Object> response) {
