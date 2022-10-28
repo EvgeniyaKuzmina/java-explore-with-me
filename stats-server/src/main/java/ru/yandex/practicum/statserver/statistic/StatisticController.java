@@ -8,7 +8,6 @@ import ru.yandex.practicum.statserver.statistic.dto.ViewStats;
 import ru.yandex.practicum.statserver.statistic.model.Statistic;
 
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
