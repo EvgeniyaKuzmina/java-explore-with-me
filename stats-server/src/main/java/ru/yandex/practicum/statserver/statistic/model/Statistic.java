@@ -29,7 +29,7 @@ public class Statistic {
     private LocalDateTime timestamp;
 
     public void setTimestamp(String timestamp) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd%20HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.timestamp = LocalDateTime.parse(timestamp, formatter);
     }
 
