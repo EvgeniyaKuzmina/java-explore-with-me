@@ -35,7 +35,7 @@ public class EventFullDto {
     @NotNull
     private String eventDate;
     private String publishedOn;
-    private Integer views;
+    private Long views;
     private UserShortDto initiator;
     @NotNull
     private CategoryDto category;

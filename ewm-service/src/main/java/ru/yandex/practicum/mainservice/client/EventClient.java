@@ -62,7 +62,6 @@ public class EventClient extends BaseClient {
 
         return parseResponseEntityToViewStats(response);
 
-
     }
 
     private String encodingTime() {
@@ -73,17 +72,19 @@ public class EventClient extends BaseClient {
 
     private Collection<ViewStats> parseResponseEntityToViewStats(ResponseEntity<Object> response) {
         Gson gson = new Gson();
-        StringBuilder sb = new StringBuilder(Objects.requireNonNull(response.getBody()).toString());
-
-        sb.delete(sb.length() - 2, sb.length());
-        sb.deleteCharAt(0);
-
-        String[] arr = sb.toString().split("}, ");
-
+        String responseString = Objects.requireNonNull(response.getBody()).toString().replace('/', '|');
         Collection<ViewStats> viewStats = new ArrayList<>();
-        for (String a : arr) {
-            viewStats.add(gson.fromJson(a + "}", ViewStats.class));
+
+        StringBuilder sb = new StringBuilder(responseString);
+        if (sb.length() > 2) {
+            sb.delete(sb.length() - 2, sb.length());
+            sb.deleteCharAt(0);
+            String[] arr = sb.toString().split("}, ");
+            for (String a : arr) {
+                viewStats.add(gson.fromJson(a + "}", ViewStats.class));
+            }
         }
+        viewStats.forEach(vs -> vs.setUri(vs.getUri().replace('|', '/')));
         return viewStats;
     }
 

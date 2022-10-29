@@ -13,61 +13,120 @@ import ru.yandex.practicum.mainservice.exception.ObjectNotFountException;
 import ru.yandex.practicum.mainservice.exception.ValidationException;
 
 import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handlerValidationException(ValidationException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerValidationException(ValidationException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Ошибка валидации")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ApiError handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         final List<FieldError> errors = e.getBindingResult().getFieldErrors();
         StringBuilder sb = new StringBuilder();
         for (FieldError error : errors) {
             sb.append(error.getField()).append(" ").append(error.getDefaultMessage());
         }
-        return new ErrorResponse(sb.toString());
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(sb.toString())
+                .reason("Ошибка валидации аргументов")
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
+
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handlerConflictException(ConflictException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerConflictException(ConflictException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Конфликт данных")
+                .status(HttpStatus.CONFLICT)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 
 
     @ExceptionHandler(ArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerArgumentNotValidException(ArgumentNotValidException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerArgumentNotValidException(ArgumentNotValidException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Ошибка валидации аргументов")
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handlerMissingRequestHeaderException(MissingRequestHeaderException e) {
-        return new ErrorResponse("Не указан заголовок " + e.getHeaderName() + " " + e.getParameter());
+    public ApiError handlerMissingRequestHeaderException(MissingRequestHeaderException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message("Не указан заголовок " + e.getHeaderName() + " " + e.getParameter())
+                .reason("Не указан заголовок")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
+
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerIllegalArgumentException(IllegalArgumentException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerIllegalArgumentException(IllegalArgumentException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Недопустимый аргумент")
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 
     @ExceptionHandler(ObjectNotFountException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerIllegalArgumentException(ObjectNotFountException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerIllegalArgumentException(ObjectNotFountException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Не найдены данные")
+                .status(HttpStatus.NOT_FOUND)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerConstraintViolationException(ConstraintViolationException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handlerConstraintViolationException(ConstraintViolationException e) {
+        ApiError apiError = ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Нарушение ограничений")
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        apiError.setEventDate(LocalDateTime.now());
+        return apiError;
     }
 }

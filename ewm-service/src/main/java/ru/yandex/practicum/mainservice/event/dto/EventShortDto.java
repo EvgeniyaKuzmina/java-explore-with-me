@@ -35,7 +35,7 @@ public class EventShortDto {
     @NotNull
     private CategoryDto category;
     private Integer confirmedRequests;
-    private Integer views;
+    private Long views;
     private Set<String> comments;
 
     public void setEventDate(LocalDateTime eventDate) {

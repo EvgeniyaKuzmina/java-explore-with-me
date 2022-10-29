@@ -52,7 +52,7 @@ public class Event {
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @Column(name = "views")
-    private Integer views;
+    private Long views;
     @OneToOne
     @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
