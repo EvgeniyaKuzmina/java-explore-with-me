@@ -26,4 +26,4 @@ Administrator can add new categories of events, modify or cancel currently categ
 Admin can add new compilations of events, modify, delete. Also, admin can pin compilations on main page.
 Admin can public event or rejected, and can modify events
 
-Link to Pull requests 
+Link to Pull requests https://github.com/EvgeniyaKuzmina/java-explore-with-me/pull/1 
