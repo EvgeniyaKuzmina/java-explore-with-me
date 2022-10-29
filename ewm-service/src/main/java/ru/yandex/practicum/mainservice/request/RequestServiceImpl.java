@@ -2,7 +2,6 @@ package ru.yandex.practicum.mainservice.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.mainservice.event.EventService;
 import ru.yandex.practicum.mainservice.event.model.Event;
@@ -49,14 +48,9 @@ public class RequestServiceImpl implements RequestService {
         } else {
             request.setStatus(Status.PENDING);
         }
-        try {
-            log.info("RequestServiceImpl: Запрос на участие добавлен: {}.", request);
-            return repository.save(request);
-        } catch (DataIntegrityViolationException e) {
-            log.error("RequestServiceImpl: Внутренняя ошибка сервера.");
-            throw new RuntimeException("Внутренняя ошибка сервера.");
-        }
 
+        log.info("RequestServiceImpl: Запрос на участие добавлен: {}.", request);
+        return repository.save(request);
     }
 
     private void validateDate(List<Long> requests, Event event, Long userId, Long eventId) {
@@ -133,13 +127,10 @@ public class RequestServiceImpl implements RequestService {
     public Request updateStatusRequestById(Long requestId, Status status) {
         Request request = getRequestById(requestId);
         request.setStatus(status);
-        try {
-            log.info("RequestServiceImpl: updateStatusRequestById — Статус обновлён {}.", request);
-            return repository.save(request);
-        } catch (DataIntegrityViolationException e) {
-            log.error("RequestServiceImpl: updateStatusRequestById — Внутренняя ошибка сервера.");
-            throw new RuntimeException("Внутренняя ошибка сервера.");
-        }
+
+        log.info("RequestServiceImpl: updateStatusRequestById — Статус обновлён {}.", request);
+        return repository.save(request);
+
     }
 
     // подтверждение заявки на событие

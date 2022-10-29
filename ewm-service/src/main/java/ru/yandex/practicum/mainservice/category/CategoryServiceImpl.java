@@ -56,16 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
     //удаление категории
     @Override
     public void removeCategory(Long id) {
-        Category category = getCategoryById(id); // проверка, что категория с указанным eventId есть
+        getCategoryById(id); // проверка, что категория с указанным eventId есть
 
-        try {
-            repository.deleteById(id);
-            log.warn("CategoryServiceImpl: removeCategory — Категория с указанным eventId {} удалена", id);
-        } catch (DataIntegrityViolationException e) {
-            log.error("CategoryServiceImpl: removeCategory — Категория {} связана с событием.", category.getName());
-            throw new ConflictException(String.format("Категория %s связана с событием.",
-                    category.getName()));
-        }
+        repository.deleteById(id);
+        log.warn("CategoryServiceImpl: removeCategory — Категория с указанным eventId {} удалена", id);
+
     }
 
     //получение списка всех категорий

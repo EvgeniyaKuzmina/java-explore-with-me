@@ -2,7 +2,6 @@ package ru.yandex.practicum.mainservice.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -52,13 +51,10 @@ public class EventServiceImpl implements EventService {
         event.setState(Status.PENDING);
         User user = userService.getUserById(userid);
         event.setInitiator(user);
-        try {
-            log.info("EventServiceImpl: createEvent — Добавлено событие {}.", event);
-            return repository.save(event);
-        } catch (DataIntegrityViolationException e) {
-            log.error("EventServiceImpl: createEvent — Произошла ошибка при сохранении данных");
-            throw new RuntimeException("Произошла ошибка при сохранении данных");
-        }
+
+        log.info("EventServiceImpl: createEvent — Добавлено событие {}.", event);
+        return repository.save(event);
+
     }
 
     // изменение события инициатором
