@@ -9,51 +9,73 @@ import java.util.Collection;
 /**
  * класс описывающий методы для работы с событиями
  */
-
 public interface EventService {
 
-    // методы для приватного API
+    /**
+     * 1. Методы для приватного API:
 
-    // добавление нового события
+     * добавление нового события
+     */
     Event createEvent(Event event, Long userid);
 
-    //обновление события пользователем (создателем) события
+    /**
+     * обновление события пользователем (создателем) события
+     */
     Event updateEventByInitiator(Event event, Long userId);
 
-    // отмена события создателем события
+    /**
+     * отмена события создателем события
+     */
     Event cancelEventByInitiator(Long eventId, Long userId);
 
-    // получение списка всех событий текущего пользователя
+    /**
+     * получение списка всех событий текущего пользователя
+     */
     Collection<Event> getAllEventsByInitiatorId(Long userId, Pageable page);
 
-    // получение события текущего пользователя по eventId
+    /**
+     * получение события текущего пользователя по id
+     */
     Event getEventByIdAndInitiatorId(Long eventId, Long userId);
 
-    // методы для API администратора
+    /**
+     * 2. Методы для API администратора
 
-    //обновление события админом
+     * обновление события админом
+     */
     Event updateEventByAdmin(Event event, Long eventId);
 
-    // публикация события
+    /**
+     * публикация события
+     */
     Event publishedEventByAdmin(Long eventId);
 
-    // отклонение события
+    /**
+     * отклонение события
+     */
     Event rejectedEventByAdmin(Long eventId);
 
-    // методы для публичного API
+    /**
+     * 3. Методы для публичного API
 
-    // получение события по eventId
+     * получение события по id
+     */
     Event getEventById(Long eventId);
 
-    // обновление всех полей события
+    /**
+     * обновление всех полей события
+     */
     Event updateEvent(Event updEvent, Long eventId);
 
-    // получение списка событий публичным API
+    /**
+     * получение списка событий публичным API
+     */
     Collection<Event> getEventsByPublicParams(EventParam param, Pageable pageable);
 
-    // получение списка событий админом
+    /**
+     * получение списка событий админом
+     */
     Collection<Event> getEventsByAdminParams(EventParam param, Pageable pageable);
-
 }
 
 

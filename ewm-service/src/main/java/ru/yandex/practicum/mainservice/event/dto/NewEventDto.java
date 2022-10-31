@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 /**
  * класс DTO для создания нового события
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,6 +42,4 @@ public class NewEventDto {
     private Integer participantLimit = 0;
     @NotNull
     private LocationDto location;
-
-
 }

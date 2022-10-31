@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 /**
  * класс DTO для редактирования события администратором.
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +25,4 @@ public class AdminUpdateEventRequest {
     private Integer participantLimit;
     private Boolean requestModeration;
     private LocalDateTime createdOn;
-
-
 }

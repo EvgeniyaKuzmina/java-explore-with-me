@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainservice.event.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.category.mapper.dto.CategoryDto;
 import ru.yandex.practicum.mainservice.event.location.LocationDto;
 import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
@@ -14,7 +14,6 @@ import java.util.Set;
 /**
  * класс DTO для получения полной информации о событии
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,7 +39,7 @@ public class EventFullDto {
     @NotNull
     private CategoryDto category;
     private Set<String> comments;
-    private Integer confirmedRequests; // Количество одобренных заявок на участие в данном событии
+    private Integer confirmedRequests;
     @NotNull
     private LocationDto location;
     private Integer participantLimit;
@@ -60,6 +59,4 @@ public class EventFullDto {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.eventDate = eventDate.format(formatter);
     }
-
-
 }

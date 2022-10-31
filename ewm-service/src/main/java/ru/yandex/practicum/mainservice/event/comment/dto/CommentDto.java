@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 /**
  * класс DTO для работы с комментариями
  */
-
 @Builder
 @Data
 public class CommentDto {

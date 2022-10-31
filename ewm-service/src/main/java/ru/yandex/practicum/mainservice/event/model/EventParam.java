@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * класс для преобразования с параметров запроса в объект
+ */
 @Setter
 @Getter
 @NoArgsConstructor
@@ -18,20 +21,13 @@ import java.util.List;
 public class EventParam {
 
     private String text;
-
     private List<Long> categoriesId = new ArrayList<>();
-
     private List<Long> usersId = new ArrayList<>();
     private List<Status> states = new ArrayList<>();
-
     private Boolean paid;
-
     private LocalDateTime rangeStart;
-
     private LocalDateTime rangeEnd;
-
     private Boolean onlyAvailable;
-
     private String sort;
 
     public void setRangeStart(String rangeStart) {
@@ -56,5 +52,4 @@ public class EventParam {
             }));
         }
     }
-
 }

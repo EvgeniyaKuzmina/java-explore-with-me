@@ -16,6 +16,9 @@ import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * класс для обработки ошибок
+ */
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
@@ -47,7 +50,6 @@ public class ErrorHandler {
                 .build();
         apiError.setEventDate(LocalDateTime.now());
         return apiError;
-
     }
 
     @ExceptionHandler(ConflictException.class)
@@ -88,7 +90,6 @@ public class ErrorHandler {
                 .build();
         apiError.setEventDate(LocalDateTime.now());
         return apiError;
-
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

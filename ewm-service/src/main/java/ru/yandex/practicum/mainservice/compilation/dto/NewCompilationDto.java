@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * класс DTO для создания новой подборки событий
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainservice.category.mapper;
 
-import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
-import ru.yandex.practicum.mainservice.category.dto.NewCategoryDto;
+import ru.yandex.practicum.mainservice.category.mapper.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.category.mapper.dto.NewCategoryDto;
 import ru.yandex.practicum.mainservice.category.model.Category;
 
 public class CategoryMapper {
@@ -25,5 +25,4 @@ public class CategoryMapper {
                 .name(categoryDto.getName())
                 .build();
     }
-
 }

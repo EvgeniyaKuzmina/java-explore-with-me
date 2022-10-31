@@ -8,10 +8,10 @@ import ru.yandex.practicum.mainservice.category.model.Category;
 /**
  * класс репозиторий для работы с БД категорий событий
  */
-
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    // получение списка категорий с пагинацией
-
+    /**
+     * получение списка категорий с пагинацией
+     */
     Page<Category> findAll(Pageable pageable);
 }

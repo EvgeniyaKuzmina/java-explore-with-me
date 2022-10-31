@@ -16,6 +16,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "locations", schema = "public")
 public class Location {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -15,7 +15,6 @@ import java.util.Optional;
 /**
  * класс реализующий методы для работы с категориями событий
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +22,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository repository;
 
-    //создание новой категории
     @Override
     public Category createCategory(Category category) {
 
@@ -37,7 +35,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    //обновление категории
     @Override
     public Category updateCategory(Category updCategory) {
         Category category = getCategoryById(updCategory.getId()); // проверка, что категория с указанным eventId есть
@@ -53,23 +50,20 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    //удаление категории
     @Override
     public void removeCategory(Long id) {
-        getCategoryById(id); // проверка, что категория с указанным eventId есть
-
+        getCategoryById(id); // проверка, что категория с указанным id есть
+        log.info("CategoryServiceImpl: removeCategory — Категория с указанным id {} удалена", id);
         repository.deleteById(id);
-        log.warn("CategoryServiceImpl: removeCategory — Категория с указанным eventId {} удалена", id);
-
     }
 
-    //получение списка всех категорий
     @Override
     public Collection<Category> getAllCategory(Pageable pageable) {
-        return repository.findAll(pageable).toList();
+        Collection<Category> categories = repository.findAll(pageable).toList();
+        log.info("CategoryServiceImpl: getAllCategory — получен список всех категорий");
+        return categories;
     }
 
-    //получение категории по id
     @Override
     public Category getCategoryById(Long id) {
         Optional<Category> category = repository.findById(id);
@@ -78,7 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ObjectNotFountException("Категории с указанным id " + id + " нет");
         });
 
-        log.warn("CategoryServiceImpl: getCategoryById — Категория с указанным eventId {} получена", id);
+        log.info("CategoryServiceImpl: getCategoryById — Категория с указанным id {} получена", id);
         return category.get();
     }
 }

@@ -20,12 +20,10 @@ import java.util.Optional;
 /**
  * класс реализующий методы для работы с заявками на участие
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
-
     private final RequestRepository repository;
     private final UserService userService;
     private final EventService eventService;
@@ -49,7 +47,7 @@ public class RequestServiceImpl implements RequestService {
             request.setStatus(Status.PENDING);
         }
 
-        log.info("RequestServiceImpl: Запрос на участие добавлен: {}.", request);
+        log.info("RequestServiceImpl: createRequest — Запрос на участие добавлен: {}.", request);
         return repository.save(request);
     }
 
@@ -75,51 +73,52 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    // отмена своего запроса на участие
     @Override
     public Request cancelRequest(Long userId, Long requestId) {
         userService.getUserById(userId);
         Request request = getRequestById(requestId);
         if (!request.getRequester().getId().equals(userId)) {
-            log.error("RequestServiceImpl: cancelRequest — Пользователь с eventId {} не оставлял заявку на участие c eventId {}", userId, requestId);
-            throw new ConflictException(String.format("Пользователь с eventId %d не оставлял заявку на участие c eventId %d", userId, requestId));
+            log.error("RequestServiceImpl: cancelRequest — Пользователь с id {} не оставлял заявку на участие c id {}", userId, requestId);
+            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие c id %d", userId, requestId));
         }
-        log.warn("RequestServiceImpl: cancelRequest —Пользователя с eventId {} удалил заявку на участие с eventId {}", userId, requestId);
-        request.setStatus(Status.CANCELED);
-        return request;
 
+        request.setStatus(Status.CANCELED);
+        log.info("RequestServiceImpl: cancelRequest —Пользователя с id {} удалил заявку на участие с id {}", userId, requestId);
+        return request;
     }
 
-    // получение списка всех заявок на участие по id пользователя
     @Override
     public Collection<Request> getAllRequestsByUserId(Long userId) {
-        return repository.findByRequesterId(userId);
+        Collection<Request> requests = repository.findByRequesterId(userId);
+        log.info("RequestServiceImpl: getAllRequestsByUserId — заявки по id создателя заявки получены");
+        return requests;
     }
 
-    // получение заявки по Id
     @Override
-    public Request getRequestById(Long eventId) {
-        Optional<Request> request = repository.findById(eventId);
+    public Request getRequestById(Long requestId) {
+        Optional<Request> request = repository.findById(requestId);
         request.orElseThrow(() -> {
-            log.warn("RequestServiceImpl: getAllRequestsByUserId — Заявки с указанным eventId {} нет", eventId);
-            return new ObjectNotFountException("Заявки с указанным eventId " + eventId + " нет");
+            log.warn("RequestServiceImpl: getRequestById — Заявки с указанным id {} нет", requestId);
+            return new ObjectNotFountException("Заявки с указанным id " + requestId + " нет");
         });
 
-        log.warn("RequestServiceImpl: getAllRequestsByUserId — Заявка с указанным eventId {} получена", eventId);
+        log.info("RequestServiceImpl: getRequestById — Заявка с указанным id {} получена", requestId);
         return request.get();
     }
 
-    // получение списка заявок по id события и статусу события
     @Override
     public List<Request> getRequestsByEventIdAndStatus(Long eventId, Status status) {
-        return repository.findByEventIdAndStatus(eventId, Status.CONFIRMED);
+        List<Request> requests = repository.findByEventIdAndStatus(eventId, Status.CONFIRMED);
+        log.info("RequestServiceImpl: getRequestsByEventIdAndStatus — заявки по id события и статусу события получены");
+        return requests;
     }
 
-    // получение списка заявок по id события
     @Override
     public List<Request> getRequestsByEventId(Event event, Long userId) {
         validateUserIdAndEventId(event, userId);
-        return repository.findByEventId(event.getId());
+        List<Request> requests = repository.findByEventId(event.getId());
+        log.info("RequestServiceImpl: getRequestsByEventId — заявки по id события получены");
+        return requests;
     }
 
     //  обновление статуса события по id
@@ -127,23 +126,19 @@ public class RequestServiceImpl implements RequestService {
     public Request updateStatusRequestById(Long requestId, Status status) {
         Request request = getRequestById(requestId);
         request.setStatus(status);
-
         log.info("RequestServiceImpl: updateStatusRequestById — Статус обновлён {}.", request);
         return repository.save(request);
-
     }
 
-    // подтверждение заявки на событие
     @Override
     public Request confirmRequestForEvent(Event event, Long userId, Long requestId) {
         validateUserIdAndEventId(event, userId);
-        getRequestById(requestId); // проверяем что заявка с указанным eventId существует
+        getRequestById(requestId);
         if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(false)) {
             log.error("RequestServiceImpl: confirmRequestForEvent — Подтверждение заявки не требуется");
             return getRequestById(requestId);
         }
 
-        // получаем количество подтвержденных заявок по событию
         Integer confirmedRequests = event.getConfirmedRequest();
         if (confirmedRequests == null) {
             confirmedRequests = 0;
@@ -166,18 +161,21 @@ public class RequestServiceImpl implements RequestService {
                 rejectRequestForEvent(event, userId, r.getId());
             }
         }
+        log.info("RequestServiceImpl: confirmRequestForEvent — заявки на событие подтверждена");
         return request;
     }
 
-    // отклонение заявки на событие
     @Override
     public Request rejectRequestForEvent(Event event, Long userId, Long requestId) {
         validateUserIdAndEventId(event, userId);
         getRequestById(requestId); // проверяем что заявка с указанным eventId существует
+        log.info("RequestServiceImpl: confirmRequestForEvent — заявки на событие отклонена");
         return updateStatusRequestById(requestId, Status.REJECTED);
     }
 
-    // проверка, что указанный пользователь userId является создателем события
+    /**
+     * проверка, что указанный пользователь userId является создателем события
+     */
     private void validateUserIdAndEventId(Event event, Long userId) {
         userService.getUserById(userId); // проверяем что существует пользователь с таким eventId
         if (!event.getInitiator().getId().equals(userId)) {

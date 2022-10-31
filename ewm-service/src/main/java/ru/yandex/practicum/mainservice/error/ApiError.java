@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
+/**
+ * класс описывающий ошибки
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

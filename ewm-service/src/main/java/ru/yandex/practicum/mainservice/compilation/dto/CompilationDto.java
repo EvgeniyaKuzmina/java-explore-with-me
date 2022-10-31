@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * класс DTO для подборки событий
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +23,4 @@ public class CompilationDto {
     private Boolean pinned;
     @NotNull
     private String title;
-
-
 }

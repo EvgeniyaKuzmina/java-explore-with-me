@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mainservice.category.dto;
+package ru.yandex.practicum.mainservice.category.mapper.dto;
 
 import lombok.*;
 
@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull;
 /**
  * класс DTO для создания новой категории
  */
-
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

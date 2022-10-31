@@ -8,15 +8,15 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * класс клиент для работы с приложением статистики
+ */
 public class BaseClient {
     protected final RestTemplate rest;
-
 
     public BaseClient(RestTemplate rest) {
         this.rest = rest;
     }
-
 
     private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
         if (response.getStatusCode().is2xxSuccessful()) {

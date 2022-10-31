@@ -3,7 +3,6 @@ package ru.yandex.practicum.mainservice.status;
 import java.util.Optional;
 
 public enum Status {
-
     REJECTED("REJECTED"),
     PUBLISHED("PUBLISHED"),
     PENDING("PENDING"),

@@ -18,6 +18,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * класс для отправки запросов в проект статистики
+ */
 @Service
 @Slf4j
 public class EventClient extends BaseClient {
@@ -31,7 +34,6 @@ public class EventClient extends BaseClient {
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
-
     }
 
     // сохранение информации о запросе в сервисе статистики
@@ -61,7 +63,6 @@ public class EventClient extends BaseClient {
         ResponseEntity<Object> response = get("/stats?start=" + start + "&end=" + end + "&unique" + unique + sb, parameters);
 
         return parseResponseEntityToViewStats(response);
-
     }
 
     private String encodingTime() {
@@ -87,6 +88,4 @@ public class EventClient extends BaseClient {
         viewStats.forEach(vs -> vs.setUri(vs.getUri().replace('|', '/')));
         return viewStats;
     }
-
-
 }

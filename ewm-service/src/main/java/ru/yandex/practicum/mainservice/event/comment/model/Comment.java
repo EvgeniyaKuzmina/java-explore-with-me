@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 /**
  * класс для работы с комментариями
  */
-
 @Builder
 @Getter
 @Setter
@@ -37,5 +36,4 @@ public class Comment {
     private User author;
     @Column(name = "created", nullable = false)
     private LocalDateTime creat;
-
 }

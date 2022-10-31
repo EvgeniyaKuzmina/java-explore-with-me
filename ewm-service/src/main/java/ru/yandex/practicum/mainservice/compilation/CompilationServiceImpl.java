@@ -19,7 +19,6 @@ import java.util.Optional;
 /**
  * класс реализующий методы для работы с подборками событий
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,14 +29,12 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public Compilation createCompilation(Compilation compilation) {
-
-        //Collection<Event> events = eventService.getAllEventByIds(compilation.getEvents());
-
         try {
             log.info("CompilationServiceImpl: createCompilation — Добавлена подборка {}.", compilation);
             return repository.save(compilation);
         } catch (DataIntegrityViolationException e) {
-            log.error("CompilationServiceImpl: createCompilation — Подборка с таким названием {} уже существует.", compilation.getTitle());
+            log.error("CompilationServiceImpl: createCompilation — Подборка с таким названием {} уже существует.",
+                    compilation.getTitle());
             throw new ConflictException(String.format("Подборка с таким названием %s уже существует.",
                     compilation.getTitle()));
         }
@@ -58,7 +55,6 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public Compilation addEventToCompilation(Long eventId, Long compId) {
         Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
-
         Event event = eventService.getEventById(eventId);
         Collection<Event> events = compilation.getEvents();
 
@@ -70,8 +66,10 @@ public class CompilationServiceImpl implements CompilationService {
         });
         events.add(event);
         compilation.setEvents(events);
+        compilation = updateCompilation(compilation, compId);
 
-        return updateCompilation(compilation, compId);
+        log.info("CompilationServiceImpl: addEventToCompilation — событие добавлено в подборку");
+        return compilation;
     }
 
     @Override
@@ -83,28 +81,30 @@ public class CompilationServiceImpl implements CompilationService {
             throw new ConflictException("Подборка уже закреплена на главной странице");
         }
         compilation.setPinned(pin);
+        compilation = updateCompilation(compilation, compId);
 
-        return updateCompilation(compilation, compId);
+        log.info("CompilationServiceImpl: pinCompilation — подборка закреплена на главной странице");
+        return compilation;
     }
 
     @Override
     public Compilation unpinCompilation(Boolean pin, Long compId) {
         Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
-        // обновляем данные
 
         if (compilation.getPinned().equals(pin)) {
             log.error("CompilationServiceImpl: unpinCompilation — Подборка не закреплена на главной странице");
             throw new ConflictException("Подборка не закреплена на главной странице");
         }
         compilation.setPinned(pin);
+        compilation = updateCompilation(compilation, compId);
 
-        return updateCompilation(compilation, compId);
+        log.info("CompilationServiceImpl: unpinCompilation — подборка откреплена с главной странице");
+        return compilation;
     }
 
     @Override
     public Compilation deleteEventFromCompilation(Long eventId, Long compId) {
         Compilation compilation = getCompilationById(compId); // проверка, что подборка с указанным eventId есть
-
         Event event = eventService.getEventById(eventId);
         Collection<Event> events = compilation.getEvents();
 
@@ -116,25 +116,31 @@ public class CompilationServiceImpl implements CompilationService {
         });
         events.remove(event);
         compilation.setEvents(events);
+        compilation = updateCompilation(compilation, compId);
 
-        return updateCompilation(compilation, compId);
+        log.info("CompilationServiceImpl: deleteEventFromCompilation — событие удалено из подборки");
+        return compilation;
     }
 
     @Override
     public void removeCompilation(Long id) {
         getCompilationById(id); // проверка, что пользователь с указанным eventId есть
-        log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным eventId {} удалена", id);
+        log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным id {} удалена", id);
         repository.deleteById(id);
     }
 
     @Override
     public Collection<Compilation> getAllCompilations(Pageable pageable) {
-        return repository.findAll(pageable).toList();
+        Collection<Compilation> compilations = repository.findAll(pageable).toList();
+        log.warn("CompilationServiceImpl: getAllCompilations — список подборок получен");
+        return compilations;
     }
 
     @Override
-    public Collection<Compilation> getAllCompilationsWithTitle(Boolean pinned, Pageable pageable) {
-        return repository.findByPinnedIs(pinned, pageable).toList();
+    public Collection<Compilation> getAllCompilationsByPinned(Boolean pinned, Pageable pageable) {
+        Collection<Compilation> compilations = repository.findByPinnedIs(pinned, pageable).toList();
+        log.warn("CompilationServiceImpl: getAllCompilationsByPinned — список подборок получен");
+        return compilations;
     }
 
     @Override
@@ -145,7 +151,7 @@ public class CompilationServiceImpl implements CompilationService {
             return new ObjectNotFountException("Подборки с указанным eventId " + id + " нет");
         });
 
-        log.warn("CompilationServiceImpl: getCompilationById — Подборка с указанным id {} получена", id);
+        log.info("CompilationServiceImpl: getCompilationById — Подборка с указанным id {} получена", id);
         return compilation.get();
     }
 }

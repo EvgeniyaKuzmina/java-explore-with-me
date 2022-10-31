@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mainservice.category.dto;
+package ru.yandex.practicum.mainservice.category.mapper.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 /**
  * класс DTO для работы с категориями
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

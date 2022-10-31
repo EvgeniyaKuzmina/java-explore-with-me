@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 /**
  * класс DTO для работы с обновлением события
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class UpdateEventDto {
+
     @NotNull
     private Long eventId;
     @Length(min = 3)
@@ -27,11 +27,8 @@ public class UpdateEventDto {
     @Length(min = 20)
     @Length(max = 2000)
     private String annotation;
-
     private String eventDate;
-
     private Long category;
     private Boolean paid;
     private Integer participantLimit;
-
 }

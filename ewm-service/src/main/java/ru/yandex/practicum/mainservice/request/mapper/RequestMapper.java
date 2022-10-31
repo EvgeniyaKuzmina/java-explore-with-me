@@ -17,5 +17,4 @@ public class RequestMapper {
         Optional.ofNullable(request.getCreated()).ifPresent(requestDto::setCreated);
         return requestDto;
     }
-
 }

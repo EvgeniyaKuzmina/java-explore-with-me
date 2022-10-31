@@ -68,7 +68,7 @@ public class Event {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
     @Column(name = "confirmed_requests")
-    private Integer confirmedRequest; // Количество одобренных заявок на участие в данном событии
+    private Integer confirmedRequest;
     @Column(name = "participant_limit")
     private Integer participantLimit;
     @Column(name = "request_moderation")
