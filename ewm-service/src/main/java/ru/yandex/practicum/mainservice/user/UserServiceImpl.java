@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Long id) {
-        getUserById(id); // проверка, что пользователь с указанным eventId есть
-        log.info("UserServiceImpl: removeUser — Пользователя с указанным eventId {} удалён", id);
+        getUserById(id); // проверка, что пользователь с указанным id есть
+        log.info("UserServiceImpl: removeUser — Пользователя с указанным id {} удалён", id);
         repository.deleteById(id);
 
     }
@@ -75,10 +75,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = repository.findById(id);
         user.orElseThrow(() -> {
             log.warn("UserServiceImpl: getUserById —Пользователя с указанным id {} нет", id);
-            return new ObjectNotFountException("Пользователя с указанным id " + id + " нет");
+            throw new ObjectNotFountException("Пользователя с указанным id " + id + " нет");
         });
 
-        log.warn("UserServiceImpl: getUserById — Пользователь с указанным id {} получен", id);
+        log.info("UserServiceImpl: getUserById — Пользователь с указанным id {} получен", id);
         return user.get();
     }
 }

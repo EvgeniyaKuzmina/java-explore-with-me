@@ -170,8 +170,8 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId); // проверяем что существует пользователь с таким eventId
         Event event = getEventById(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("EventServiceImpl: validateUserIdAndEventId — Пользователь с eventId {} не является инициатором события {}.", userId, event.getId());
-            throw new ConflictException(String.format("Пользователь с eventId %d не является инициатором события %d.",
+            log.error("EventServiceImpl: validateUserIdAndEventId — Пользователь с id {} не является инициатором события {}.", userId, event.getId());
+            throw new ConflictException(String.format("Пользователь с id %d не является инициатором события %d.",
                     userId, event.getId()));
         }
     }

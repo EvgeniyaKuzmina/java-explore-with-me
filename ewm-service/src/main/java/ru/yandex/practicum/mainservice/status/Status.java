@@ -10,7 +10,7 @@ public enum Status {
     CONFIRMED("CONFIRMED"),
     CANCELED("CANCELED");
 
-    Status(String status) {
+    Status(String  status) {
     }
 
     public static Optional<Status> from(String stringState) {
