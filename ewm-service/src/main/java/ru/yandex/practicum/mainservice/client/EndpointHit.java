@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @ToString
 public class EndpointHit {
+
     private String app;
     private String uri;
     private String ip;

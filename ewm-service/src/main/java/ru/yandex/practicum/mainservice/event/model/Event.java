@@ -31,23 +31,23 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
     @NotNull
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
     @NotNull
-    @Column(name = "annotation")
+    @Column(name = "annotation", nullable = false)
     private String annotation;
     @JoinColumn(name = "state")
     @Enumerated(EnumType.STRING)
     private Status state;
-    @Column(name = "paid")
+    @Column(name = "paid", nullable = false)
     private Boolean paid;
     @Column(name = "created_on")
     private LocalDateTime createdOn;
     @NotNull
-    @Column(name = "event_date")
+    @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
@@ -69,9 +69,9 @@ public class Event {
     private Location location;
     @Column(name = "confirmed_requests")
     private Integer confirmedRequest;
-    @Column(name = "participant_limit")
+    @Column(name = "participant_limit", nullable = false)
     private Integer participantLimit;
-    @Column(name = "request_moderation")
+    @Column(name = "request_moderation", nullable = false)
     private Boolean requestModeration;
 
     public void setEventDate(String eventDate) {
@@ -88,7 +88,12 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return id.equals(event.id) && title.equals(event.title) && description.equals(event.description) && annotation.equals(event.annotation) && initiator.equals(event.initiator) && category.equals(event.category);
+        return id.equals(event.id) &&
+                title.equals(event.title) &&
+                description.equals(event.description) &&
+                annotation.equals(event.annotation) &&
+                initiator.equals(event.initiator) &&
+                category.equals(event.category);
     }
 
     @Override

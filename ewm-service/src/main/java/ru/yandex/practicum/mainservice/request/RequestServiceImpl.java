@@ -41,7 +41,7 @@ public class RequestServiceImpl implements RequestService {
                 .requester(user)
                 .event(event)
                 .build();
-        if (event.getRequestModeration().equals(false)) {
+        if (event.getRequestModeration().equals(Boolean.FALSE)) {
             request.setStatus(Status.CONFIRMED);
         } else {
             request.setStatus(Status.PENDING);
@@ -134,7 +134,7 @@ public class RequestServiceImpl implements RequestService {
     public Request confirmRequestForEvent(Event event, Long userId, Long requestId) {
         validateUserIdAndEventId(event, userId);
         getRequestById(requestId);
-        if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(false)) {
+        if (event.getParticipantLimit() == 0 || event.getRequestModeration().equals(Boolean.FALSE)) {
             log.error("RequestServiceImpl: confirmRequestForEvent — Подтверждение заявки не требуется");
             return getRequestById(requestId);
         }

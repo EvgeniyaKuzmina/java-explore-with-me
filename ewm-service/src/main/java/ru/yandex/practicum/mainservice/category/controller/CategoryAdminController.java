@@ -7,9 +7,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.CategoryService;
 import ru.yandex.practicum.mainservice.category.CategoryServiceImpl;
-import ru.yandex.practicum.mainservice.category.mapper.dto.CategoryDto;
-import ru.yandex.practicum.mainservice.category.mapper.dto.NewCategoryDto;
 import ru.yandex.practicum.mainservice.category.mapper.CategoryMapper;
+import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.category.dto.NewCategoryDto;
 import ru.yandex.practicum.mainservice.category.model.Category;
 
 import javax.validation.Valid;
@@ -49,6 +49,4 @@ public class CategoryAdminController {
         log.info("CategoryAdminController: removeCategoryById — получен запрос на удаление категории");
         service.removeCategory(id);
     }
-
-
 }

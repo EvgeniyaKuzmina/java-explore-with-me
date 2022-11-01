@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainservice.event.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainservice.category.mapper.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
 import ru.yandex.practicum.mainservice.event.location.LocationDto;
 import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.dto.UserShortDto;

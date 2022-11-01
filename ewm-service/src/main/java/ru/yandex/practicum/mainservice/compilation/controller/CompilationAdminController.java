@@ -25,7 +25,6 @@ import java.util.Collection;
 public class CompilationAdminController {
 
     private final CompilationService service;
-
     private final EventService eventService;
 
     @Autowired

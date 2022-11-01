@@ -9,7 +9,6 @@ import java.util.Collection;
 /**
  * класс описывающий методы для работы со статистикой
  */
-
 public interface StatisticService {
 
     // сохранение информации о том, что к эндпоинту был запрос

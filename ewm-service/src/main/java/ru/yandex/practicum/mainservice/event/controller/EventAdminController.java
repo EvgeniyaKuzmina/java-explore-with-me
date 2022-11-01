@@ -51,7 +51,7 @@ public class EventAdminController {
                                                 @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = SIZE) @Positive Integer size) {
         log.info("EventAdminController: getAllEvent — получен запрос на получение списка всех событий");
-        EventParam param = creatParam(usersId, categoriesId, states, rangeStart, rangeEnd);
+        EventParam param = createParam(usersId, categoriesId, states, rangeStart, rangeEnd);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
@@ -84,11 +84,11 @@ public class EventAdminController {
         return EventMapper.toEventFullDto(event);
     }
 
-    private EventParam creatParam(List<Long> usersId,
-                                  List<Long> categoriesId,
-                                  List<String> states,
-                                  String rangeStart,
-                                  String rangeEnd) {
+    private EventParam createParam(List<Long> usersId,
+                                   List<Long> categoriesId,
+                                   List<String> states,
+                                   String rangeStart,
+                                   String rangeEnd) {
 
         EventParam param = new EventParam();
         Optional.ofNullable(usersId).ifPresent(param::setUsersId);
@@ -96,7 +96,7 @@ public class EventAdminController {
         Optional.ofNullable(states).ifPresent(param::setStates);
         Optional.ofNullable(rangeStart).ifPresent(param::setRangeStart);
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
-        log.info("EventAdminController: creatParam — параметры запроса преобразованы в объект EventParam");
+        log.info("EventAdminController: createParam — параметры запроса преобразованы в объект EventParam");
         return param;
     }
 }

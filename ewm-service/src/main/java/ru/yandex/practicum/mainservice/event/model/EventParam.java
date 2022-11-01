@@ -39,7 +39,6 @@ public class EventParam {
         this.rangeStart = rangeStart;
     }
 
-
     public void setRangeEnd(String rangeEnd) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.rangeEnd = LocalDateTime.parse(rangeEnd, formatter);

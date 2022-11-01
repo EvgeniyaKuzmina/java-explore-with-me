@@ -24,12 +24,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(Category category) {
-
         try {
             log.info("CategoryServiceImpl: createCategory — Добавлена категория {}.", category);
             return repository.save(category);
         } catch (DataIntegrityViolationException e) {
-            log.error("CategoryServiceImpl: createCategory — Категория с таким названием {} уже существует.", category.getName());
+            log.error("CategoryServiceImpl: createCategory — Категория с таким названием {} уже существует.",
+                    category.getName());
             throw new ConflictException(String.format("Категория с таким названием %s уже существует.",
                     category.getName()));
         }

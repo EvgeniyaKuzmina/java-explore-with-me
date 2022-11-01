@@ -1,6 +1,7 @@
-package ru.yandex.practicum.mainservice.category.mapper.dto;
+package ru.yandex.practicum.mainservice.category.dto;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,5 +15,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class NewCategoryDto {
     @NotNull
+    @Length(max = 100)
     private String name;
 }

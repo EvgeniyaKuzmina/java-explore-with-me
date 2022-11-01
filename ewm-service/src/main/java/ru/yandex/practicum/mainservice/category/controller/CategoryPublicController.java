@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.CategoryService;
 import ru.yandex.practicum.mainservice.category.CategoryServiceImpl;
-import ru.yandex.practicum.mainservice.category.mapper.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
 import ru.yandex.practicum.mainservice.category.mapper.CategoryMapper;
 import ru.yandex.practicum.mainservice.category.model.Category;
 

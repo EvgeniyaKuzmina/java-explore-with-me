@@ -6,6 +6,7 @@ import ru.yandex.practicum.statserver.statistic.model.Statistic;
 
 @Slf4j
 public class StatisticMapper {
+
     public static Statistic toStatistic(EndpointHit endpointHit) {
         Statistic statistic = Statistic.builder()
                 .app(endpointHit.getApp())

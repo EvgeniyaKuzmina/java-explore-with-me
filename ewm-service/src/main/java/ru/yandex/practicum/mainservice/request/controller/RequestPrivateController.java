@@ -46,7 +46,6 @@ public class RequestPrivateController {
         log.info("RequestPrivateController: deleteRequest — получен запрос на получение списка всех заявок на участие по id пользователя");
         Collection<RequestDto> allRequestDto = new ArrayList<>();
         Collection<Request> allRequests = service.getAllRequestsByUserId(userId);
-
         allRequests.forEach(r -> allRequestDto.add(RequestMapper.toRequestDto(r)));
         return allRequestDto;
     }
