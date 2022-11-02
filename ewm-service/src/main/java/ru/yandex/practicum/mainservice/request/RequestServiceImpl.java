@@ -158,10 +158,7 @@ public class RequestServiceImpl implements RequestService {
 
         // отменяем все заявки в статусе ожидания, если при подтверждении текущей заявки лимит заявок исчерпан
         if (event.getParticipantLimit().equals(confirmedRequests)) {
-            List<Request> requests = getRequestsByEventIdAndStatus(event.getId(), Status.PENDING);
-            List<Long> requestsId = new ArrayList<>();
-            requests.forEach(r -> requestsId.add(r.getId()));
-            repository.updateStatusWhereIdIn(Status.REJECTED, requestsId);
+            repository.updateStatusWhereEventIdAnsStatusPending(Status.REJECTED, event, Status.PENDING);
         }
 
         log.info("RequestServiceImpl: confirmRequestForEvent — заявки на событие подтверждена");
@@ -172,7 +169,7 @@ public class RequestServiceImpl implements RequestService {
     public Request rejectRequestForEvent(Event event, Long userId, Long requestId) {
         validateUserIdAndEventId(event, userId);
         getRequestById(requestId); // проверяем что заявка с указанным eventId существует
-        log.info("RequestServiceImpl: confirmRequestForEvent — заявки на событие отклонена");
+        log.info("RequestServiceImpl: rejectRequestForEvent — заявка на событие отклонена");
         return updateStatusRequestById(requestId, Status.REJECTED);
     }
 
