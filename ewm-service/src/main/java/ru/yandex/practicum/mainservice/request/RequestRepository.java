@@ -8,7 +8,6 @@ import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.request.model.Request;
 import ru.yandex.practicum.mainservice.status.Status;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
