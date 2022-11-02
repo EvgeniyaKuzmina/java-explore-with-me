@@ -1,9 +1,13 @@
 package ru.yandex.practicum.mainservice.request;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.mainservice.request.model.Request;
 import ru.yandex.practicum.mainservice.status.Status;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,12 +16,7 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
     /**
-     * получение id событий по id создателя запроса на участие
-     */
-    List<Long> findEventIdByRequesterId(Long id);
-
-    /**
-     * получение всех заявок по id пользователя
+     * получение всех заявок по id создателя
      */
     List<Request> findByRequesterId(Long id);
 
@@ -30,4 +29,12 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
      * получение всех заявок по id события
      */
     List<Request> findByEventId(Long id);
+
+    /**
+     * изменение статуса всех заявок по указанным id
+     */
+    @Modifying
+    @Query("update Request r set r.status = ?1 where r.id in (?2)")
+    @Transactional
+    void updateStatusWhereIdIn(Status status, Collection<Long> ids);
 }

@@ -13,6 +13,7 @@ import ru.yandex.practicum.mainservice.user.UserService;
 import ru.yandex.practicum.mainservice.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +31,13 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Request createRequest(Long userId, Long eventId) {
-        List<Long> requests = repository.findEventIdByRequesterId(userId);
         Event event = eventService.getEventById(eventId);
         User user = userService.getUserById(userId);
+        List<Request> requests = repository.findByRequesterId(userId);
+        List<Long> ids = new ArrayList<>();
+        requests.forEach(r -> ids.add(r.getEvent().getId()));
 
-        validateDate(requests, event, userId, eventId);
+        validateDate(ids, event, userId, eventId);
 
         Request request = Request.builder()
                 .created(LocalDateTime.now())
@@ -62,7 +65,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии");
         }
 
-        if (!event.getState().equals(Status.PUBLISHED)) {
+        if (event.getState() != Status.PUBLISHED) {
             log.error("RequestServiceImpl: validateDate — Нельзя участвовать в неопубликованном событии");
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
@@ -121,7 +124,6 @@ public class RequestServiceImpl implements RequestService {
         return requests;
     }
 
-    //  обновление статуса события по id
     @Override
     public Request updateStatusRequestById(Long requestId, Status status) {
         Request request = getRequestById(requestId);
@@ -152,15 +154,16 @@ public class RequestServiceImpl implements RequestService {
         Request request = updateStatusRequestById(requestId, Status.CONFIRMED);
         ++confirmedRequests;
         event.setConfirmedRequest(confirmedRequests);
-        eventService.updateEvent(event, event.getId());
+        event = eventService.updateEvent(event, event.getId());
 
         // отменяем все заявки в статусе ожидания, если при подтверждении текущей заявки лимит заявок исчерпан
         if (event.getParticipantLimit().equals(confirmedRequests)) {
             List<Request> requests = getRequestsByEventIdAndStatus(event.getId(), Status.PENDING);
-            for (Request r : requests) {
-                rejectRequestForEvent(event, userId, r.getId());
-            }
+            List<Long> requestsId = new ArrayList<>();
+            requests.forEach(r -> requestsId.add(r.getId()));
+            repository.updateStatusWhereIdIn(Status.REJECTED, requestsId);
         }
+
         log.info("RequestServiceImpl: confirmRequestForEvent — заявки на событие подтверждена");
         return request;
     }

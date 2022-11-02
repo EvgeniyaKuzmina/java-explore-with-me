@@ -55,10 +55,10 @@ public class EventServiceImpl implements EventService {
         validateUserIdAndEventId(updEvent.getId(), userId);
         Event event = getEventById(updEvent.getId());
         LocalDateTime publishedTime = LocalDateTime.now();
-        if (event.getState().equals(Status.CANCELED)) {
+        if (event.getState() == Status.CANCELED) {
             event.setState(Status.PENDING);
         }
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: updateEventByInitiator — Событие изменить нельзя");
             throw new ConflictException("Событие изменить нельзя");
         }
@@ -75,7 +75,7 @@ public class EventServiceImpl implements EventService {
     public Event cancelEventByInitiator(Long eventId, Long userId) {
         validateUserIdAndEventId(eventId, userId);
         Event event = getEventById(eventId);
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: cancelEventByInitiator — Событие отменить нельзя");
             throw new ConflictException("Событие отменить нельзя");
         }
@@ -122,7 +122,7 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Нельзя опубликовать событие, дата начала которого ранее текущего времени");
         }
 
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: publishedEventByAdmin — Нельзя опубликовать событие");
             throw new ConflictException("Нельзя опубликовать событие");
         }
@@ -135,7 +135,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event rejectedEventByAdmin(Long eventId) {
         Event event = getEventById(eventId);
-        if (event.getState().equals(Status.PUBLISHED)) {
+        if (event.getState() == Status.PUBLISHED) {
             log.error("EventServiceImpl: rejectedEventByAdmin — Нельзя отменить опубликованное событие");
             throw new ConflictException("Нельзя отменить опубликованное событие");
         }
@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (param.getOnlyAvailable() != null) {
-            if (param.getOnlyAvailable()) {
+            if (Boolean.TRUE.equals(param.getOnlyAvailable())) {
                 specification = Specification.where(specification).and(
                         (root, criteriaQuery, criteriaBuilder) ->
                                 criteriaBuilder.lessThan(root.get("confirmedRequest"), root.get("participantLimit"))
