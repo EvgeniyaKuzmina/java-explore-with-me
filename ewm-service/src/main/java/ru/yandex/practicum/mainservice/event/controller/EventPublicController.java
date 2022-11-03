@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.client.EventClient;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
 import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
@@ -34,11 +36,13 @@ public class EventPublicController {
     private static final String SIZE = "10";
     private final EventService service;
     private final EventClient client;
+    private final CommentService commentService;
 
     @Autowired
-    public EventPublicController(EventService service, EventClient client) {
+    public EventPublicController(EventService service, EventClient client, CommentService commentService) {
         this.service = service;
         this.client = client;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -68,8 +72,9 @@ public class EventPublicController {
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
         log.info("EventPublicController: getEventById — получен запрос на получение события по id");
         Event event = service.getEventById(id);
-        client.addStatistic(request); // сохранение статистики в сервисе статистики
-        return EventMapper.toEventFullDto(event);
+        client.addStatistic(request);
+        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     private EventParam creatParam(String text,

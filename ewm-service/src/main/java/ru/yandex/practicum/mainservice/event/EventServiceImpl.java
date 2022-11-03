@@ -300,7 +300,9 @@ public class EventServiceImpl implements EventService {
         return repository.findAll(specification, pageable).stream().collect(Collectors.toList());
     }
 
-    // вызов метода для получения статистики по просмотрам
+    /**
+     * вызов метода для получения статистики по просмотрам
+     */
     private Collection<ViewStats> getStatisticView(Collection<String> uris) {
         LocalDateTime start = LocalDateTime.now().minusMonths(1L);
         LocalDateTime end = LocalDateTime.now();

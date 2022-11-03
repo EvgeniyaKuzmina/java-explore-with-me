@@ -1,14 +1,14 @@
-package ru.yandex.practicum.mainserver.event.mapper;
+package ru.yandex.practicum.mainservice.event.mapper;
 
-import ru.yandex.practicum.mainserver.category.mapper.CategoryMapper;
-import ru.yandex.practicum.mainserver.category.model.Category;
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
-import ru.yandex.practicum.mainserver.event.comment.mapper.CommentMapper;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
-import ru.yandex.practicum.mainserver.event.dto.*;
-import ru.yandex.practicum.mainserver.event.location.mapper.LocationMapper;
-import ru.yandex.practicum.mainserver.event.model.Event;
-import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
+import ru.yandex.practicum.mainservice.category.mapper.CategoryMapper;
+import ru.yandex.practicum.mainservice.category.model.Category;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentShortDto;
+import ru.yandex.practicum.mainservice.event.comment.mapper.CommentMapper;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.event.dto.*;
+import ru.yandex.practicum.mainservice.event.location.mapper.LocationMapper;
+import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.user.mapper.UserMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;

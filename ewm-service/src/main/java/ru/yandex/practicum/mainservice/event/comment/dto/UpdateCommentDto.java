@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mainserver.event.comment.dto;
+package ru.yandex.practicum.mainservice.event.comment.dto;
 
 import lombok.*;
 

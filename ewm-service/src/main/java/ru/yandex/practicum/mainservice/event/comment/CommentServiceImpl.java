@@ -1,29 +1,26 @@
-package ru.yandex.practicum.mainserver.event.comment;
+package ru.yandex.practicum.mainservice.event.comment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.mainserver.event.EventService;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
-import ru.yandex.practicum.mainserver.event.model.Event;
-import ru.yandex.practicum.mainserver.exception.ConflictException;
-import ru.yandex.practicum.mainserver.exception.ObjectNotFountException;
-import ru.yandex.practicum.mainserver.request.RequestService;
-import ru.yandex.practicum.mainserver.request.model.Request;
-import ru.yandex.practicum.mainserver.status.Status;
-import ru.yandex.practicum.mainserver.user.UserService;
-import ru.yandex.practicum.mainserver.user.model.User;
+import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.exception.ConflictException;
+import ru.yandex.practicum.mainservice.exception.ObjectNotFountException;
+import ru.yandex.practicum.mainservice.request.RequestService;
+import ru.yandex.practicum.mainservice.request.model.Request;
+import ru.yandex.practicum.mainservice.status.Status;
+import ru.yandex.practicum.mainservice.user.UserService;
+import ru.yandex.practicum.mainservice.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 
 /**
  * класс реализующий методы для работы с комментариями
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +28,6 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository repository;
     private final UserService userService;
-
     private final RequestService requestService;
     private final EventService eventService;
 
@@ -42,49 +38,76 @@ public class CommentServiceImpl implements CommentService {
         User user = userService.getUserById(userId);
         comment.setEvent(event);
         comment.setAuthor(user);
-        try {
-            log.info("CommentServiceImpl: addNewComment — Комментарий добавлен {}.", comment);
-            return repository.save(comment);
-        } catch (DataIntegrityViolationException e) {
-            log.error("CommentServiceImpl: addNewComment — Произошла ошибка при сохранении данных");
-            throw new RuntimeException("Произошла ошибка при сохранении данных");
-        }
+        log.info("CommentServiceImpl: addNewComment — Комментарий добавлен {}.", comment);
+        return repository.save(comment);
     }
 
     @Override
-    public Comment changeCommentByUser(Comment updComment, Long eventId, Long userId) {
-        validateUsersRequestAndEvent(userId, eventId);
+    public Comment changeCommentByAuthor(Comment updComment, Long userId) {
         Comment comment = getCommentById(updComment.getId(), userId);
         comment.setText(updComment.getText());
-        try {
-            log.info("CommentServiceImpl: addNewComment — Комментарий изменён {}.", comment);
-            return repository.save(comment);
-        } catch (DataIntegrityViolationException e) {
-            log.error("CommentServiceImpl: addNewComment — Произошла ошибка при сохранении данных");
-            throw new RuntimeException("Произошла ошибка при сохранении данных");
-        }
+        comment.setStatus(Status.PENDING);
+        log.info("CommentServiceImpl: changeCommentByAuthor — Комментарий изменён {}.", comment);
+        return repository.save(comment);
     }
 
     @Override
-    public Collection<Comment> findAllByEventIdOrderByCreatDesc(Long eventId, Pageable pageable) {
-        return repository.findByEventIdOrderByCreatedDesc(eventId, pageable).toList();
+    public Comment changeCommentStatusByAdmin(Long commentId, Status status) {
+        Comment comment = getCommentById(commentId);
+        comment.setStatus(status);
+        log.info("CommentServiceImpl: changeCommentStatusByAdmin — Статус комментария изменён {}.", comment);
+        return repository.save(comment);
     }
 
     @Override
-    public Collection<Comment> findAllByEventIdOrderByCreatDesc(Long eventId) {
-        return repository.findByEventIdOrderByCreatedDesc(eventId);
+    public Collection<Comment> findPublishedByEventIdOrderByCreatDesc(Long eventId, Pageable pageable) {
+        Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED, pageable).toList();
+        log.info("CommentServiceImpl: findByEventIdAndStatusOrderByCreatDesc — получен список комментариев с указанным статусом");
+        return comments;
+    }
+
+    @Override
+    public Collection<Comment> findPublishedByEventIdOrderByCreatDesc(Long eventId) {
+        Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED);
+        log.info("CommentServiceImpl: findPublishedByEventIdOrderByCreatDesc — " +
+                "получен список опубликованных комментариев");
+        return comments;
+    }
+
+    @Override
+    public Collection<Comment> findAllByAuthorIdOrderByCreatDesc(Long authorId, Pageable pageable) {
+        Collection<Comment> comments = repository.findByAuthorIdOrderByCreatedDesc(authorId, pageable).toList();
+        log.info("CommentServiceImpl: findAllByEventIdOrderByCreatDesc — " +
+                "получен список всех комментариев пользователя");
+        return comments;
+    }
+
+    @Override
+    public Collection<Comment> findAllByAuthorAndStatusIdOrderByCreatDesc(Long authorId, Status status,
+                                                                          Pageable pageable) {
+        Collection<Comment> comments = repository.findByAuthorIdAndStatusOrderByCreatedDesc(authorId, status,
+                pageable).toList();
+        log.info("CommentServiceImpl: findAllByAuthorAndStatusIdOrderByCreatDesc — " +
+                "получен список всех комментариев пользователя с указанным статусом");
+        return comments;
     }
 
     @Override
     public void removeComment(Long commentId, Long userId) {
-        Comment comment = getCommentById(commentId, userId); // проверка, что комментарий с указанным id есть
-        if (!comment.getAuthor().getId().equals(userId)) {
-            log.warn("CommentServiceImpl: removeComment — пользователь с id {} не является автором комментария c id {}", userId, commentId);
-            throw new ConflictException("Пользователь с  id " + userId + " не является автором комментария c id " + commentId);
-        }
+        getCommentById(commentId, userId);
         log.info("CommentServiceImpl: removeComment — Комментарий с указанным id {} удалён", commentId);
         repository.deleteById(commentId);
+    }
 
+    @Override
+    public Comment getCommentById(Long commentId) {
+        Optional<Comment> comment = repository.findById(commentId);
+        comment.orElseThrow(() -> {
+            log.warn("CommentServiceImpl: getCommentById — Комментария с указанным id {} нет", commentId);
+            throw new ObjectNotFountException("Комментария с указанным id " + commentId + " нет");
+        });
+        log.warn("CommentServiceImpl: getCommentById — Комментарий с указанным id {} получен", commentId);
+        return comment.get();
     }
 
     @Override
@@ -107,16 +130,13 @@ public class CommentServiceImpl implements CommentService {
         boolean check = false;
         for (Request r : request) {
             if (r.getEvent().getId().equals(eventId) && r.getStatus().equals(Status.CONFIRMED)) {
-                if(r.getEvent().getEventDate().isBefore(LocalDateTime.now())) {
-                    check = true;
-                    break;
-                }
+                check = true;
+                break;
             }
         }
         if (!check) {
-            log.error("CommentServiceImpl: validateUserAndEvent — Пользователь с id {} не участвовал в событии c id или событие ещё не состоялось {}", userId, eventId);
-            throw new ConflictException(String.format("Пользователь с id %d не участвовал в событии c id %d или событие ещё не состоялось", userId, eventId));
+            log.error("CommentServiceImpl: validateUserAndEvent — Пользователь с id {} не является участником события c id {}", userId, eventId);
+            throw new ConflictException(String.format("Пользователь с id %d не является участником события c id %d", userId, eventId));
         }
-
     }
 }

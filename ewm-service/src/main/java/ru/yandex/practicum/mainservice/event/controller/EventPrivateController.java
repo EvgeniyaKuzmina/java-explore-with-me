@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.CategoryService;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.dto.NewEventDto;
 import ru.yandex.practicum.mainservice.event.dto.UpdateEventDto;
@@ -25,6 +27,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * класс контроллер для работы с приватным API событий
@@ -61,7 +64,7 @@ public class EventPrivateController {
         }
 
         event = service.createEvent(event, userId);
-        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = List.of();
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -72,7 +75,7 @@ public class EventPrivateController {
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
-        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -85,7 +88,7 @@ public class EventPrivateController {
         Collection<Event> event = service.getAllEventsByInitiatorId(userId, pageable);
         Collection<EventFullDto> eventsDto = new ArrayList<>();
         event.forEach(e -> {
-            Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(e.getId());
+            Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(e.getId());
             eventsDto.add(EventMapper.toEventFullDto(e, comments));
         });
         return eventsDto;
@@ -95,7 +98,7 @@ public class EventPrivateController {
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: getEventByIdAndInitiatorId — получен запрос от инициатора на получение события по id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
-        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -103,7 +106,7 @@ public class EventPrivateController {
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: cancelEventByInitiator — получен запрос на отмену события");
         Event event = service.cancelEventByInitiator(eventId, userId);
-        Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

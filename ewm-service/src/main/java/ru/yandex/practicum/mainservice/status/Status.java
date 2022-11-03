@@ -1,7 +1,10 @@
 package ru.yandex.practicum.mainservice.status;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Optional;
 
+@Slf4j
 public enum Status {
     REJECTED("REJECTED"),
     PUBLISHED("PUBLISHED"),
@@ -12,12 +15,13 @@ public enum Status {
     Status(String  status) {
     }
 
-    public static Optional<Status> from(String stringState) {
+    public static Status from(String stringState) {
         for (Status state : values()) {
             if (state.name().equalsIgnoreCase(stringState)) {
-                return Optional.of(state);
+                return state;
             }
         }
-        return Optional.empty();
+        log.warn("Status: from — указан неверный статус");
+        throw new IllegalArgumentException("Unknown state: " + stringState);
     }
 }

@@ -1,10 +1,8 @@
-package ru.yandex.practicum.mainserver.event.comment.dto;
+package ru.yandex.practicum.mainservice.event.comment.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainserver.event.dto.EventShortDto;
-import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
+import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,13 +19,11 @@ public class CommentShortDto {
 
 
     private Long id;
-
     private String text;
-
     private UserShortDto author;
-    private String creat;
-    public void setCreat(LocalDateTime creat) {
+    private String created;
+    public void setCreated(LocalDateTime created) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.creat = creat.format(formatter);
+        this.created = created.format(formatter);
     }
 }

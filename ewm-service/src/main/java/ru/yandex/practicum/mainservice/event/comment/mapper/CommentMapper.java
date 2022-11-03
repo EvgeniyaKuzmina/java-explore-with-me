@@ -1,12 +1,12 @@
-package ru.yandex.practicum.mainserver.event.comment.mapper;
+package ru.yandex.practicum.mainservice.event.comment.mapper;
 
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentDto;
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
-import ru.yandex.practicum.mainserver.event.comment.dto.NewCommentDto;
-import ru.yandex.practicum.mainserver.event.comment.dto.UpdateCommentDto;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
-import ru.yandex.practicum.mainserver.event.mapper.EventMapper;
-import ru.yandex.practicum.mainserver.user.mapper.UserMapper;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentDto;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentShortDto;
+import ru.yandex.practicum.mainservice.event.comment.dto.NewCommentDto;
+import ru.yandex.practicum.mainservice.event.comment.dto.UpdateCommentDto;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
+import ru.yandex.practicum.mainservice.user.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ public class CommentMapper {
                 .text(comment.getText())
                 .author(UserMapper.toUserShortDto(comment.getAuthor()))
                 .build();
-        commentDto.setCreat(comment.getCreated());
+        commentDto.setCreated(comment.getCreated());
         return commentDto;
     }
 
@@ -29,7 +29,7 @@ public class CommentMapper {
                 .event(EventMapper.toEventShortDto(comment.getEvent()))
                 .author(UserMapper.toUserShortDto(comment.getAuthor()))
                 .build();
-        commentDto.setCreat(comment.getCreated());
+        commentDto.setCreated(comment.getCreated());
         return commentDto;
     }
 

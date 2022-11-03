@@ -1,10 +1,8 @@
-package ru.yandex.practicum.mainserver.event.comment.dto;
+package ru.yandex.practicum.mainservice.event.comment.dto;
 
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Builder
 @NoArgsConstructor
@@ -15,5 +13,4 @@ public class NewCommentDto {
 
     @NotNull
     private String text;
-
-    }
+}

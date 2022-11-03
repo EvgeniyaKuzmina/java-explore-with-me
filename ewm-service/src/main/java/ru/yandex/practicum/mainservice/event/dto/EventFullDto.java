@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainservice.event.dto;
 
 import lombok.*;
 import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentShortDto;
 import ru.yandex.practicum.mainservice.event.location.LocationDto;
 import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
@@ -9,7 +10,7 @@ import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * класс DTO для получения полной информации о событии

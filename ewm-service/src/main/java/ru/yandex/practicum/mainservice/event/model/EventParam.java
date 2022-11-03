@@ -46,9 +46,7 @@ public class EventParam {
 
     public void setStates(List<String> states) {
         for (String s : states) {
-            this.states.add(Status.from(s).orElseThrow(() -> {
-                throw new IllegalArgumentException("Unknown state: " + s);
-            }));
+            this.states.add(Status.from(s));
         }
     }
 }

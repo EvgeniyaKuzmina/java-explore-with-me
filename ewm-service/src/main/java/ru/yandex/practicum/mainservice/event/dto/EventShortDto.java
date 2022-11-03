@@ -1,8 +1,8 @@
-package ru.yandex.practicum.mainserver.event.dto;
+package ru.yandex.practicum.mainservice.event.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
-import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
+import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;

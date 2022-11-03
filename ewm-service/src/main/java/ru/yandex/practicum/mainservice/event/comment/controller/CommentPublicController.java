@@ -1,5 +1,4 @@
-package ru.yandex.practicum.mainserver.event.comment.controller;
-
+package ru.yandex.practicum.mainservice.event.comment.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -7,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainserver.event.comment.CommentService;
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentDto;
-import ru.yandex.practicum.mainserver.event.comment.mapper.CommentMapper;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentDto;
+import ru.yandex.practicum.mainservice.event.comment.mapper.CommentMapper;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.status.Status;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -36,16 +36,14 @@ public class CommentPublicController {
         this.service = service;
     }
 
-    // получение списка всех комментариев по id события
     @GetMapping
     public Collection<CommentDto> getAllCommentsByEventId(@PathVariable Long eventId,
                                                           @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                           @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-
-
+        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех опубликованных комментариев к событию");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Comment> comment = service.findAllByEventIdOrderByCreatDesc(eventId, pageable);
+        Collection<Comment> comment = service.findPublishedByEventIdOrderByCreatDesc(eventId, pageable);
         Collection<CommentDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));
         return commentDto;

@@ -1,18 +1,18 @@
-package ru.yandex.practicum.mainserver.event.controller;
+package ru.yandex.practicum.mainservice.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainserver.event.EventService;
-import ru.yandex.practicum.mainserver.event.comment.CommentService;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
-import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
-import ru.yandex.practicum.mainserver.event.dto.EventShortDto;
-import ru.yandex.practicum.mainserver.event.mapper.EventMapper;
-import ru.yandex.practicum.mainserver.event.model.Event;
-import ru.yandex.practicum.mainserver.event.model.EventParam;
+import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
+import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
+import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
+import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
+import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.event.model.EventParam;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
