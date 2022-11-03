@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompilationMapper {
-    private CompilationMapper() {}
+    private CompilationMapper() {
+    }
 
     public static CompilationDto toCompilationDto(Compilation compilation) {
         List<EventShortDto> eventsDto = new ArrayList<>();

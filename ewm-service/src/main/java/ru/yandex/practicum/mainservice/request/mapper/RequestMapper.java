@@ -6,7 +6,8 @@ import ru.yandex.practicum.mainservice.request.model.Request;
 import java.util.Optional;
 
 public class RequestMapper {
-    private RequestMapper() {}
+    private RequestMapper() {
+    }
 
     public static RequestDto toRequestDto(Request request) {
         RequestDto requestDto = RequestDto.builder()

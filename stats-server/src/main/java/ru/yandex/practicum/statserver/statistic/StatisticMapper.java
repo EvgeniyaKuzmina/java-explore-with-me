@@ -5,7 +5,8 @@ import ru.yandex.practicum.statserver.statistic.model.Statistic;
 
 
 public class StatisticMapper {
-    private StatisticMapper() {}
+    private StatisticMapper() {
+    }
 
     public static Statistic toStatistic(EndpointHit endpointHit) {
         Statistic statistic = Statistic.builder()

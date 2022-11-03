@@ -10,7 +10,8 @@ import ru.yandex.practicum.mainservice.user.mapper.UserMapper;
 import java.util.Optional;
 
 public class EventMapper {
-    private EventMapper() {}
+    private EventMapper() {
+    }
 
     public static EventShortDto toEventShortDto(Event event) {
         EventShortDto eventDto = EventShortDto.builder()
