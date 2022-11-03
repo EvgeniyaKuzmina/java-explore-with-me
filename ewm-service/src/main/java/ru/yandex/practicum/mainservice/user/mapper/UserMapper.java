@@ -10,6 +10,9 @@ import ru.yandex.practicum.mainservice.user.model.User;
  */
 public class UserMapper {
 
+    private UserMapper() {
+    }
+
     public static UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())

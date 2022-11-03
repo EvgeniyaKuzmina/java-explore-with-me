@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "locations", schema = "public")
+@Table(name = "locations")
 public class Location {
 
     @Id

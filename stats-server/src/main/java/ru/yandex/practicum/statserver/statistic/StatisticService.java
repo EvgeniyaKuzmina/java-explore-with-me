@@ -11,9 +11,13 @@ import java.util.Collection;
  */
 public interface StatisticService {
 
-    // сохранение информации о том, что к эндпоинту был запрос
+    /**
+     * сохранение информации о том, что к эндпоинту был запрос
+     */
     Statistic addNewHit(Statistic statistic);
 
-    // получение статистики по посещениям
+    /**
+     * получение статистики по посещениям
+     */
     Collection<ViewStats> getStatistic(LocalDateTime start, LocalDateTime end, Collection<String> uris, Boolean unique);
 }

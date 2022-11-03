@@ -1,7 +1,6 @@
 package ru.yandex.practicum.mainservice.client;
 
 import com.google.gson.Gson;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,9 +21,10 @@ import java.util.Objects;
  * класс для отправки запросов в проект статистики
  */
 @Service
-@Slf4j
 public class EventClient extends BaseClient {
+
     private static final String APP = "ewm-main-service";
+    private final Gson gson = new Gson();
 
     @Autowired
     public EventClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -36,7 +36,6 @@ public class EventClient extends BaseClient {
         );
     }
 
-    // сохранение информации о запросе в сервисе статистики
     public void addStatistic(HttpServletRequest request) {
         EndpointHit endpointHit = EndpointHit.builder()
                 .ip(request.getRemoteAddr())
@@ -47,7 +46,6 @@ public class EventClient extends BaseClient {
         post("/hit", endpointHit);
     }
 
-    // получение статистики по просмотрам
     public Collection<ViewStats> getStatistic(String start, String end,
                                               Collection<String> uris,
                                               Boolean unique) {
@@ -72,7 +70,6 @@ public class EventClient extends BaseClient {
     }
 
     private Collection<ViewStats> parseResponseEntityToViewStats(ResponseEntity<Object> response) {
-        Gson gson = new Gson();
         String responseString = Objects.requireNonNull(response.getBody()).toString().replace('/', '|');
         Collection<ViewStats> viewStats = new ArrayList<>();
 
