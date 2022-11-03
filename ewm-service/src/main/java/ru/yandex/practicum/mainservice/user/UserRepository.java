@@ -10,11 +10,10 @@ import java.util.Collection;
 /**
  * класс репозиторий для работы с БД пользователей
  */
-
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // получение списка пользователей с пагинацией
+    /**
+     * получение списка пользователей с пагинацией
+     */
     Page<User> findByIdIn(Collection<Long> ids, Pageable pageable);
-
-
 }

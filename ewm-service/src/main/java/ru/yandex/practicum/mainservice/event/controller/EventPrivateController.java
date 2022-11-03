@@ -1,25 +1,23 @@
-package ru.yandex.practicum.mainserver.event.controller;
+package ru.yandex.practicum.mainservice.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.mainserver.category.CategoryService;
-import ru.yandex.practicum.mainserver.category.model.Category;
-import ru.yandex.practicum.mainserver.event.EventService;
-import ru.yandex.practicum.mainserver.event.comment.CommentService;
-import ru.yandex.practicum.mainserver.event.comment.model.Comment;
-import ru.yandex.practicum.mainserver.event.dto.EventFullDto;
-import ru.yandex.practicum.mainserver.event.dto.NewEventDto;
-import ru.yandex.practicum.mainserver.event.dto.UpdateEventDto;
-import ru.yandex.practicum.mainserver.event.mapper.EventMapper;
-import ru.yandex.practicum.mainserver.event.model.Event;
-import ru.yandex.practicum.mainserver.exception.ConflictException;
-import ru.yandex.practicum.mainserver.request.RequestService;
-import ru.yandex.practicum.mainserver.request.dto.RequestDto;
-import ru.yandex.practicum.mainserver.request.mapper.RequestMapper;
-import ru.yandex.practicum.mainserver.request.model.Request;
+import ru.yandex.practicum.mainservice.category.CategoryService;
+import ru.yandex.practicum.mainservice.category.model.Category;
+import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
+import ru.yandex.practicum.mainservice.event.dto.NewEventDto;
+import ru.yandex.practicum.mainservice.event.dto.UpdateEventDto;
+import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
+import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.exception.ConflictException;
+import ru.yandex.practicum.mainservice.request.RequestService;
+import ru.yandex.practicum.mainservice.request.dto.RequestDto;
+import ru.yandex.practicum.mainservice.request.mapper.RequestMapper;
+import ru.yandex.practicum.mainservice.request.model.Request;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -31,7 +29,6 @@ import java.util.Collection;
 /**
  * класс контроллер для работы с приватным API событий
  */
-
 @RestController
 @RequestMapping(path = "/users/{userId}/events")
 @Slf4j
@@ -52,9 +49,9 @@ public class EventPrivateController {
         this.commentService = commentService;
     }
 
-    // создание события
     @PostMapping
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto eventDto, @PathVariable Long userId) {
+        log.info("EventPrivateController: createEvent — получен запрос на создание события");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromNewDto(eventDto, category);
         LocalDateTime publishedTime = LocalDateTime.now();
@@ -71,6 +68,7 @@ public class EventPrivateController {
     // изменение события
     @PatchMapping
     public EventFullDto updateEvent(@Valid @RequestBody UpdateEventDto eventDto, @PathVariable Long userId) {
+        log.info("EventPrivateController: updateEvent — получен запрос на обновление события");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
@@ -78,10 +76,10 @@ public class EventPrivateController {
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // получение событий, добавленных текущим пользователем
     @GetMapping
     public Collection<EventFullDto> getEventsByInitiator(@PathVariable Long userId, @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+        log.info("EventPrivateController: getEventsByInitiator — получен запрос от инициатора на списка событий");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> event = service.getAllEventsByInitiatorId(userId, pageable);
@@ -93,45 +91,48 @@ public class EventPrivateController {
         return eventsDto;
     }
 
-    // получение информации о событии по eventId, добавленным текущим пользователем
     @GetMapping(value = "/{eventId}")
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
-
+        log.info("EventPrivateController: getEventByIdAndInitiatorId — получен запрос от инициатора на получение события по id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
         Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // отмена события добавленного текущим пользователем
     @PatchMapping(value = "/{eventId}")
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("EventPrivateController: cancelEventByInitiator — получен запрос на отмену события");
         Event event = service.cancelEventByInitiator(eventId, userId);
         Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // получение информации о запросах на участие в событии текущего пользователя
     @GetMapping(value = "/{eventId}/requests")
-    public Collection<RequestDto> getERequestsByEventIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
+    public Collection<RequestDto> getRequestsByEventIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("EventPrivateController: getRequestsByEventIdAndInitiatorId — " +
+                "получен запрос на получение информации о запросах на участие в событии текущего пользователя");
         Event event = service.getEventById(eventId);
         Collection<Request> requests = requestService.getRequestsByEventId(event, userId);
         Collection<RequestDto> requestsDto = new ArrayList<>();
         requests.forEach(r -> requestsDto.add(RequestMapper.toRequestDto(r)));
+
         return requestsDto;
     }
 
-    // подтверждение чужой заявки на участие в событии текущего пользователя
     @PatchMapping(value = "/{eventId}/requests/{reqId}/confirm")
     public RequestDto confirmRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
+        log.info("EventPrivateController: confirmRequestToEventByInitiator — " +
+                "получен запрос на подтверждение чужой заявки на участие в событии текущего пользователя");
         Event event = service.getEventById(eventId);
         Request request = requestService.confirmRequestForEvent(event, userId, reqId);
 
         return RequestMapper.toRequestDto(request);
     }
 
-    // отклонение чужой заявки на участие в событии текущего пользователя
     @PatchMapping(value = "/{eventId}/requests/{reqId}/reject")
     public RequestDto rejectRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
+        log.info("EventPrivateController: rejectRequestToEventByInitiator — " +
+                "получен запрос на отклонение чужой заявки на участие в событии текущего пользователя");
         Event event = service.getEventById(eventId);
         Request request = requestService.rejectRequestForEvent(event, userId, reqId);
 

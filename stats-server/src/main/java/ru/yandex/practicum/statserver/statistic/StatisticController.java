@@ -27,9 +27,9 @@ public class StatisticController {
     // сохранение истории просмотра
     @PostMapping(value = "/hit")
     public void addStatistic(@Valid @RequestBody EndpointHit endpointHit) {
+        log.info("StatisticController: addStatistic — получен запрос на сохранение статистики");
         Statistic statistic = StatisticMapper.toStatistic(endpointHit);
         service.addNewHit(statistic);
-
     }
 
     // получение истории просмотров
@@ -37,6 +37,7 @@ public class StatisticController {
     public Collection<ViewStats> getUserById(@RequestParam String start, @RequestParam String end,
                                              @RequestParam(required = false) Collection<String> uris,
                                              @RequestParam(defaultValue = "false") Boolean unique) {
+        log.info("StatisticController: getUserById — получен запрос на получение статистики");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
         LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);

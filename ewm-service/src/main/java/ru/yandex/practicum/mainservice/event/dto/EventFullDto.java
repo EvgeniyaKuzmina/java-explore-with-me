@@ -1,11 +1,10 @@
-package ru.yandex.practicum.mainserver.event.dto;
+package ru.yandex.practicum.mainservice.event.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainserver.category.dto.CategoryDto;
-import ru.yandex.practicum.mainserver.event.comment.dto.CommentShortDto;
-import ru.yandex.practicum.mainserver.event.location.LocationDto;
-import ru.yandex.practicum.mainserver.status.Status;
-import ru.yandex.practicum.mainserver.user.dto.UserShortDto;
+import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
+import ru.yandex.practicum.mainservice.event.location.LocationDto;
+import ru.yandex.practicum.mainservice.status.Status;
+import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ import java.util.Set;
 /**
  * класс DTO для получения полной информации о событии
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -61,6 +59,4 @@ public class EventFullDto {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.eventDate = eventDate.format(formatter);
     }
-
-
 }

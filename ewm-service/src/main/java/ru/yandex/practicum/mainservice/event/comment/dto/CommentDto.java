@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 /**
  * класс DTO для работы с комментариями
  */
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

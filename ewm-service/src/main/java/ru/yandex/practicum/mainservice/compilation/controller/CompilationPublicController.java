@@ -19,7 +19,6 @@ import java.util.Collection;
 /**
  * класс контроллер для работы с публичным API подборками событий
  */
-
 @RestController
 @RequestMapping(path = "/compilations")
 @Slf4j
@@ -34,27 +33,24 @@ public class CompilationPublicController {
         this.service = service;
     }
 
-    // получение подборки по Id
     @GetMapping(value = {"/{id}"})
     public CompilationDto getCompilationById(@PathVariable Long id) {
+        log.info("CompilationPublicController: getCompilationById — получен запрос на получение подборки событий по id");
         Compilation compilation = service.getCompilationById(id);
         return CompilationMapper.toCompilationDto(compilation);
     }
 
-    // получение списка всех пользователей
     @GetMapping
     public Collection<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned,
                                                          @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+        log.info("CompilationPublicController: getAllCompilations — получен запрос на получение списка всех подборок");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<CompilationDto> allCompilationDto = new ArrayList<>();
-        Collection<Compilation> allCompilation;
-        if (pinned == null) {
-            allCompilation = service.getAllCompilations(pageable);
-        } else {
-            allCompilation = service.getAllCompilationsWithTitle(pinned, pageable);
-        }
+        Collection<Compilation> allCompilation = pinned == null
+                ? service.getAllCompilations(pageable)
+                : service.getAllCompilationsByPinned(pinned, pageable);
 
         allCompilation.forEach(c -> allCompilationDto.add(CompilationMapper.toCompilationDto(c)));
         return allCompilationDto;

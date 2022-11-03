@@ -28,7 +28,6 @@ import java.util.Optional;
 /**
  * класс контроллер для работы с API администратора событий
  */
-
 @RestController
 @RequestMapping(path = "/admin/events")
 @Slf4j
@@ -47,7 +46,6 @@ public class EventAdminController {
         this.commentService = commentService;
     }
 
-    // получение полной информации обо всех событиях подходящих под переданные условия
     @GetMapping
     public Collection<EventFullDto> getAllEvent(@RequestParam(name = "users", required = false) List<Long> usersId,
                                                 @RequestParam(name = "categories", required = false) List<Long> categoriesId,
@@ -56,8 +54,8 @@ public class EventAdminController {
                                                 @RequestParam(required = false) String rangeEnd,
                                                 @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-
-        EventParam param = creatParam(usersId, categoriesId, states, rangeStart, rangeEnd);
+        log.info("EventAdminController: getAllEvent — получен запрос на получение списка всех событий");
+        EventParam param = createParam(usersId, categoriesId, states, rangeStart, rangeEnd);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
@@ -71,9 +69,9 @@ public class EventAdminController {
         return eventFullDto;
     }
 
-    // изменение события админом
     @PutMapping(value = {"/{eventId}"})
     public EventFullDto updateEventByAdmin(@Valid @RequestBody AdminUpdateEventRequest eventDto, @PathVariable Long eventId) {
+        log.info("EventAdminController: updateEventByAdmin — получен запрос на обновление события админом");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
@@ -81,29 +79,27 @@ public class EventAdminController {
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // публикация события
     @PatchMapping(value = {"/{eventId}/publish"})
     public EventFullDto publishEvent(@PathVariable Long eventId) {
+        log.info("EventAdminController: publishEvent — получен запрос на публикацию события");
         Event event = service.publishedEventByAdmin(eventId);
         Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // отклонение события
     @PatchMapping(value = {"/{eventId}/reject"})
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
+        log.info("EventAdminController: rejectEvent — получен запрос на отклонение события");
         Event event = service.rejectedEventByAdmin(eventId);
         Collection<Comment> comments = commentService.findAllByEventIdOrderByCreatDesc(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
-
-    // преобразование параметров запроса в объект EventParam
-    private EventParam creatParam(List<Long> usersId,
-                                  List<Long> categoriesId,
-                                  List<String> states,
-                                  String rangeStart,
-                                  String rangeEnd) {
+    private EventParam createParam(List<Long> usersId,
+                                   List<Long> categoriesId,
+                                   List<String> states,
+                                   String rangeStart,
+                                   String rangeEnd) {
 
         EventParam param = new EventParam();
         Optional.ofNullable(usersId).ifPresent(param::setUsersId);
@@ -111,8 +107,7 @@ public class EventAdminController {
         Optional.ofNullable(states).ifPresent(param::setStates);
         Optional.ofNullable(rangeStart).ifPresent(param::setRangeStart);
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
-
+        log.info("EventAdminController: createParam — параметры запроса преобразованы в объект EventParam");
         return param;
-
     }
 }

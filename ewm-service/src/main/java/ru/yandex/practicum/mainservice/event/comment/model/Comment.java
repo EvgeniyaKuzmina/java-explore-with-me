@@ -12,7 +12,6 @@ import java.util.Objects;
 /**
  * класс для работы с комментариями
  */
-
 @Builder
 @Getter
 @Setter
@@ -29,8 +28,9 @@ public class Comment {
     @NotNull
     @Column(name = "text", nullable = false)
     private String text;
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
     @ManyToOne
     @JoinColumn(name = "author_id")

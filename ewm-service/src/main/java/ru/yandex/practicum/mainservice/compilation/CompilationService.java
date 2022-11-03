@@ -8,37 +8,55 @@ import java.util.Collection;
 /**
  * интерфейс описывающий методы для работы с подборками событий
  */
-
-
 public interface CompilationService {
 
-    // данные новой подборки
+    /**
+     * создание новой подборки
+     */
     Compilation createCompilation(Compilation compilation);
 
-    //обновление подборки
+    /**
+     * обновление подборки
+     */
     Compilation updateCompilation(Compilation compilation, Long id);
 
-    // добавление нового события в подборку
+    /**
+     * добавление события в подборку
+     */
     Compilation addEventToCompilation(Long eventId, Long compId);
 
-    // закрепление подборки на главной странице
+    /**
+     * закрепление подборки на главной странице
+     */
     Compilation pinCompilation(Boolean pin, Long compId);
 
-    // удаление события из подборки
+    /**
+     * удаление события из подборки
+     */
     Compilation deleteEventFromCompilation(Long eventId, Long compId);
 
-    //удаление подборки с главной страницы
+    /**
+     * удаление подборки с главной страницы
+     */
     Compilation unpinCompilation(Boolean pin, Long id);
 
-    // удаление подборки
+    /**
+     * удаление подборки
+     */
     void removeCompilation(Long id);
 
-    // получение списка всех подборок без указания параметра title
+    /**
+     * получение списка всех подборок без указания параметра title
+     */
     Collection<Compilation> getAllCompilations(Pageable pageable);
 
-    // получение списка всех подборок с указанием параметра title
-    Collection<Compilation> getAllCompilationsWithTitle(Boolean pinned, Pageable pageable);
+    /**
+     * получение списка всех подборок с указанием параметра title
+     */
+    Collection<Compilation> getAllCompilationsByPinned(Boolean pinned, Pageable pageable);
 
-    // получение подборки по eventId
+    /**
+     * получение подборки по id
+     */
     Compilation getCompilationById(Long id);
 }

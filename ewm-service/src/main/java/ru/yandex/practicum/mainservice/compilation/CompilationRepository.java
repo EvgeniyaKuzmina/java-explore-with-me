@@ -8,12 +8,15 @@ import ru.yandex.practicum.mainservice.compilation.model.Compilation;
 /**
  * класс репозиторий для работы с БД подборок событий
  */
-
-
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
-
+    /**
+     * получение списка всех подборок с пагинацией
+     */
     Page<Compilation> findAll(Pageable pageable);
 
+    /**
+     * получение списка всех подборок закреплённых или не закреплённых на главной странице
+     */
     Page<Compilation> findByPinnedIs(Boolean pinned, Pageable pageable);
 }

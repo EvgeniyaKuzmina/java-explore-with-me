@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.client.EventClient;
 import ru.yandex.practicum.mainservice.event.EventService;
@@ -26,12 +25,9 @@ import java.util.Optional;
 /**
  * класс контроллер для работы с публичным API событий
  */
-
-
 @RequestMapping(path = "/events")
 @Slf4j
 @RestController
-@Validated
 public class EventPublicController {
 
     private static final String FROM = "0";
@@ -45,7 +41,6 @@ public class EventPublicController {
         this.client = client;
     }
 
-    // получение списка всех событий на участие
     @GetMapping
     public Collection<EventShortDto> getAllEvent(@RequestParam(required = false) String text,
                                                  @RequestParam(name = "categories", required = false) List<Long> categoriesId,
@@ -57,6 +52,7 @@ public class EventPublicController {
                                                  @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = SIZE) @Positive Integer size) {
 
+        log.info("EventPublicController: getAllEvent — получен запрос на получение списка событий");
         EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
@@ -68,17 +64,14 @@ public class EventPublicController {
         return eventsShortDto;
     }
 
-
-    // получение подробной информации о событии по его eventId
     @GetMapping(value = {"/{id}"})
-    public EventFullDto getUserById(@PathVariable Long id, HttpServletRequest request) {
-
+    public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
+        log.info("EventPublicController: getEventById — получен запрос на получение события по id");
         Event event = service.getEventById(id);
         client.addStatistic(request); // сохранение статистики в сервисе статистики
         return EventMapper.toEventFullDto(event);
     }
 
-    // преобразование параметров запроса в объект EventParam
     private EventParam creatParam(String text,
                                   List<Long> categoriesId,
                                   Boolean paid,
@@ -100,9 +93,7 @@ public class EventPublicController {
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
         Optional.ofNullable(onlyAvailable).ifPresent(param::setOnlyAvailable);
         Optional.ofNullable(sort).ifPresent(param::setSort);
-
+        log.info("EventPublicController: creatParam — параметры запроса преобразованы в объект EventParam");
         return param;
     }
-
-
 }

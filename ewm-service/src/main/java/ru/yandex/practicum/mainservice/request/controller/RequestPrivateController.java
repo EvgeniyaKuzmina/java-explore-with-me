@@ -16,7 +16,6 @@ import java.util.Collection;
 /**
  * класс контроллер для работы с приватным API заявок на участие
  */
-
 @RestController
 @RequestMapping(path = "/users/{userId}/requests")
 @Slf4j
@@ -29,27 +28,24 @@ public class RequestPrivateController {
         this.service = service;
     }
 
-    // создание заявки
     @PostMapping
     public RequestDto createRequest(@PathVariable @NotNull Long userId, @RequestParam @NotNull Long eventId) {
+        log.info("RequestPrivateController: createRequest — получен запрос на создание запроса на участие");
         return RequestMapper.toRequestDto(service.createRequest(userId, eventId));
     }
 
-    // отмена своего запроса на участие
     @PatchMapping(value = {"/{requestId}/cancel"})
-    public RequestDto deleteEventFromCompilation(@Valid @PathVariable @NotNull Long userId, @PathVariable @NotNull Long requestId) {
+    public RequestDto deleteRequest(@Valid @PathVariable @NotNull Long userId, @PathVariable @NotNull Long requestId) {
+        log.info("RequestPrivateController: deleteRequest — получен запрос на удаление запроса на участие");
         Request request = service.cancelRequest(userId, requestId);
         return RequestMapper.toRequestDto(request);
     }
 
-
-    // получение списка всех заявок на участие по eventId пользователя
     @GetMapping
     public Collection<RequestDto> getAllRequestsByUserId(@PathVariable @NotNull Long userId) {
-
+        log.info("RequestPrivateController: deleteRequest — получен запрос на получение списка всех заявок на участие по id пользователя");
         Collection<RequestDto> allRequestDto = new ArrayList<>();
         Collection<Request> allRequests = service.getAllRequestsByUserId(userId);
-
         allRequests.forEach(r -> allRequestDto.add(RequestMapper.toRequestDto(r)));
         return allRequestDto;
     }

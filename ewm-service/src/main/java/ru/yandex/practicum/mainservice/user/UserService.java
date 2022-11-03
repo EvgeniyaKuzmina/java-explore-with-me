@@ -8,25 +8,35 @@ import java.util.Collection;
 /**
  * класс описывающий методы для работы с пользователем
  */
-
-
 public interface UserService {
 
-    // создание пользователя
+    /**
+     * создание пользователя
+     */
     User createUser(User user);
 
-    //обновление пользователя
+    /**
+     * обновление пользователя
+     */
     User updateUser(User user, Long id);
 
-    // удаление пользователя по eventId
+    /**
+     * удаление пользователя по eventId
+     */
     void removeUser(Long id);
 
-    // получение списка всех пользователей
+    /**
+     * получение списка всех пользователей
+     */
     Collection<User> getAllUsers(Pageable pageable);
 
-    // получение списка всех пользователей c указанными eventId
+    /**
+     * получение списка всех пользователей c указанными eventId
+     */
     Collection<User> getAllUsersByIds(Collection<Long> ids, Pageable pageable);
 
-    // получение пользователя по eventId
+    /**
+     * получение пользователя по eventId
+     */
     User getUserById(Long id);
 }

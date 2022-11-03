@@ -9,6 +9,7 @@ import ru.yandex.practicum.mainservice.user.model.User;
  * класс преобразовывающий сущность пользователя в Dto и обратно
  */
 public class UserMapper {
+
     public static UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())

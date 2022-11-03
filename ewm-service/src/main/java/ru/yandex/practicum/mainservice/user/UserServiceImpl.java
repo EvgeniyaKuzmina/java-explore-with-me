@@ -15,7 +15,6 @@ import java.util.Optional;
 /**
  * класс реализующий методы для работы с пользователем
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         try {
-            log.info("UserServiceImpl: removeUser —Добавлен пользователь {}.", user);
+            log.info("UserServiceImpl: createUser —Добавлен пользователь {}.", user);
             return repository.save(user);
         } catch (DataIntegrityViolationException e) {
             log.error("UserServiceImpl: removeUser — Пользователь с таким email {} уже существует.", user.getEmail());
@@ -37,13 +36,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user, Long userId) {
-        User updUser = getUserById(userId); // проверка, что пользователь с указанным eventId есть
-        // обновляем данные
+        User updUser = getUserById(userId);
+
         Optional.ofNullable(user.getName()).ifPresent(updUser::setName);
         Optional.ofNullable(user.getEmail()).ifPresent(updUser::setEmail);
 
         try {
-            log.info("UserServiceImpl: removeUser — Добавлен пользователь {}.", updUser);
+            log.info("UserServiceImpl: updateUser — пользователь обновлён {}.", updUser);
             return repository.save(updUser);
         } catch (DataIntegrityViolationException e) {
             log.error("UserServiceImpl: removeUser — Пользователь с таким email {} уже существует.", updUser.getEmail());
@@ -54,20 +53,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Long id) {
-        getUserById(id); // проверка, что пользователь с указанным id есть
-        log.info("UserServiceImpl: removeUser — Пользователя с указанным id {} удалён", id);
+        getUserById(id); // проверка, что пользователь с указанным eventId есть
+        log.info("UserServiceImpl: removeUser — Пользователя с указанным eventId {} удалён", id);
         repository.deleteById(id);
-
     }
 
     @Override
     public Collection<User> getAllUsers(Pageable pageable) {
-        return repository.findAll(pageable).toList();
+        Collection<User> users = repository.findAll(pageable).toList();
+        log.info("UserServiceImpl: getAllUsers — список пользователей получен");
+        return users;
     }
 
     @Override
     public Collection<User> getAllUsersByIds(Collection<Long> ids, Pageable pageable) {
-        return repository.findByIdIn(ids, pageable).toList();
+        Collection<User> users = repository.findByIdIn(ids, pageable).toList();
+        log.info("UserServiceImpl: getAllUsersByIds — список пользователей по указанным id получен");
+        return users;
     }
 
     @Override

@@ -20,7 +20,6 @@ import java.util.List;
 /**
  * класс контроллер для работы с пользователями
  */
-
 @RestController
 @RequestMapping(path = "/admin/users")
 @Slf4j
@@ -35,39 +34,39 @@ public class UserController {
         this.service = service;
     }
 
-    // создание пользователя
     @PostMapping
     public UserDto createUser(@Valid @RequestBody NewUserDto newUserDto) {
+        log.info("UserController: createUser — получен запрос на создание пользователя");
         User user = UserMapper.toUserFromNewUserDto(newUserDto);
         return UserMapper.toUserDto(service.createUser(user));
     }
 
-    // обновление пользователя
     @PatchMapping(value = {"/{id}"})
     public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long id) {
+        log.info("UserController: updateUser — получен запрос на обновление пользователя");
         User user = UserMapper.toUser(userDto);
         user = service.updateUser(user, id);
         return UserMapper.toUserDto(user);
     }
 
-    // удаление пользователя по eventId
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable Long id) {
+        log.info("UserController: removeUser — получен запрос на удаление пользователя");
         service.removeUser(id);
     }
 
-    // получение пользователя по Id
     @GetMapping(value = {"/{id}"})
     public UserDto getUserById(@PathVariable Long id) {
+        log.info("UserController: getUserById — получен запрос на получение пользователя по id");
         User user = service.getUserById(id);
         return UserMapper.toUserDto(user);
     }
 
-    // получение списка всех пользователей
     @GetMapping
     public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+        log.info("UserController: getAllUsers — получен запрос на списка всех пользователей");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<UserDto> allUsersDto = new ArrayList<>();
@@ -79,7 +78,6 @@ public class UserController {
         }
 
         service.getAllUsers(pageable).forEach(u -> allUsersDto.add(UserMapper.toUserDto(u)));
-
         return allUsersDto;
     }
 }

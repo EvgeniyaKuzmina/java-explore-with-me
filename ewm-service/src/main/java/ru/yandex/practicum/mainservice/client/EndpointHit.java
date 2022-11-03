@@ -2,6 +2,9 @@ package ru.yandex.practicum.mainservice.client;
 
 import lombok.*;
 
+/**
+ * класс DTO для работы сохранением статистики просмотров
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +17,4 @@ public class EndpointHit {
     private String uri;
     private String ip;
     private String timestamp;
-
-
 }

@@ -20,7 +20,6 @@ import java.util.Collection;
 /**
  * класс контроллер для работы с публичным API категорий событий
  */
-
 @RestController
 @RequestMapping(path = "/categories")
 @Slf4j
@@ -34,22 +33,20 @@ public class CategoryPublicController {
         this.categoryService = categoryService;
     }
 
-
-    // получение категории по Id
     @GetMapping(value = {"/{catId}"})
     public CategoryDto getCategoryById(@PathVariable @NotNull Long catId) {
+        log.info("CategoryPublicController: getCategoryById — получен запрос на получение категории по id");
         Category category = categoryService.getCategoryById(catId);
         return CategoryMapper.toCategoryDto(category);
     }
 
-    // получение списка всех категорий
     @GetMapping
     public Collection<CategoryDto> getAllCategories(@RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                     @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+        log.info("CategoryPublicController: getAllCategories — получен запрос на получение списка всех категорий");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<CategoryDto> allCategoryDto = new ArrayList<>();
-
         categoryService.getAllCategory(pageable).forEach(c -> allCategoryDto.add(CategoryMapper.toCategoryDto(c)));
         return allCategoryDto;
     }

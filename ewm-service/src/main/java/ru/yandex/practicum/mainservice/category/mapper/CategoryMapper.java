@@ -25,5 +25,4 @@ public class CategoryMapper {
                 .name(categoryDto.getName())
                 .build();
     }
-
 }

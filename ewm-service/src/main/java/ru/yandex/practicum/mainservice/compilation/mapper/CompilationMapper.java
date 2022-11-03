@@ -1,6 +1,5 @@
 package ru.yandex.practicum.mainservice.compilation.mapper;
 
-import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.mainservice.compilation.dto.CompilationDto;
 import ru.yandex.practicum.mainservice.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.mainservice.compilation.model.Compilation;
@@ -12,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Slf4j
 public class CompilationMapper {
-
 
     public static CompilationDto toCompilationDto(Compilation compilation) {
         List<EventShortDto> eventsDto = new ArrayList<>();

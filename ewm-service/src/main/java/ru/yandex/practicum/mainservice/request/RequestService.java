@@ -9,34 +9,50 @@ import java.util.Collection;
 /**
  * класс описывающий методы для работы с запросами на участие в событиях
  */
-
 public interface RequestService {
 
-    // добавление нового запроса
+    /**
+     * добавление нового запроса
+     */
     Request createRequest(Long userId, Long eventId);
 
-    // отмена своего запроса на участие
+    /**
+     * отмена своего запроса на участие
+     */
     Request cancelRequest(Long userId, Long requestId);
 
-    // получение списка всех заявок на участие
+    /**
+     * получение списка всех заявок на участие
+     */
     Collection<Request> getAllRequestsByUserId(Long userId);
 
-    // получение заявки по eventId
+    /**
+     * получение заявки по id
+     */
     Request getRequestById(Long id);
 
-    // получение всех заявок по eventId события
+    /**
+     * получение всех заявок по id события и статусу события
+     */
     Collection<Request> getRequestsByEventIdAndStatus(Long id, Status status);
 
-    // обновление заявки
+    /**
+     * обновление статуса заявки
+     */
     Request updateStatusRequestById(Long id, Status status);
 
-    // получение списка всех заявок на eventId события
+    /**
+     * получение списка всех заявок на участие в событии по id события
+     */
     Collection<Request> getRequestsByEventId(Event event, Long userId);
 
-    //подтверждение чужой заявки на участие в событии текущего пользователя
+    /**
+     * подтверждение чужой заявки на участие в событии текущего пользователя
+     */
     Request confirmRequestForEvent(Event event, Long userId, Long requestId);
 
-    //отклонение чужой заявки на участие в событии текущего пользователя
+    /**
+     * отклонение чужой заявки на участие в событии текущего пользователя
+     */
     Request rejectRequestForEvent(Event event, Long userId, Long requestId);
-
 }

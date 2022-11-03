@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 /**
  * класс реализующий методы для работы с событиями
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -36,37 +35,30 @@ public class EventServiceImpl implements EventService {
     private static final String EVENT_DATE = "EVENT_DATE";
     private static final String VIEWS = "VIEWS";
     private static final String URI = "/events/";
-
     private final EventRepository repository;
-
     private final UserService userService;
-
     private final EventClient client;
 
 
-    // создание события
     @Override
     public Event createEvent(Event event, Long userid) {
         event.setCreatedOn(LocalDateTime.now());
         event.setState(Status.PENDING);
         User user = userService.getUserById(userid);
         event.setInitiator(user);
-
         log.info("EventServiceImpl: createEvent — Добавлено событие {}.", event);
         return repository.save(event);
-
     }
 
-    // изменение события инициатором
     @Override
     public Event updateEventByInitiator(Event updEvent, Long userId) {
         validateUserIdAndEventId(updEvent.getId(), userId);
         Event event = getEventById(updEvent.getId());
         LocalDateTime publishedTime = LocalDateTime.now();
-        if (event.getState().equals(Status.CANCELED)) {
+        if (event.getState() == Status.CANCELED) {
             event.setState(Status.PENDING);
         }
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: updateEventByInitiator — Событие изменить нельзя");
             throw new ConflictException("Событие изменить нельзя");
         }
@@ -74,54 +66,52 @@ public class EventServiceImpl implements EventService {
             log.error("EventServiceImpl: updateEventByInitiator — Нельзя изменить событие, дата начала которого ранее текущего времени");
             throw new ConflictException("Нельзя изменить событие, дата начала которого ранее текущего времени");
         }
-
-        return updateEvent(updEvent, updEvent.getId());
+        event = updateEvent(updEvent, updEvent.getId());
+        log.info("EventServiceImpl: updateEventByInitiator — событие обновлено");
+        return event;
     }
 
-    // отмена события инициатором
     @Override
     public Event cancelEventByInitiator(Long eventId, Long userId) {
         validateUserIdAndEventId(eventId, userId);
         Event event = getEventById(eventId);
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: cancelEventByInitiator — Событие отменить нельзя");
             throw new ConflictException("Событие отменить нельзя");
         }
         event.setState(Status.CANCELED);
-
+        log.info("EventServiceImpl: cancelEventByInitiator — событие отменено");
         return updViewInEvent(event);
-
     }
 
-    // получение всех событий инициатора
     @Override
     public Collection<Event> getAllEventsByInitiatorId(Long userId, Pageable page) {
-        userService.getUserById(userId); // проверяем что существует пользователь с таким eventId
+        userService.getUserById(userId);
         Collection<Event> events = repository.findByInitiatorId(userId, page).toList();
         events.forEach(this::updViewInEvent);
+        log.info("EventServiceImpl: getAllEventsByInitiatorId —  события получены");
         return events;
     }
 
-    // получение инициатором события по id
     @Override
     public Event getEventByIdAndInitiatorId(Long eventId, Long userId) {
         validateUserIdAndEventId(eventId, userId);
         Event event = getEventById(eventId);
+        log.info("EventServiceImpl: getEventByIdAndInitiatorId —  получено событие по id");
         return updViewInEvent(event);
-
     }
 
-    // обновление события администратором
     @Override
     public Event updateEventByAdmin(Event updEvent, Long eventId) {
         Event event = getEventById(eventId);
 
         Optional.ofNullable(updEvent.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(updEvent.getLocation()).ifPresent(event::setLocation);
-        return updateEvent(updEvent, eventId);
+        event = updateEvent(updEvent, eventId);
+        log.info("EventServiceImpl: updateEventByAdmin —  событие обновлено админом");
+        return event;
     }
 
-    // публикация события администратором
     @Override
     public Event publishedEventByAdmin(Long eventId) {
         LocalDateTime publishedTime = LocalDateTime.now();
@@ -132,28 +122,28 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Нельзя опубликовать событие, дата начала которого ранее текущего времени");
         }
 
-        if (!event.getState().equals(Status.PENDING)) {
+        if (event.getState() != Status.PENDING) {
             log.error("EventServiceImpl: publishedEventByAdmin — Нельзя опубликовать событие");
             throw new ConflictException("Нельзя опубликовать событие");
         }
         event.setState(Status.PUBLISHED);
         event.setPublishedOn(publishedTime);
+        log.info("EventServiceImpl: publishedEventByAdmin —  событие опубликовано");
         return updViewInEvent(event);
     }
 
-    // отклонение события администратором
     @Override
     public Event rejectedEventByAdmin(Long eventId) {
         Event event = getEventById(eventId);
-        if (event.getState().equals(Status.PUBLISHED)) {
+        if (event.getState() == Status.PUBLISHED) {
             log.error("EventServiceImpl: rejectedEventByAdmin — Нельзя отменить опубликованное событие");
             throw new ConflictException("Нельзя отменить опубликованное событие");
         }
         event.setState(Status.CANCELED);
+        log.info("EventServiceImpl: rejectedEventByAdmin —  событие отклонено админом");
         return updViewInEvent(event);
     }
 
-    // получение события по id
     @Override
     public Event getEventById(Long eventId) {
         Optional<Event> event = repository.findById(eventId);
@@ -162,7 +152,7 @@ public class EventServiceImpl implements EventService {
             return new ObjectNotFountException("События с указанным eventId " + eventId + " нет");
         });
 
-        log.warn("EventServiceImpl: getEventById — Событие с указанным eventId {} получено", eventId);
+        log.info("EventServiceImpl: getEventById — Событие с указанным eventId {} получено", eventId);
         return updViewInEvent(event.get());
     }
 
@@ -176,7 +166,6 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    // обновление события
     @Override
     public Event updateEvent(Event updEvent, Long eventId) {
         Event event = getEventById(eventId);
@@ -193,10 +182,8 @@ public class EventServiceImpl implements EventService {
         return updViewInEvent(event);
     }
 
-    // получения списка событий по указанным параметрам
     @Override
     public Collection<Event> getEventsByAdminParams(EventParam param, Pageable pageable) {
-
         Specification<Event> specification = null;
 
         if (param.getUsersId() != null && !param.getUsersId().isEmpty()) {
@@ -235,14 +222,12 @@ public class EventServiceImpl implements EventService {
         }
         Collection<Event> events = repository.findAll(specification, pageable).toList();
         events.forEach(this::updViewInEvent);
+        log.info("EventServiceImpl: getEventsByAdminParams — событие с указанными параметрами получено");
         return events;
-
     }
 
-    // получение списка событий публичным API по указанным параметрам
     @Override
     public Collection<Event> getEventsByPublicParams(EventParam param, Pageable pageable) {
-
         Specification<Event> specification = null;
 
         specification = Specification.where(specification).and(
@@ -277,7 +262,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (param.getOnlyAvailable() != null) {
-            if (param.getOnlyAvailable()) {
+            if (Boolean.TRUE.equals(param.getOnlyAvailable())) {
                 specification = Specification.where(specification).and(
                         (root, criteriaQuery, criteriaBuilder) ->
                                 criteriaBuilder.lessThan(root.get("confirmedRequest"), root.get("participantLimit"))
@@ -293,11 +278,10 @@ public class EventServiceImpl implements EventService {
         }
         Collection<Event> events = makeSort(param.getSort(), specification, pageable);
         events.forEach(this::updViewInEvent);
+        log.info("EventServiceImpl: getEventsByPublicParams — событие с указанными параметрами получено");
         return events;
-
     }
 
-    // сортировка событий
     private Collection<Event> makeSort(String sort, Specification<Event> specification, Pageable pageable) {
         if (sort != null) {
             switch (sort) {
@@ -324,7 +308,6 @@ public class EventServiceImpl implements EventService {
         String startString = start.format(formatter);
         String endString = end.format(formatter);
         return client.getStatistic(startString, endString, uris, true);
-
     }
 
     private Event updViewInEvent(Event event) {
@@ -335,7 +318,7 @@ public class EventServiceImpl implements EventService {
         if (!viewStats.isEmpty()) {
             viewStats.forEach(vs -> event.setViews(vs.getHits()));
         }
+        log.info("EventServiceImpl: updViewInEvent — количество просмотров события получено");
         return repository.save(event);
     }
-
 }

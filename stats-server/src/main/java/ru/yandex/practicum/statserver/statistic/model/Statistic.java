@@ -15,9 +15,9 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Table(name = "statistic")
 public class Statistic {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
     @Column(name = "app")
     private String app;
@@ -32,5 +32,4 @@ public class Statistic {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.timestamp = LocalDateTime.parse(timestamp, formatter);
     }
-
 }

@@ -24,12 +24,14 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public Collection<ViewStats> getStatistic(LocalDateTime start, LocalDateTime end, Collection<String> uris, Boolean unique) {
-        if (unique && uris != null)
+        if (Boolean.TRUE.equals(unique) && uris != null) {
             return repository.findDistinctIpTimestampBetweenAndUris(uris, start, end);
-        else if (unique)
+        }  else if (Boolean.TRUE.equals(unique)) {
             return repository.findDistinctIpTimestampBetween(start, end);
-        else if (uris != null)
+        } else if (uris != null) {
             return repository.findTimestampBetweenAndUris(uris, start, end);
-        else return repository.findTimestampBetween(start, end);
+        }  else {
+            return repository.findTimestampBetween(start, end);
+        }
     }
 }

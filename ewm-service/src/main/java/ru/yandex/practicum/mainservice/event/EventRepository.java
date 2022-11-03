@@ -11,12 +11,13 @@ import ru.yandex.practicum.mainservice.event.model.Event;
  */
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    // получение списка событие с пагинацией
+    /**
+     * получение списка событий по id создателя события с пагинацией
+     */
     Page<Event> findByInitiatorId(Long userId, Pageable pageable);
 
-    // получение списка событий по указанным параметрам
-
+    /**
+     * получение списка событий по указанным параметрам
+     */
     Page<Event> findAll(Specification<Event> specification, Pageable pageable);
-
-
 }
