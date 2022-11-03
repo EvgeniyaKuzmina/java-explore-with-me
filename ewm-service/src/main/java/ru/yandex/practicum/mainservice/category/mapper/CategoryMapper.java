@@ -5,6 +5,7 @@ import ru.yandex.practicum.mainservice.category.dto.NewCategoryDto;
 import ru.yandex.practicum.mainservice.category.model.Category;
 
 public class CategoryMapper {
+    private CategoryMapper() {}
 
     public static CategoryDto toCategoryDto(Category category) {
         return CategoryDto.builder()

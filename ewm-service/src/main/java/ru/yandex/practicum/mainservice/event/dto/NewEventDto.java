@@ -19,16 +19,13 @@ import javax.validation.constraints.NotNull;
 public class NewEventDto {
 
     @NotNull
-    @Length(max = 120)
-    @Length(min = 3)
+    @Length(min = 3, max = 120)
     private String title;
     @NotNull
-    @Length(max = 7000)
-    @Length(min = 20)
+    @Length(min = 20, max = 7000)
     private String description;
     @NotNull
-    @Length(max = 2000)
-    @Length(min = 20)
+    @Length(min = 20, max = 2000)
     private String annotation;
     @NotNull
     private String eventDate;
