@@ -18,10 +18,7 @@ import ru.yandex.practicum.mainservice.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -88,9 +85,8 @@ public class EventServiceImpl implements EventService {
     public Collection<Event> getAllEventsByInitiatorId(Long userId, Pageable page) {
         userService.getUserById(userId);
         Collection<Event> events = repository.findByInitiatorId(userId, page).toList();
-        events.forEach(this::updViewInEvent);
         log.info("EventServiceImpl: getAllEventsByInitiatorId —  события получены");
-        return events;
+        return updViewInEventList(events);
     }
 
     @Override
@@ -146,14 +142,21 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEventById(Long eventId) {
-        Optional<Event> event = repository.findById(eventId);
-        event.orElseThrow(() -> {
+        Optional<Event> eventOpt = repository.findById(eventId);
+        Event event = eventOpt.orElseThrow(() -> {
             log.warn("EventServiceImpl: getEventById — События с указанным eventId {} нет", eventId);
             return new ObjectNotFountException("События с указанным eventId " + eventId + " нет");
         });
 
         log.info("EventServiceImpl: getEventById — Событие с указанным eventId {} получено", eventId);
-        return updViewInEvent(event.get());
+        return updViewInEvent(event);
+    }
+
+    @Override
+    public Collection<Event> getEventByIdIn(Collection<Long> eventId) {
+        Collection<Event> events = repository.findByIdIn(eventId);
+        log.info("EventServiceImpl: getEventByIdIn — Получены события с указанными id");
+        return events;
     }
 
     private void validateUserIdAndEventId(Long eventId, Long userId) {
@@ -221,9 +224,8 @@ public class EventServiceImpl implements EventService {
             );
         }
         Collection<Event> events = repository.findAll(specification, pageable).toList();
-        events.forEach(this::updViewInEvent);
         log.info("EventServiceImpl: getEventsByAdminParams — событие с указанными параметрами получено");
-        return events;
+        return updViewInEventList(events);
     }
 
     @Override
@@ -277,9 +279,8 @@ public class EventServiceImpl implements EventService {
             );
         }
         Collection<Event> events = makeSort(param.getSort(), specification, pageable);
-        events.forEach(this::updViewInEvent);
         log.info("EventServiceImpl: getEventsByPublicParams — событие с указанными параметрами получено");
-        return events;
+        return updViewInEventList(events);
     }
 
     private Collection<Event> makeSort(String sort, Specification<Event> specification, Pageable pageable) {
@@ -312,8 +313,26 @@ public class EventServiceImpl implements EventService {
         return client.getStatistic(startString, endString, uris, true);
     }
 
+    private Collection<Event> updViewInEventList(Collection<Event> event) {
+        Collection<String> uris = new ArrayList<>();
+        event.forEach(e -> uris.add(URI + e.getId()));
+
+        Collection<ViewStats> viewStats = getStatisticView(uris);
+        if (!viewStats.isEmpty()) {
+            for (ViewStats vs : viewStats) {
+                Long idFromUri = Long.valueOf(vs.getUri().split("/")[2]);
+                for (Event e : event) {
+                    if (idFromUri.equals(e.getId())) {
+                        e.setViews(vs.getHits());
+                    }
+                }
+            }
+        }
+        log.info("EventServiceImpl: updViewInEvent — количество просмотров события получено");
+        return event;
+    }
+
     private Event updViewInEvent(Event event) {
-        log.error(event.toString());
         Collection<String> uris = Collections.singleton(URI + event.getId());
         Collection<ViewStats> viewStats = getStatisticView(uris);
 

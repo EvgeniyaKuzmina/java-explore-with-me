@@ -34,6 +34,21 @@ public class EventMapper {
         return eventDto;
     }
 
+    public static EventShortDtoForComment toEventShortDtoForComment(Event event) {
+        EventShortDtoForComment eventDto = EventShortDtoForComment.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .annotation(event.getAnnotation())
+                .paid(event.getPaid())
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequest())
+                .views(event.getViews())
+                .build();
+        Optional.ofNullable(event.getEventDate()).ifPresent(eventDto::setEventDate);
+        return eventDto;
+    }
+
     public static EventFullDto toEventFullDto(Event event, Collection<Comment> comments) {
         Collection<CommentShortDto> commentDto = new ArrayList<>();
         comments.forEach(c -> commentDto.add(CommentMapper.toCommentShortDto(c)));

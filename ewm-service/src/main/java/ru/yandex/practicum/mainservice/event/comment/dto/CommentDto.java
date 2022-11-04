@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mainservice.event.comment.dto;
 
 import lombok.*;
-import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
+import ru.yandex.practicum.mainservice.event.dto.EventShortDtoForComment;
 import ru.yandex.practicum.mainservice.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class CommentDto {
     private Long id;
     private String text;
     private UserShortDto author;
-    private EventShortDto event;
+    private EventShortDtoForComment event;
     private String created;
 
     public void setCreated(LocalDateTime created) {

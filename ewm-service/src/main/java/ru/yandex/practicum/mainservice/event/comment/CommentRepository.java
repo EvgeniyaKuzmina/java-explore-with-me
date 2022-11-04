@@ -24,6 +24,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Collection<Comment> findByEventIdAndStatusOrderByCreatedDesc(Long eventId, Status status);
 
     /**
+     * получение списка комментариев по указанному статусу и по id событий, отсортированные по дате создания по убыванию
+     */
+    Collection<Comment> findByEventIdInAndStatusOrderByCreatedDesc(Collection<Long> eventId, Status status);
+
+    /**
      * получение списка комментариев по указанному статусу и по id события, отсортированные по дате создания по убыванию с пагинацией
      */
     Page<Comment> findByEventIdAndStatusOrderByCreatedDesc(Long eventId, Status status, Pageable pageable);
@@ -32,4 +37,19 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * получение списка комментариев по id создателя, отсортированные по дате создания по убыванию с пагинацией
      */
     Page<Comment> findByAuthorIdOrderByCreatedDesc(Long authorId, Pageable pageable);
+
+    /**
+     * получение списка комментариев по указанному статусу, отсортированные по дате создания по убыванию
+     */
+    Page<Comment> findByStatusOrderByCreatedDesc(Status status, Pageable pageable);
+
+    /**
+     * получение списка комментариев по указанному статусу, отсортированные по дате создания по увеличению
+     */
+    Page<Comment> findByStatusOrderByCreatedAsc(Status status, Pageable pageable);
+
+    /**
+     * получение списка комментариев с пагинацией
+     */
+    Page<Comment> findAll(Pageable pageable);
 }

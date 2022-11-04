@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 
 public class CommentMapper {
 
+    private CommentMapper() {
+    }
+
     public static CommentShortDto toCommentShortDto(Comment comment) {
         CommentShortDto commentDto = CommentShortDto.builder()
                 .id(comment.getId())
@@ -26,7 +29,7 @@ public class CommentMapper {
         CommentDto commentDto = CommentDto.builder()
                 .id(comment.getId())
                 .text(comment.getText())
-                .event(EventMapper.toEventShortDto(comment.getEvent()))
+                .event(EventMapper.toEventShortDtoForComment(comment.getEvent()))
                 .author(UserMapper.toUserShortDto(comment.getAuthor()))
                 .build();
         commentDto.setCreated(comment.getCreated());

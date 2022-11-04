@@ -74,13 +74,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        Optional<User> user = repository.findById(id);
-        user.orElseThrow(() -> {
+        Optional<User> userOpt = repository.findById(id);
+        User user = userOpt.orElseThrow(() -> {
             log.warn("UserServiceImpl: getUserById —Пользователя с указанным id {} нет", id);
             throw new ObjectNotFountException("Пользователя с указанным id " + id + " нет");
         });
 
         log.info("UserServiceImpl: getUserById — Пользователь с указанным id {} получен", id);
-        return user.get();
+        return user;
     }
 }

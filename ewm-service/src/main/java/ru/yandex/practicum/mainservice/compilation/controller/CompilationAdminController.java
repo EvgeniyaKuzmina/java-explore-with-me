@@ -36,8 +36,8 @@ public class CompilationAdminController {
     @PostMapping
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto compilationDto) {
         log.info("CompilationAdminController: createCompilation — получен запрос на создание новой подборки событий");
-        Collection<Event> events = new ArrayList<>();
-        compilationDto.getEvents().forEach(id -> events.add(eventService.getEventById(id)));
+        Collection<Long> eventsId = new ArrayList<>(compilationDto.getEvents());
+        Collection<Event> events = eventService.getEventByIdIn(eventsId);
         Compilation compilation = CompilationMapper.toCompilationFromNewCompilationDto(compilationDto, events);
         return CompilationMapper.toCompilationDto(service.createCompilation(compilation));
     }

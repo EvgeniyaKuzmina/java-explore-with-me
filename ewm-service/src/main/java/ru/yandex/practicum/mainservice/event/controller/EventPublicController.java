@@ -55,14 +55,12 @@ public class EventPublicController {
                                                  @RequestParam(required = false) String sort,
                                                  @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-
         log.info("EventPublicController: getAllEvent — получен запрос на получение списка событий");
         EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> events = service.getEventsByPublicParams(param, pageable);
-        log.info(events.toString());
         Collection<EventShortDto> eventsShortDto = new ArrayList<>();
         events.forEach(e -> eventsShortDto.add(EventMapper.toEventShortDto(e)));
         return eventsShortDto;
@@ -73,7 +71,7 @@ public class EventPublicController {
         log.info("EventPublicController: getEventById — получен запрос на получение события по id");
         Event event = service.getEventById(id);
         client.addStatistic(request);
-        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

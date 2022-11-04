@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void removeCategory(Long id) {
-        getCategoryById(id); // проверка, что категория с указанным id есть
+        getCategoryById(id);
         log.info("CategoryServiceImpl: removeCategory — Категория с указанным id {} удалена", id);
         repository.deleteById(id);
     }
@@ -66,13 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(Long id) {
-        Optional<Category> category = repository.findById(id);
-        category.orElseThrow(() -> {
+        Optional<Category> categoryOpt = repository.findById(id);
+        Category category = categoryOpt.orElseThrow(() -> {
             log.warn("CategoryServiceImpl: getCategoryById — Категории с указанным id {} нет", id);
             throw new ObjectNotFountException("Категории с указанным id " + id + " нет");
         });
-
         log.info("CategoryServiceImpl: getCategoryById — Категория с указанным id {} получена", id);
-        return category.get();
+        return category;
     }
 }

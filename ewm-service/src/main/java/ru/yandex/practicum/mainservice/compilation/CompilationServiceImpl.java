@@ -124,7 +124,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public void removeCompilation(Long id) {
-        getCompilationById(id); // проверка, что пользователь с указанным eventId есть
+        getCompilationById(id);
         log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным id {} удалена", id);
         repository.deleteById(id);
     }
@@ -145,13 +145,13 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public Compilation getCompilationById(Long id) {
-        Optional<Compilation> compilation = repository.findById(id);
-        compilation.orElseThrow(() -> {
+        Optional<Compilation> compilationOpt = repository.findById(id);
+        Compilation compilation = compilationOpt.orElseThrow(() -> {
             log.warn("CompilationServiceImpl: getCompilationById — Подборки с указанным id {} нет", id);
             return new ObjectNotFountException("Подборки с указанным eventId " + id + " нет");
         });
 
         log.info("CompilationServiceImpl: getCompilationById — Подборка с указанным id {} получена", id);
-        return compilation.get();
+        return compilation;
     }
 }

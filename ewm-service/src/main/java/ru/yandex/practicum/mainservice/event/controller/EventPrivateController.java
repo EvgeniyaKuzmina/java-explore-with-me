@@ -68,14 +68,13 @@ public class EventPrivateController {
         return EventMapper.toEventFullDto(event, comments);
     }
 
-    // изменение события
     @PatchMapping
     public EventFullDto updateEvent(@Valid @RequestBody UpdateEventDto eventDto, @PathVariable Long userId) {
         log.info("EventPrivateController: updateEvent — получен запрос на обновление события");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -85,12 +84,24 @@ public class EventPrivateController {
         log.info("EventPrivateController: getEventsByInitiator — получен запрос от инициатора на списка событий");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Event> event = service.getAllEventsByInitiatorId(userId, pageable);
+        Collection<Event> events = service.getAllEventsByInitiatorId(userId, pageable);
         Collection<EventFullDto> eventsDto = new ArrayList<>();
-        event.forEach(e -> {
-            Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(e.getId());
-            eventsDto.add(EventMapper.toEventFullDto(e, comments));
-        });
+        Collection<Long> eventsId = new ArrayList<>();
+        events.forEach(e -> eventsId.add(e.getId()));
+
+        Collection<Comment> comments = commentService.findPublishedByListEventId(eventsId);
+        Collection<Comment> commentsByEventId = new ArrayList<>();
+        for (Event e : events) {
+            if (!comments.isEmpty()) {
+                for (Comment c : comments) {
+                    if (e.getId().equals(c.getEvent().getId())) {
+                        commentsByEventId.add(c);
+                    }
+                }
+            }
+            eventsDto.add(EventMapper.toEventFullDto(e, commentsByEventId));
+            commentsByEventId.clear();
+        }
         return eventsDto;
     }
 
@@ -98,7 +109,7 @@ public class EventPrivateController {
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: getEventByIdAndInitiatorId — получен запрос от инициатора на получение события по id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -106,7 +117,7 @@ public class EventPrivateController {
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: cancelEventByInitiator — получен запрос на отмену события");
         Event event = service.cancelEventByInitiator(eventId, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventIdOrderByCreatDesc(event.getId());
+        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

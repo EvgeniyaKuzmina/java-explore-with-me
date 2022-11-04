@@ -10,7 +10,6 @@ import ru.yandex.practicum.mainservice.event.comment.CommentService;
 import ru.yandex.practicum.mainservice.event.comment.dto.CommentDto;
 import ru.yandex.practicum.mainservice.event.comment.mapper.CommentMapper;
 import ru.yandex.practicum.mainservice.event.comment.model.Comment;
-import ru.yandex.practicum.mainservice.status.Status;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -43,7 +42,7 @@ public class CommentPublicController {
         log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех опубликованных комментариев к событию");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Comment> comment = service.findPublishedByEventIdOrderByCreatDesc(eventId, pageable);
+        Collection<Comment> comment = service.findPublishedByEventIdWithPagination(eventId, pageable);
         Collection<CommentDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));
         return commentDto;

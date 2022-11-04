@@ -24,28 +24,42 @@ public interface CommentService {
     /**
      * изменение статуса комментария админом
      */
-    Comment changeCommentStatusByAdmin(Long commentId, Status status);
+    Comment changeStatusForCommentByAdmin(Long commentId, Status status);
 
     /**
      * получение списка комментариев с указанным статусом и по id события отсортированные по дате создания от более раннего к более позднему, с пагинацией
      */
-    Collection<Comment> findPublishedByEventIdOrderByCreatDesc(Long eventId, Pageable pageable);
+    Collection<Comment> findPublishedByEventIdWithPagination(Long eventId, Pageable pageable);
 
     /**
      * получение списка комментариев по id создателя, отсортированные по дате создания от более раннего к более позднему, с пагинацией
      */
-    Collection<Comment> findAllByAuthorIdOrderByCreatDesc(Long eventId, Pageable pageable);
+    Collection<Comment> findAllByAuthorId(Long eventId, Pageable pageable);
 
     /**
      * получение списка комментариев статусу и по id создателя, отсортированные по дате создания от более раннего к более позднему, с пагинацией
      */
-    Collection<Comment> findAllByAuthorAndStatusIdOrderByCreatDesc(Long authorId, Status status, Pageable pageable);
+    Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, Pageable pageable);
+
+    /**
+     * получение списка комментариев по статусу, отсортированные по дате создания от более раннего к более позднему, с пагинацией
+     */
+    Collection<Comment> findByStatusIdSortedByCreatedDate(Status status, String sort, Pageable pageable);
+
+    /**
+     * получение списка комментариев, отсортированные по дате с пагинацией
+     */
+    Collection<Comment> findAllSortedByCreatedDate(String sort, Pageable pageable);
 
     /**
      * получение списка опубликованных комментариев по id события отсортированные по дате создания от более раннего к более позднему
      */
-    Collection<Comment> findPublishedByEventIdOrderByCreatDesc(Long eventId);
+    Collection<Comment> findPublishedByEventId(Long eventId);
 
+    /**
+     * получение списка опубликованных комментариев по id событий отсортированные по дате создания от более раннего к более позднему
+     */
+    Collection<Comment> findPublishedByListEventId(Collection<Long> eventId);
 
     /**
      * удаление комментария

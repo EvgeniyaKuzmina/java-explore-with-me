@@ -69,7 +69,7 @@ public class CommentPrivateController {
     }
 
     @GetMapping(value = "/comments")
-    public Collection<CommentDto> getAllCommentsByEventId(@PathVariable Long userId,
+    public Collection<CommentDto> getAllCommentsByAuthorId(@PathVariable Long userId,
                                                           @RequestParam(required = false) String state,
                                                           @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                           @RequestParam(defaultValue = SIZE) @Positive Integer size) {
@@ -78,14 +78,14 @@ public class CommentPrivateController {
         Pageable pageable = PageRequest.of(page, size);
         Collection<Comment> comment;
         if (state == null) {
-            comment = service.findAllByAuthorIdOrderByCreatDesc(userId, pageable);
+            comment = service.findAllByAuthorId(userId, pageable);
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
                 log.warn("CommentPublicController: getAllCommentsByEventId — указан неверный статус для получения комментария");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
-            comment = service.findAllByAuthorAndStatusIdOrderByCreatDesc(userId, status, pageable);
+            comment = service.findAllByAuthorIdAndStatus(userId, status, pageable);
         }
         Collection<CommentDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));

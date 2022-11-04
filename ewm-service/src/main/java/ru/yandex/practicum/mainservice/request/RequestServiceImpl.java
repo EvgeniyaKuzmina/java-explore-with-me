@@ -99,14 +99,14 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Request getRequestById(Long requestId) {
-        Optional<Request> request = repository.findById(requestId);
-        request.orElseThrow(() -> {
+        Optional<Request> requestOpt = repository.findById(requestId);
+        Request request = requestOpt.orElseThrow(() -> {
             log.warn("RequestServiceImpl: getRequestById — Заявки с указанным id {} нет", requestId);
             return new ObjectNotFountException("Заявки с указанным id " + requestId + " нет");
         });
 
         log.info("RequestServiceImpl: getRequestById — Заявка с указанным id {} получена", requestId);
-        return request.get();
+        return request;
     }
 
     @Override
