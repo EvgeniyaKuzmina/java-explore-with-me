@@ -9,6 +9,9 @@ import ru.yandex.practicum.statserver.statistic.model.Statistic;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+/**
+ * класс реализующий методы для работы со статистикой
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

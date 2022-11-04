@@ -20,7 +20,7 @@ public class CommentShortDto {
     private String text;
     private UserShortDto author;
     private String created;
-    
+
     public void setCreated(LocalDateTime created) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.created = created.format(formatter);

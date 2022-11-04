@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
+/**
+ * класс контроллер для работы с API статистики
+ */
 @RestController
 @RequestMapping
 @Slf4j
