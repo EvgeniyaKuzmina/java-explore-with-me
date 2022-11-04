@@ -16,11 +16,11 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class CommentShortDto {
 
-
     private Long id;
     private String text;
     private UserShortDto author;
     private String created;
+    
     public void setCreated(LocalDateTime created) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.created = created.format(formatter);

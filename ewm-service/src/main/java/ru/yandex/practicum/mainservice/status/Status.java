@@ -2,8 +2,6 @@ package ru.yandex.practicum.mainservice.status;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
-
 @Slf4j
 public enum Status {
     REJECTED("REJECTED"),
@@ -12,7 +10,7 @@ public enum Status {
     CONFIRMED("CONFIRMED"),
     CANCELED("CANCELED");
 
-    Status(String  status) {
+    Status(String status) {
     }
 
     public static Status from(String stringState) {
