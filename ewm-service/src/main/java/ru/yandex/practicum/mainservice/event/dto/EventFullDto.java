@@ -22,6 +22,7 @@ import java.util.Collection;
 @Setter
 public class EventFullDto {
 
+    private static final String DATA_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private Long id;
     @NotNull
     private String title;
@@ -47,17 +48,17 @@ public class EventFullDto {
     private Boolean requestModeration;
 
     public void setPublishedOn(LocalDateTime publishedOn) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATA_FORMAT);
         this.publishedOn = publishedOn.format(formatter);
     }
 
     public void setCreatedOn(LocalDateTime createdOn) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATA_FORMAT);
         this.createdOn = createdOn.format(formatter);
     }
 
     public void setEventDate(LocalDateTime eventDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATA_FORMAT);
         this.eventDate = eventDate.format(formatter);
     }
 }

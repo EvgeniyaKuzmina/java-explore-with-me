@@ -34,7 +34,6 @@ public class EventShortDtoForComment {
     private Integer confirmedRequests;
     private Long views;
 
-
     public void setEventDate(LocalDateTime eventDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.eventDate = eventDate.format(formatter);

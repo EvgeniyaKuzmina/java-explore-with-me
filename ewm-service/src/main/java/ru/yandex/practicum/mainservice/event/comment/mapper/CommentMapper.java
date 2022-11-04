@@ -31,6 +31,7 @@ public class CommentMapper {
                 .text(comment.getText())
                 .event(EventMapper.toEventShortDtoForComment(comment.getEvent()))
                 .author(UserMapper.toUserShortDto(comment.getAuthor()))
+                .status(comment.getStatus())
                 .build();
         commentDto.setCreated(comment.getCreated());
         return commentDto;
@@ -45,7 +46,7 @@ public class CommentMapper {
 
     public static Comment fromUpdateCommentDto(UpdateCommentDto commentDto) {
         return Comment.builder()
-                .id(commentDto.getCommentId())
+                .id(commentDto.getId())
                 .text(commentDto.getText())
                 .build();
     }

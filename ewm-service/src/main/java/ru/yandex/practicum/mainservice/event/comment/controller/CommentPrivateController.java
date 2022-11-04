@@ -70,12 +70,19 @@ public class CommentPrivateController {
 
     @GetMapping(value = "/comments")
     public Collection<CommentDto> getAllCommentsByAuthorId(@PathVariable Long userId,
-                                                          @RequestParam(required = false) String state,
-                                                          @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
-                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+                                                           @RequestParam(required = false) String state,
+                                                           @RequestParam(defaultValue = "desc") String sort,
+                                                           @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
+                                                           @RequestParam(defaultValue = SIZE) @Positive Integer size) {
         log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех комментариев пользователя");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
+
+        if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
+            log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный формат сортировки");
+            throw new IllegalArgumentException("Unknown sort type: " + sort);
+        }
+
         Collection<Comment> comment;
         if (state == null) {
             comment = service.findAllByAuthorId(userId, pageable);
@@ -85,8 +92,9 @@ public class CommentPrivateController {
                 log.warn("CommentPublicController: getAllCommentsByEventId — указан неверный статус для получения комментария");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
-            comment = service.findAllByAuthorIdAndStatus(userId, status, pageable);
+            comment = service.findAllByAuthorIdAndStatus(userId, status, sort, pageable);
         }
+
         Collection<CommentDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));
         return commentDto;

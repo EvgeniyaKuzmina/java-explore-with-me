@@ -39,12 +39,12 @@ public interface CommentService {
     /**
      * получение списка комментариев статусу и по id создателя, отсортированные по дате создания от более раннего к более позднему, с пагинацией
      */
-    Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, Pageable pageable);
+    Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, String sort, Pageable pageable);
 
     /**
      * получение списка комментариев по статусу, отсортированные по дате создания от более раннего к более позднему, с пагинацией
      */
-    Collection<Comment> findByStatusIdSortedByCreatedDate(Status status, String sort, Pageable pageable);
+    Collection<Comment> findByStatusSortedByCreatedDate(Status status, String sort, Pageable pageable);
 
     /**
      * получение списка комментариев, отсортированные по дате с пагинацией

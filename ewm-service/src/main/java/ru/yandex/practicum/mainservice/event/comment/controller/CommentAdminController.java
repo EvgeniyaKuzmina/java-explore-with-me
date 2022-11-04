@@ -55,11 +55,13 @@ public class CommentAdminController {
         log.info("CommentAdminController: getAllCommentsByStatus — получен запрос на получение всех комментариев пользователя");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Comment> comment;
+
         if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
             log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный формат сортировки");
             throw new IllegalArgumentException("Unknown sort type: " + sort);
         }
+
+        Collection<Comment> comment;
         if (state == null) {
             comment = service.findAllSortedByCreatedDate(sort, pageable);
         } else {
@@ -68,8 +70,9 @@ public class CommentAdminController {
                 log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный статус для получения комментария");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
-            comment = service.findByStatusIdSortedByCreatedDate(status, sort, pageable);
+            comment = service.findByStatusSortedByCreatedDate(status, sort, pageable);
         }
+
         Collection<CommentDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));
         return commentDto;

@@ -18,6 +18,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      */
     Page<Comment> findByAuthorIdAndStatusOrderByCreatedDesc(Long authorId, Status status, Pageable pageable);
 
+    /**
+     * получение списка комментариев по id создателя с указанным статусом, отсортированные по дате создания по возрастанию с пагинацией
+     */
+    Page<Comment> findByAuthorIdAndStatusOrderByCreatedAsc(Long authorId, Status status, Pageable pageable);
+
      /**
      * получение списка комментариев по указанному статусу и по id события, отсортированные по дате создания по убыванию
      */

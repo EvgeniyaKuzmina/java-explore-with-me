@@ -172,7 +172,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event updateEvent(Event updEvent, Long eventId) {
         Event event = getEventById(eventId);
-
         Optional.ofNullable(updEvent.getTitle()).ifPresent(event::setTitle);
         Optional.ofNullable(updEvent.getDescription()).ifPresent(event::setDescription);
         Optional.ofNullable(updEvent.getAnnotation()).ifPresent(event::setAnnotation);

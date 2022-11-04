@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.event.comment.CommentService;
-import ru.yandex.practicum.mainservice.event.comment.dto.CommentDto;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentShortDto;
 import ru.yandex.practicum.mainservice.event.comment.mapper.CommentMapper;
 import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 
@@ -27,7 +27,6 @@ public class CommentPublicController {
 
     private static final String FROM = "0";
     private static final String SIZE = "10";
-
     private final CommentService service;
 
     @Autowired
@@ -36,15 +35,15 @@ public class CommentPublicController {
     }
 
     @GetMapping
-    public Collection<CommentDto> getAllCommentsByEventId(@PathVariable Long eventId,
-                                                          @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
-                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
+    public Collection<CommentShortDto> getAllCommentsByEventId(@PathVariable Long eventId,
+                                                               @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
+                                                               @RequestParam(defaultValue = SIZE) @Positive Integer size) {
         log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех опубликованных комментариев к событию");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Comment> comment = service.findPublishedByEventIdWithPagination(eventId, pageable);
-        Collection<CommentDto> commentDto = new ArrayList<>();
-        comment.forEach(c -> commentDto.add(CommentMapper.toCommentDto(c)));
+        Collection<CommentShortDto> commentDto = new ArrayList<>();
+        comment.forEach(c -> commentDto.add(CommentMapper.toCommentShortDto(c)));
         return commentDto;
     }
 }

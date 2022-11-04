@@ -15,7 +15,6 @@ import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.UserService;
 import ru.yandex.practicum.mainservice.user.model.User;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
@@ -94,24 +93,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, Pageable pageable) {
-        Collection<Comment> comments = repository.findByAuthorIdAndStatusOrderByCreatedDesc(authorId, status,
-                pageable).toList();
+    public Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, String sort, Pageable pageable) {
+        Collection<Comment> comments;
+        if (sort.equalsIgnoreCase("desc")) {
+            comments = repository.findByAuthorIdAndStatusOrderByCreatedDesc(authorId, status, pageable).toList();
+        } else {
+            comments = repository.findByAuthorIdAndStatusOrderByCreatedAsc(authorId, status, pageable).toList();
+        }
         log.info("CommentServiceImpl: findAllByAuthorIdAndStatus — " +
                 "получен список всех комментариев пользователя с указанным статусом");
         return comments;
     }
 
     @Override
-    public Collection<Comment> findByStatusIdSortedByCreatedDate(Status status, String sort, Pageable pageable) {
-        Collection<Comment> comments = new ArrayList<>();
+    public Collection<Comment> findByStatusSortedByCreatedDate(Status status, String sort, Pageable pageable) {
+        Collection<Comment> comments;
         if (sort.equalsIgnoreCase("desc")) {
-            repository.findByStatusOrderByCreatedDesc(status, pageable).toList();
-
+            comments = repository.findByStatusOrderByCreatedDesc(status, pageable).toList();
         } else {
             comments = repository.findByStatusOrderByCreatedAsc(status, pageable).toList();
         }
-        log.info("CommentServiceImpl: findByStatusIdSortedByCreatedDate — " +
+        log.info("CommentServiceImpl: findByStatusSortedByCreatedDate — " +
                 "получен список всех комментариев с указанным статусом");
         return comments;
     }
@@ -123,7 +125,6 @@ public class CommentServiceImpl implements CommentService {
             comments = repository.findAll(pageable).stream()
                     .sorted(Comparator.comparing(Comment::getCreated, Comparator.reverseOrder()))
                     .collect(Collectors.toList());
-
         } else {
             comments = repository.findAll(pageable).stream()
                     .sorted(Comparator.comparing(Comment::getCreated))
