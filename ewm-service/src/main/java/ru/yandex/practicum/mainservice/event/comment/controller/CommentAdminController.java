@@ -36,7 +36,7 @@ public class CommentAdminController {
     @PatchMapping(value = {"/{commentId}/publish"})
     public CommentDto publishComment(@PathVariable Long commentId) {
         log.info("CommentAdminController: publishComment — получен запрос на публикацию комментария");
-        Comment comment = service.changeStatusForCommentByAdmin(null, Status.PUBLISHED);
+        Comment comment = service.changeStatusForCommentByAdmin(commentId, Status.PUBLISHED);
         return CommentMapper.toCommentDto(comment);
     }
 

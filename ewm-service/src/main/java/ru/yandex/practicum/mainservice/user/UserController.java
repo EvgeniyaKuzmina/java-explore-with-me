@@ -58,7 +58,7 @@ public class UserController {
     @GetMapping(value = {"/{id}"})
     public UserDto getUserById(@PathVariable Long id) {
         log.info("UserController: getUserById — получен запрос на получение пользователя по id");
-        User user = service.getUserById(id);
+        User user = service.getUserById(null);
         return UserMapper.toUserDto(user);
     }
 
