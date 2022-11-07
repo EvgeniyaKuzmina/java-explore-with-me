@@ -85,14 +85,14 @@ public class CommentPrivateController {
 
         Collection<Comment> comment;
         if (state == null) {
-            comment = service.findAllByAuthorId(userId, pageable);
+            comment = service.getAllByAuthorId(userId, pageable);
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
                 log.warn("CommentPublicController: getAllCommentsByEventId — указан неверный статус для получения комментария");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
-            comment = service.findAllByAuthorIdAndStatus(userId, status, sort, pageable);
+            comment = service.getAllByAuthorIdAndStatus(userId, status, sort, pageable);
         }
 
         Collection<CommentDto> commentDto = new ArrayList<>();

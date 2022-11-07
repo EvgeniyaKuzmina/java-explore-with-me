@@ -65,7 +65,7 @@ public class EventAdminController {
         Collection<Long> eventsId = new ArrayList<>();
         events.forEach(e -> eventsId.add(e.getId()));
 
-        Collection<Comment> comments = commentService.findPublishedByListEventId(eventsId);
+        Collection<Comment> comments = commentService.getPublishedByListEventId(eventsId);
         Collection<Comment> commentsByEventId = new ArrayList<>();
         for (Event e : events) {
             if (!comments.isEmpty()) {
@@ -87,7 +87,7 @@ public class EventAdminController {
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -95,7 +95,7 @@ public class EventAdminController {
     public EventFullDto publishEvent(@PathVariable Long eventId) {
         log.info("EventAdminController: publishEvent — получен запрос на публикацию события");
         Event event = service.publishedEventByAdmin(eventId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -103,7 +103,7 @@ public class EventAdminController {
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
         log.info("EventAdminController: rejectEvent — получен запрос на отклонение события");
         Event event = service.rejectedEventByAdmin(eventId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

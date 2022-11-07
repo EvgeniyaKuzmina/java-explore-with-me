@@ -63,14 +63,14 @@ public class CommentAdminController {
 
         Collection<Comment> comment;
         if (state == null) {
-            comment = service.findAllSortedByCreatedDate(sort, pageable);
+            comment = service.getAllSortedByCreatedDate(sort, pageable);
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
                 log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный статус для получения комментария");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
-            comment = service.findByStatusSortedByCreatedDate(status, sort, pageable);
+            comment = service.getByStatusSortedByCreatedDate(status, sort, pageable);
         }
 
         Collection<CommentDto> commentDto = new ArrayList<>();

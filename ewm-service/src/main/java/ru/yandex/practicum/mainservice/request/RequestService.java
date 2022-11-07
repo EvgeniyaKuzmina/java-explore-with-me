@@ -27,14 +27,14 @@ public interface RequestService {
     Collection<Request> getAllRequestsByUserId(Long userId);
 
     /**
+     * получение заявки на участие по id события
+     */
+    Request getRequestByUserIdAndEventId(Long userId, Long eventId);
+
+    /**
      * получение заявки по id
      */
     Request getRequestById(Long id);
-
-    /**
-     * получение всех заявок по id события и статусу события
-     */
-    Collection<Request> getRequestsByEventIdAndStatus(Long id, Status status);
 
     /**
      * обновление статуса заявки

@@ -71,7 +71,7 @@ public class EventPublicController {
         log.info("EventPublicController: getEventById — получен запрос на получение события по id");
         Event event = service.getEventById(id);
         client.addStatistic(request);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

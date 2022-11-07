@@ -15,7 +15,6 @@ import ru.yandex.practicum.mainservice.user.model.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,8 +32,8 @@ public class RequestServiceImpl implements RequestService {
     public Request createRequest(Long userId, Long eventId) {
         Event event = eventService.getEventById(eventId);
         User user = userService.getUserById(userId);
-        List<Request> requests = repository.findByRequesterId(userId);
-        List<Long> ids = new ArrayList<>();
+        Collection<Request> requests = repository.findByRequesterId(userId);
+        Collection<Long> ids = new ArrayList<>();
         requests.forEach(r -> ids.add(r.getEvent().getId()));
 
         validateDate(ids, event, userId, eventId);
@@ -54,7 +53,7 @@ public class RequestServiceImpl implements RequestService {
         return repository.save(request);
     }
 
-    private void validateDate(List<Long> requests, Event event, Long userId, Long eventId) {
+    private void validateDate(Collection<Long> requests, Event event, Long userId, Long eventId) {
         if (requests.contains(eventId)) {
             log.error("RequestServiceImpl: validateDate — Нельзя добавить повторно запрос на участие в одном и том же событии");
             throw new ConflictException("Нельзя добавить повторно запрос на участие в одном и том же событии");
@@ -98,6 +97,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public Request getRequestByUserIdAndEventId(Long userId, Long eventId) {
+        Request request = repository.findByRequesterIdAndEventId(userId, eventId);
+        log.info("RequestServiceImpl: getRequestByUserIdAndEventId — заявка по id создателя и id события получена");
+        return request;
+    }
+
+    @Override
     public Request getRequestById(Long requestId) {
         Optional<Request> requestOpt = repository.findById(requestId);
         Request request = requestOpt.orElseThrow(() -> {
@@ -110,16 +116,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> getRequestsByEventIdAndStatus(Long eventId, Status status) {
-        List<Request> requests = repository.findByEventIdAndStatus(eventId, Status.CONFIRMED);
-        log.info("RequestServiceImpl: getRequestsByEventIdAndStatus — заявки по id события и статусу события получены");
-        return requests;
-    }
-
-    @Override
-    public List<Request> getRequestsByEventId(Event event, Long userId) {
+    public Collection<Request> getRequestsByEventId(Event event, Long userId) {
         validateUserIdAndEventId(event, userId);
-        List<Request> requests = repository.findByEventId(event.getId());
+        Collection<Request> requests = repository.findByEventId(event.getId());
         log.info("RequestServiceImpl: getRequestsByEventId — заявки по id события получены");
         return requests;
     }

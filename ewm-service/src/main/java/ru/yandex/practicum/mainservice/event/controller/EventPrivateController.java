@@ -74,7 +74,7 @@ public class EventPrivateController {
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -89,7 +89,7 @@ public class EventPrivateController {
         Collection<Long> eventsId = new ArrayList<>();
         events.forEach(e -> eventsId.add(e.getId()));
 
-        Collection<Comment> comments = commentService.findPublishedByListEventId(eventsId);
+        Collection<Comment> comments = commentService.getPublishedByListEventId(eventsId);
         Collection<Comment> commentsByEventId = new ArrayList<>();
         for (Event e : events) {
             if (!comments.isEmpty()) {
@@ -109,7 +109,7 @@ public class EventPrivateController {
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: getEventByIdAndInitiatorId — получен запрос от инициатора на получение события по id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 
@@ -117,7 +117,7 @@ public class EventPrivateController {
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: cancelEventByInitiator — получен запрос на отмену события");
         Event event = service.cancelEventByInitiator(eventId, userId);
-        Collection<Comment> comments = commentService.findPublishedByEventId(event.getId());
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
     }
 

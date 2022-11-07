@@ -41,7 +41,7 @@ public class CommentPublicController {
         log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех опубликованных комментариев к событию");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Comment> comment = service.findPublishedByEventIdWithPagination(eventId, pageable);
+        Collection<Comment> comment = service.getPublishedByEventIdWithPagination(eventId, pageable);
         Collection<CommentShortDto> commentDto = new ArrayList<>();
         comment.forEach(c -> commentDto.add(CommentMapper.toCommentShortDto(c)));
         return commentDto;

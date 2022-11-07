@@ -47,6 +47,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment changeCommentByAuthor(Comment updComment, Long userId) {
         Comment comment = getCommentById(updComment.getId(), userId);
+        validateUsersRequestAndEvent(userId, comment.getEvent().getId());
         comment.setText(updComment.getText());
         comment.setStatus(Status.PENDING);
         log.info("CommentServiceImpl: changeCommentByAuthor — Комментарий изменён {}.", comment);
@@ -62,64 +63,64 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Collection<Comment> findPublishedByEventIdWithPagination(Long eventId, Pageable pageable) {
+    public Collection<Comment> getPublishedByEventIdWithPagination(Long eventId, Pageable pageable) {
         Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED, pageable).toList();
-        log.info("CommentServiceImpl: findPublishedByEventIdWithPagination — получен список комментариев с указанным статусом");
+        log.info("CommentServiceImpl: getPublishedByEventIdWithPagination — получен список комментариев с указанным статусом");
         return comments;
     }
 
     @Override
-    public Collection<Comment> findPublishedByEventId(Long eventId) {
+    public Collection<Comment> getPublishedByEventId(Long eventId) {
         Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED);
-        log.info("CommentServiceImpl: findPublishedByEventIdWithPagination — " +
+        log.info("CommentServiceImpl: getPublishedByEventId — " +
                 "получен список опубликованных комментариев к событию с id {}", eventId);
         return comments;
     }
 
     @Override
-    public Collection<Comment> findPublishedByListEventId(Collection<Long> eventId) {
+    public Collection<Comment> getPublishedByListEventId(Collection<Long> eventId) {
         Collection<Comment> comments = repository.findByEventIdInAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED);
-        log.info("CommentServiceImpl: findPublishedByEventIdWithPagination — " +
+        log.info("CommentServiceImpl: getPublishedByListEventId — " +
                 "получен список опубликованных комментариев к указанным событиям c id {}", eventId);
         return comments;
     }
 
     @Override
-    public Collection<Comment> findAllByAuthorId(Long authorId, Pageable pageable) {
+    public Collection<Comment> getAllByAuthorId(Long authorId, Pageable pageable) {
         Collection<Comment> comments = repository.findByAuthorIdOrderByCreatedDesc(authorId, pageable).toList();
-        log.info("CommentServiceImpl: findAllByAuthorId — " +
+        log.info("CommentServiceImpl: getAllByAuthorId — " +
                 "получен список всех комментариев пользователя");
         return comments;
     }
 
     @Override
-    public Collection<Comment> findAllByAuthorIdAndStatus(Long authorId, Status status, String sort, Pageable pageable) {
+    public Collection<Comment> getAllByAuthorIdAndStatus(Long authorId, Status status, String sort, Pageable pageable) {
         Collection<Comment> comments;
         if (sort.equalsIgnoreCase("desc")) {
             comments = repository.findByAuthorIdAndStatusOrderByCreatedDesc(authorId, status, pageable).toList();
         } else {
             comments = repository.findByAuthorIdAndStatusOrderByCreatedAsc(authorId, status, pageable).toList();
         }
-        log.info("CommentServiceImpl: findAllByAuthorIdAndStatus — " +
+        log.info("CommentServiceImpl: getAllByAuthorIdAndStatus — " +
                 "получен список всех комментариев пользователя с указанным статусом");
         return comments;
     }
 
     @Override
-    public Collection<Comment> findByStatusSortedByCreatedDate(Status status, String sort, Pageable pageable) {
+    public Collection<Comment> getByStatusSortedByCreatedDate(Status status, String sort, Pageable pageable) {
         Collection<Comment> comments;
         if (sort.equalsIgnoreCase("desc")) {
             comments = repository.findByStatusOrderByCreatedDesc(status, pageable).toList();
         } else {
             comments = repository.findByStatusOrderByCreatedAsc(status, pageable).toList();
         }
-        log.info("CommentServiceImpl: findByStatusSortedByCreatedDate — " +
+        log.info("CommentServiceImpl: getByStatusSortedByCreatedDate — " +
                 "получен список всех комментариев с указанным статусом");
         return comments;
     }
 
     @Override
-    public Collection<Comment> findAllSortedByCreatedDate(String sort, Pageable pageable) {
+    public Collection<Comment> getAllSortedByCreatedDate(String sort, Pageable pageable) {
         Collection<Comment> comments;
         if (sort.equalsIgnoreCase("desc")) {
             comments = repository.findAll(pageable).stream()
@@ -130,7 +131,7 @@ public class CommentServiceImpl implements CommentService {
                     .sorted(Comparator.comparing(Comment::getCreated))
                     .collect(Collectors.toList());
         }
-        log.info("CommentServiceImpl: findAllSortedByCreatedDate — " +
+        log.info("CommentServiceImpl: getAllSortedByCreatedDate — " +
                 "получен список всех комментариев c сортировкой");
         return comments;
     }
@@ -161,7 +162,7 @@ public class CommentServiceImpl implements CommentService {
             throw new ObjectNotFountException("Комментария с указанным id " + commentId + " нет");
         });
         if (!comment.getAuthor().getId().equals(userId)) {
-            log.warn("CommentServiceImpl: removeComment — пользователь с id {} не является автором комментария c id {}", userId, commentId);
+            log.warn("CommentServiceImpl: getCommentById — пользователь с id {} не является автором комментария c id {}", userId, commentId);
             throw new ConflictException("Пользователь с  id " + userId + " не является автором комментария c id " + commentId);
         }
         log.warn("CommentServiceImpl: getCommentById — Комментарий с указанным id {} получен", commentId);
@@ -169,17 +170,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void validateUsersRequestAndEvent(Long userId, Long eventId) {
-        Collection<Request> request = requestService.getAllRequestsByUserId(userId);
-        boolean check = false;
-        for (Request r : request) {
-            if (r.getEvent().getId().equals(eventId) && r.getStatus().equals(Status.CONFIRMED)) {
-                check = true;
-                break;
-            }
-        }
-        if (!check) {
-            log.error("CommentServiceImpl: validateUserAndEvent — Пользователь с id {} не является участником события c id {}", userId, eventId);
-            throw new ConflictException(String.format("Пользователь с id %d не является участником события c id %d", userId, eventId));
+        Optional<Request> requestOpt = Optional.ofNullable(requestService.getRequestByUserIdAndEventId(userId, eventId));
+        Request request = requestOpt.orElseThrow(() -> {
+            log.warn("CommentServiceImpl: validateUsersRequestAndEvent — Пользователь с id {} не оставлял заявку на участие в событии c id {}", userId, eventId);
+            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие в событии c id %d", userId, eventId));
+        });
+
+        if (!request.getStatus().equals(Status.CONFIRMED)) {
+            log.error("CommentServiceImpl: validateUsersRequestAndEvent — пользователь не может оставить комментарий, если заявка на участие не подтверждена");
+            throw new ConflictException("пользователь не может оставить комментарий, если заявка на участие не подтверждена");
         }
     }
 }
