@@ -37,7 +37,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Category updCategory) {
-        Category category = getCategoryById(updCategory.getId()); // проверка, что категория с указанным eventId есть
+        Category category = getCategoryById(25L);
+       // Category category = getCategoryById(updCategory.getId()); // проверка, что категория с указанным eventId есть
         Optional.ofNullable(updCategory.getName()).ifPresent(category::setName);
 
         try {
