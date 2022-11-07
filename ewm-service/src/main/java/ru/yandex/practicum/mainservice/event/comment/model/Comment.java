@@ -1,14 +1,13 @@
 package ru.yandex.practicum.mainservice.event.comment.model;
 
 import lombok.*;
-import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * класс для работы с комментариями
@@ -42,17 +41,4 @@ public class Comment {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = Status.PENDING;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Comment comment = (Comment) o;
-        return text.equals(comment.text) && event.equals(comment.event) && author.equals(comment.author);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(text, event, author);
-    }
 }

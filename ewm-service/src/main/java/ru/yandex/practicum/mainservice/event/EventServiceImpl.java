@@ -43,8 +43,9 @@ public class EventServiceImpl implements EventService {
         event.setState(Status.PENDING);
         User user = userService.getUserById(userid);
         event.setInitiator(user);
+        event = repository.save(event);
         log.info("EventServiceImpl: createEvent — Добавлено событие {}.", event);
-        return repository.save(event);
+        return event;
     }
 
     @Override
@@ -309,7 +310,9 @@ public class EventServiceImpl implements EventService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String startString = start.format(formatter);
         String endString = end.format(formatter);
-        return client.getStatistic(startString, endString, uris, true);
+        Collection<ViewStats> viewStats = client.getStatistic(startString, endString, uris, true);
+        log.info("получена статистика по просмотрам");
+        return viewStats;
     }
 
     private Collection<Event> updViewInEventList(Collection<Event> event) {

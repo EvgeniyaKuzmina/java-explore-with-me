@@ -25,8 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(Category category) {
         try {
+            category = repository.save(category);
             log.info("CategoryServiceImpl: createCategory — Добавлена категория {}.", category);
-            return repository.save(category);
+            return category;
         } catch (DataIntegrityViolationException e) {
             log.error("CategoryServiceImpl: createCategory — Категория с таким названием {} уже существует.",
                     category.getName());
@@ -53,8 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void removeCategory(Long id) {
         getCategoryById(id);
-        log.info("CategoryServiceImpl: removeCategory — Категория с указанным id {} удалена", id);
         repository.deleteById(id);
+        log.info("CategoryServiceImpl: removeCategory — Категория с указанным id {} удалена", id);
     }
 
     @Override

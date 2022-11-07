@@ -48,9 +48,9 @@ public class RequestServiceImpl implements RequestService {
         } else {
             request.setStatus(Status.PENDING);
         }
-
+        request = repository.save(request);
         log.info("RequestServiceImpl: createRequest — Запрос на участие добавлен: {}.", request);
-        return repository.save(request);
+        return request;
     }
 
     private void validateDate(Collection<Long> requests, Event event, Long userId, Long eventId) {
@@ -80,12 +80,15 @@ public class RequestServiceImpl implements RequestService {
         userService.getUserById(userId);
         Request request = getRequestById(requestId);
         if (!request.getRequester().getId().equals(userId)) {
-            log.error("RequestServiceImpl: cancelRequest — Пользователь с id {} не оставлял заявку на участие c id {}", userId, requestId);
-            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие c id %d", userId, requestId));
+            log.error("RequestServiceImpl: cancelRequest — Пользователь с id {} не оставлял заявку на участие c id {}",
+                    userId, requestId);
+            throw new ConflictException(String.format("Пользователь с id %d не оставлял заявку на участие c id %d",
+                    userId, requestId));
         }
 
         request.setStatus(Status.CANCELED);
-        log.info("RequestServiceImpl: cancelRequest —Пользователя с id {} удалил заявку на участие с id {}", userId, requestId);
+        request = repository.save(request);
+        log.info("RequestServiceImpl: cancelRequest — Пользователя с id {} удалил заявку на участие с id {}", userId, requestId);
         return request;
     }
 
@@ -127,8 +130,9 @@ public class RequestServiceImpl implements RequestService {
     public Request updateStatusRequestById(Long requestId, Status status) {
         Request request = getRequestById(requestId);
         request.setStatus(status);
+        request = repository.save(request);
         log.info("RequestServiceImpl: updateStatusRequestById — Статус обновлён {}.", request);
-        return repository.save(request);
+        return request;
     }
 
     @Override

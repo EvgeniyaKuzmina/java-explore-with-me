@@ -25,8 +25,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         try {
+            user =  repository.save(user);
             log.info("UserServiceImpl: createUser —Добавлен пользователь {}.", user);
-            return repository.save(user);
+            return user;
         } catch (DataIntegrityViolationException e) {
             log.error("UserServiceImpl: createUser — Пользователь с таким email {} уже существует.", user.getEmail());
             throw new ConflictException(String.format("Пользователь с таким email %s уже существует.",
@@ -42,8 +43,9 @@ public class UserServiceImpl implements UserService {
         Optional.ofNullable(user.getEmail()).ifPresent(updUser::setEmail);
 
         try {
+            updUser = repository.save(updUser);
             log.info("UserServiceImpl: updateUser — пользователь обновлён {}.", updUser);
-            return repository.save(updUser);
+            return updUser;
         } catch (DataIntegrityViolationException e) {
             log.error("UserServiceImpl: removeUser — Пользователь с таким email {} уже существует.", updUser.getEmail());
             throw new ConflictException(String.format("Пользователь с таким email %s уже существует.",
@@ -54,8 +56,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeUser(Long id) {
         getUserById(id); // проверка, что пользователь с указанным eventId есть
-        log.info("UserServiceImpl: removeUser — Пользователя с указанным eventId {} удалён", id);
         repository.deleteById(id);
+        log.info("UserServiceImpl: removeUser — Пользователя с указанным eventId {} удалён", id);
     }
 
     @Override

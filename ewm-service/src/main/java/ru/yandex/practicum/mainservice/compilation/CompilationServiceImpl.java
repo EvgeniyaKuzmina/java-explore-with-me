@@ -30,8 +30,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public Compilation createCompilation(Compilation compilation) {
         try {
+            compilation = repository.save(compilation);
             log.info("CompilationServiceImpl: createCompilation — Добавлена подборка {}.", compilation);
-            return repository.save(compilation);
+            return compilation;
         } catch (DataIntegrityViolationException e) {
             log.error("CompilationServiceImpl: createCompilation — Подборка с таким названием {} уже существует.",
                     compilation.getTitle());
@@ -43,8 +44,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public Compilation updateCompilation(Compilation compilation, Long id) {
         try {
+            compilation = repository.save(compilation);
             log.info("CompilationServiceImpl: updateCompilation — Обновлена подборка {}.", compilation);
-            return repository.save(compilation);
+            return compilation;
         } catch (DataIntegrityViolationException e) {
             log.error("CompilationServiceImpl: updateCompilation — Подборка с таким названием {} уже существует.", compilation.getTitle());
             throw new ConflictException(String.format("Подборка с таким названием %s уже существует.",
@@ -125,8 +127,8 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void removeCompilation(Long id) {
         getCompilationById(id);
-        log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным id {} удалена", id);
         repository.deleteById(id);
+        log.warn("CompilationServiceImpl: removeCompilation — Подборка с указанным id {} удалена", id);
     }
 
     @Override
