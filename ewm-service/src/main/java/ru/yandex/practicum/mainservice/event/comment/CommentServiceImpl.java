@@ -40,8 +40,9 @@ public class CommentServiceImpl implements CommentService {
         User user = userService.getUserById(userId);
         comment.setEvent(event);
         comment.setAuthor(user);
+        comment = repository.save(comment);
         log.info("CommentServiceImpl: addNewComment — Комментарий добавлен {}.", comment);
-        return repository.save(comment);
+        return comment;
     }
 
     @Override
@@ -50,16 +51,18 @@ public class CommentServiceImpl implements CommentService {
         validateUsersRequestAndEvent(userId, comment.getEvent().getId());
         comment.setText(updComment.getText());
         comment.setStatus(Status.PENDING);
+        comment = repository.save(comment);
         log.info("CommentServiceImpl: changeCommentByAuthor — Комментарий изменён {}.", comment);
-        return repository.save(comment);
+        return comment;
     }
 
     @Override
     public Comment changeStatusForCommentByAdmin(Long commentId, Status status) {
         Comment comment = getCommentById(commentId);
         comment.setStatus(status);
+        comment = repository.save(comment);
         log.info("CommentServiceImpl: changeStatusForCommentByAdmin — Статус комментария изменён {}.", comment);
-        return repository.save(comment);
+        return comment;
     }
 
     @Override

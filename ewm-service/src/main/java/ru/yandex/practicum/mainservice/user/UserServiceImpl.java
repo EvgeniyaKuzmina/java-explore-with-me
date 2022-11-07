@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
             log.info("UserServiceImpl: createUser —Добавлен пользователь {}.", user);
             return repository.save(user);
         } catch (DataIntegrityViolationException e) {
-            log.error("UserServiceImpl: removeUser — Пользователь с таким email {} уже существует.", user.getEmail());
+            log.error("UserServiceImpl: createUser — Пользователь с таким email {} уже существует.", user.getEmail());
             throw new ConflictException(String.format("Пользователь с таким email %s уже существует.",
                     user.getEmail()));
         }
