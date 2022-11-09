@@ -40,7 +40,7 @@ public class CommentPrivateController {
     public CommentDto createComment(@Valid @RequestBody NewCommentDto commentDto,
                                     @PathVariable Long userId,
                                     @PathVariable Long eventId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на создание комментария");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request on create comment");
         Comment comment = CommentMapper.fromNewCommentDto(commentDto);
         comment = service.addNewComment(comment, eventId, userId);
         return CommentMapper.toCommentDto(comment);
@@ -49,7 +49,7 @@ public class CommentPrivateController {
     @PatchMapping(value = "/comments")
     public CommentDto updateComment(@Valid @RequestBody UpdateCommentDto commentDto,
                                     @PathVariable Long userId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на обновление комментария");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request on update comment");
         Comment comment = CommentMapper.fromUpdateCommentDto(commentDto);
         comment = service.changeCommentByAuthor(comment, userId);
         return CommentMapper.toCommentDto(comment);
@@ -57,13 +57,13 @@ public class CommentPrivateController {
 
     @DeleteMapping(value = {"/comments/{commentId}"})
     public void removeComment(@PathVariable Long userId, @PathVariable Long commentId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на удаление комментария");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request on delete comment");
         service.removeComment(commentId, userId);
     }
 
     @GetMapping(value = {"/comments/{commentId}"})
     public CommentDto getCommentById(@PathVariable Long userId, @PathVariable Long commentId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение комментария по id");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request to get comment by id");
         Comment comment = service.getCommentById(commentId, userId);
         return CommentMapper.toCommentDto(comment);
     }
@@ -74,12 +74,12 @@ public class CommentPrivateController {
                                                            @RequestParam(defaultValue = "desc") String sort,
                                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех комментариев пользователя");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request to get all comments by user");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
 
         if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
-            log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный формат сортировки");
+            log.warn("CommentPublicController: getAllCommentsByStatus — Unknown sort type");
             throw new IllegalArgumentException("Unknown sort type: " + sort);
         }
 
@@ -89,7 +89,7 @@ public class CommentPrivateController {
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
-                log.warn("CommentPublicController: getAllCommentsByEventId — указан неверный статус для получения комментария");
+                log.warn("CommentPublicController: getAllCommentsByEventId — Unknown state");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
             comment = service.getAllByAuthorIdAndStatus(userId, status, sort, pageable);

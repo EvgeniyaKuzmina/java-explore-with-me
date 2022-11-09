@@ -55,7 +55,7 @@ public class EventPublicController {
                                                  @RequestParam(required = false) String sort,
                                                  @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventPublicController: getAllEvent — получен запрос на получение списка событий");
+        log.info("EventPublicController: getAllEvent — Received request to get list of all events by params");
         EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
@@ -68,7 +68,7 @@ public class EventPublicController {
 
     @GetMapping(value = {"/{id}"})
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
-        log.info("EventPublicController: getEventById — получен запрос на получение события по id");
+        log.info("EventPublicController: getEventById — Received request to get list of event by id");
         Event event = service.getEventById(id);
         client.addStatistic(request);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
@@ -96,7 +96,7 @@ public class EventPublicController {
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
         Optional.ofNullable(onlyAvailable).ifPresent(param::setOnlyAvailable);
         Optional.ofNullable(sort).ifPresent(param::setSort);
-        log.info("EventPublicController: creatParam — параметры запроса преобразованы в объект EventParam");
+        log.info("EventPublicController: creatParam — params of request was converted to EventParam");
         return param;
     }
 }

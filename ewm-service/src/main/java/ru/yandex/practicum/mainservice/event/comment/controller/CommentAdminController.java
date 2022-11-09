@@ -35,14 +35,14 @@ public class CommentAdminController {
 
     @PatchMapping(value = {"/{commentId}/publish"})
     public CommentDto publishComment(@PathVariable Long commentId) {
-        log.info("CommentAdminController: publishComment — получен запрос на публикацию комментария");
+        log.info("CommentAdminController: publishComment — Received request on publish comment");
         Comment comment = service.changeStatusForCommentByAdmin(commentId, Status.PUBLISHED);
         return CommentMapper.toCommentDto(comment);
     }
 
     @PatchMapping(value = {"/{commentId}/reject"})
     public CommentDto rejectComment(@PathVariable Long commentId) {
-        log.info("CommentAdminController: rejectComment — получен запрос на отклонение комментария");
+        log.info("CommentAdminController: rejectComment — Received request on reject comment");
         Comment comment = service.changeStatusForCommentByAdmin(commentId, Status.REJECTED);
         return CommentMapper.toCommentDto(comment);
     }
@@ -52,12 +52,12 @@ public class CommentAdminController {
                                                          @RequestParam(defaultValue = "desc") String sort,
                                                          @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("CommentAdminController: getAllCommentsByStatus — получен запрос на получение всех комментариев пользователя");
+        log.info("CommentAdminController: getAllCommentsByStatus — Received request to get all comments by user");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
 
         if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
-            log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный формат сортировки");
+            log.warn("CommentPublicController: getAllCommentsByStatus — Unknown sort type");
             throw new IllegalArgumentException("Unknown sort type: " + sort);
         }
 
@@ -67,7 +67,7 @@ public class CommentAdminController {
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
-                log.warn("CommentPublicController: getAllCommentsByStatus — указан неверный статус для получения комментария");
+                log.warn("CommentPublicController: getAllCommentsByStatus — Unknown state");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
             comment = service.getByStatusSortedByCreatedDate(status, sort, pageable);
@@ -80,7 +80,7 @@ public class CommentAdminController {
 
     @GetMapping(value = {"/{commentId}"})
     public CommentDto getCommentById(@PathVariable Long commentId) {
-        log.info("CommentPublicController: getCommentById — получен запрос на получение комментария по id {} ", commentId);
+        log.info("CommentPublicController: getCommentById —   Received request to get comment by id {} ", commentId);
         Comment comment = service.getCommentById(commentId);
         return CommentMapper.toCommentDto(comment);
     }

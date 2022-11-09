@@ -38,7 +38,7 @@ public class CommentPublicController {
     public Collection<CommentShortDto> getAllCommentsByEventId(@PathVariable Long eventId,
                                                                @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                                @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("CommentPublicController: getAllCommentsByEventId — получен запрос на получение всех опубликованных комментариев к событию");
+        log.info("CommentPublicController: getAllCommentsByEventId — Received request to get all published comments by event");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Comment> comment = service.getPublishedByEventIdWithPagination(eventId, pageable);
