@@ -40,7 +40,7 @@ public class CommentPrivateController {
     public CommentDto createComment(@Valid @RequestBody NewCommentDto commentDto,
                                     @PathVariable Long userId,
                                     @PathVariable Long eventId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — Received request on create comment");
+        log.info("CommentPublicController: getAllCommentsByEventId — received request on create comment");
         Comment comment = CommentMapper.fromNewCommentDto(commentDto);
         comment = service.addNewComment(comment, eventId, userId);
         return CommentMapper.toCommentDto(comment);
@@ -49,7 +49,7 @@ public class CommentPrivateController {
     @PatchMapping(value = "/comments")
     public CommentDto updateComment(@Valid @RequestBody UpdateCommentDto commentDto,
                                     @PathVariable Long userId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — Received request on update comment");
+        log.info("CommentPublicController: getAllCommentsByEventId — received request on update comment");
         Comment comment = CommentMapper.fromUpdateCommentDto(commentDto);
         comment = service.changeCommentByAuthor(comment, userId);
         return CommentMapper.toCommentDto(comment);
@@ -57,13 +57,13 @@ public class CommentPrivateController {
 
     @DeleteMapping(value = {"/comments/{commentId}"})
     public void removeComment(@PathVariable Long userId, @PathVariable Long commentId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — Received request on delete comment");
+        log.info("CommentPublicController: getAllCommentsByEventId — received request on delete comment");
         service.removeComment(commentId, userId);
     }
 
     @GetMapping(value = {"/comments/{commentId}"})
     public CommentDto getCommentById(@PathVariable Long userId, @PathVariable Long commentId) {
-        log.info("CommentPublicController: getAllCommentsByEventId — Received request to get comment by id");
+        log.info("CommentPublicController: getAllCommentsByEventId — received request to get comment by id");
         Comment comment = service.getCommentById(commentId, userId);
         return CommentMapper.toCommentDto(comment);
     }
@@ -74,7 +74,7 @@ public class CommentPrivateController {
                                                            @RequestParam(defaultValue = "desc") String sort,
                                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("CommentPublicController: getAllCommentsByEventId — Received request to get all comments by user");
+        log.info("CommentPublicController: getAllCommentsByEventId — received request to get all comments by user");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
 
@@ -89,7 +89,7 @@ public class CommentPrivateController {
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
-                log.warn("CommentPublicController: getAllCommentsByEventId — Unknown state");
+                log.warn("CommentPublicController: getAllCommentsByEventId — unknown state");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
             comment = service.getAllByAuthorIdAndStatus(userId, status, sort, pageable);

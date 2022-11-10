@@ -54,7 +54,7 @@ public class EventPrivateController {
 
     @PostMapping
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto eventDto, @PathVariable Long userId) {
-        log.info("EventPrivateController: createEvent — Received request to create event");
+        log.info("EventPrivateController: createEvent — received request to create event");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromNewDto(eventDto, category);
         event = service.createEvent(event, userId);
@@ -64,7 +64,7 @@ public class EventPrivateController {
 
     @PatchMapping
     public EventFullDto updateEvent(@Valid @RequestBody UpdateEventDto eventDto, @PathVariable Long userId) {
-        log.info("EventPrivateController: updateEvent — Received request to update event");
+        log.info("EventPrivateController: updateEvent — received request to update event");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
@@ -75,7 +75,7 @@ public class EventPrivateController {
     @GetMapping
     public Collection<EventFullDto> getEventsByInitiator(@PathVariable Long userId, @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventPrivateController: getEventsByInitiator — Received request from author to get list of events");
+        log.info("EventPrivateController: getEventsByInitiator — received request from author to get list of events");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> events = service.getAllEventsByInitiatorId(userId, pageable);
@@ -101,7 +101,7 @@ public class EventPrivateController {
 
     @GetMapping(value = "/{eventId}")
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
-        log.info("EventPrivateController: getEventByIdAndInitiatorId — Received request from author to get event by id");
+        log.info("EventPrivateController: getEventByIdAndInitiatorId — received request from author to get event by id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
@@ -109,7 +109,7 @@ public class EventPrivateController {
 
     @PatchMapping(value = "/{eventId}")
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
-        log.info("EventPrivateController: cancelEventByInitiator — Received request to cancel event");
+        log.info("EventPrivateController: cancelEventByInitiator — received request to cancel event");
         Event event = service.cancelEventByInitiator(eventId, userId);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
@@ -118,7 +118,7 @@ public class EventPrivateController {
     @GetMapping(value = "/{eventId}/requests")
     public Collection<RequestDto> getRequestsByEventIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: getRequestsByEventIdAndInitiatorId — " +
-                "Received request to get participation requests in events current user");
+                "received request to get request to participation in events current user");
         Event event = service.getEventById(eventId);
         Collection<Request> requests = requestService.getRequestsByEventId(event, userId);
         Collection<RequestDto> requestsDto = new ArrayList<>();
@@ -130,7 +130,7 @@ public class EventPrivateController {
     @PatchMapping(value = "/{eventId}/requests/{reqId}/confirm")
     public RequestDto confirmRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
         log.info("EventPrivateController: confirmRequestToEventByInitiator — " +
-                "Received request to confirm participation request in the event of the current user");
+                "received request to confirm request to participation in the event of the current user");
         Event event = service.getEventById(eventId);
         Request request = requestService.confirmRequestForEvent(event, userId, reqId);
 
@@ -140,7 +140,7 @@ public class EventPrivateController {
     @PatchMapping(value = "/{eventId}/requests/{reqId}/reject")
     public RequestDto rejectRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
         log.info("EventPrivateController: rejectRequestToEventByInitiator — " +
-                "Received request to reject participation request in the event of the current user");
+                "received request to reject request to participation in the event of the current user");
         Event event = service.getEventById(eventId);
         Request request = requestService.rejectRequestForEvent(event, userId, reqId);
 

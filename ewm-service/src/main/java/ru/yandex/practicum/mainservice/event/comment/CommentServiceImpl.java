@@ -41,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setEvent(event);
         comment.setAuthor(user);
         comment = repository.save(comment);
-        log.info("CommentServiceImpl: addNewComment — New comment added {}.", comment);
+        log.info("CommentServiceImpl: addNewComment — new comment added {}.", comment);
         return comment;
     }
 
@@ -52,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(updComment.getText());
         comment.setStatus(Status.PENDING);
         comment = repository.save(comment);
-        log.info("CommentServiceImpl: changeCommentByAuthor — Comment was changed {}.", comment);
+        log.info("CommentServiceImpl: changeCommentByAuthor — comment was changed {}.", comment);
         return comment;
     }
 
@@ -61,14 +61,14 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = getCommentById(commentId);
         comment.setStatus(status);
         comment = repository.save(comment);
-        log.info("CommentServiceImpl: changeStatusForCommentByAdmin — Comment's status was changed {}.", comment);
+        log.info("CommentServiceImpl: changeStatusForCommentByAdmin — comment's status was changed {}.", comment);
         return comment;
     }
 
     @Override
     public Collection<Comment> getPublishedByEventIdWithPagination(Long eventId, Pageable pageable) {
         Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED, pageable).toList();
-        log.info("CommentServiceImpl: getPublishedByEventIdWithPagination — Received list of comments with required status");
+        log.info("CommentServiceImpl: getPublishedByEventIdWithPagination — received list of comments with required status");
         return comments;
     }
 
@@ -76,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
     public Collection<Comment> getPublishedByEventId(Long eventId) {
         Collection<Comment> comments = repository.findByEventIdAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED);
         log.info("CommentServiceImpl: getPublishedByEventId — " +
-                "Received list of published comments to event with id {}", eventId);
+                "received list of published comments to event with id {}", eventId);
         return comments;
     }
 
@@ -84,14 +84,14 @@ public class CommentServiceImpl implements CommentService {
     public Collection<Comment> getPublishedByListEventId(Collection<Long> eventId) {
         Collection<Comment> comments = repository.findByEventIdInAndStatusOrderByCreatedDesc(eventId, Status.PUBLISHED);
         log.info("CommentServiceImpl: getPublishedByListEventId — " +
-                "Received list of published comments to events with ids {}", eventId);
+                "received list of published comments to events with ids {}", eventId);
         return comments;
     }
 
     @Override
     public Collection<Comment> getAllByAuthorId(Long authorId, Pageable pageable) {
         Collection<Comment> comments = repository.findByAuthorIdOrderByCreatedDesc(authorId, pageable).toList();
-        log.info("CommentServiceImpl: getAllByAuthorId — Received list of all user's comments");
+        log.info("CommentServiceImpl: getAllByAuthorId — received list of all user's comments");
         return comments;
     }
 
@@ -104,7 +104,7 @@ public class CommentServiceImpl implements CommentService {
             comments = repository.findByAuthorIdAndStatusOrderByCreatedAsc(authorId, status, pageable).toList();
         }
         log.info("CommentServiceImpl: getAllByAuthorIdAndStatus — " +
-                "Received list of all user's comments with required status");
+                "received list of all user's comments with required status");
         return comments;
     }
 
@@ -117,7 +117,7 @@ public class CommentServiceImpl implements CommentService {
             comments = repository.findByStatusOrderByCreatedAsc(status, pageable).toList();
         }
         log.info("CommentServiceImpl: getByStatusSortedByCreatedDate — " +
-                "Received list of all comments with required status");
+                "received list of all comments with required status");
         return comments;
     }
 
@@ -134,7 +134,7 @@ public class CommentServiceImpl implements CommentService {
                     .collect(Collectors.toList());
         }
         log.info("CommentServiceImpl: getAllSortedByCreatedDate — " +
-                "Received list of all comments with sorting");
+                "received list of all comments with sorting");
         return comments;
     }
 
@@ -142,17 +142,17 @@ public class CommentServiceImpl implements CommentService {
     public void removeComment(Long commentId, Long userId) {
         getCommentById(commentId, userId);
         repository.deleteById(commentId);
-        log.info("CommentServiceImpl: removeComment — Comment with id {} was deleted", commentId);
+        log.info("CommentServiceImpl: removeComment — comment with id {} was deleted", commentId);
     }
 
     @Override
     public Comment getCommentById(Long commentId) {
         Optional<Comment> commentOpt = repository.findById(commentId);
         Comment comment = commentOpt.orElseThrow(() -> {
-            log.warn("CommentServiceImpl: getCommentById — Comment with id {} does  not exist", commentId);
+            log.warn("CommentServiceImpl: getCommentById — comment with id {} does  not exist", commentId);
             throw new ObjectNotFountException("Comment with id " + commentId + " does  not exist");
         });
-        log.warn("CommentServiceImpl: getCommentById — Comment with id {} was received", commentId);
+        log.warn("CommentServiceImpl: getCommentById — comment with id {} was received", commentId);
         return comment;
     }
 
@@ -160,15 +160,15 @@ public class CommentServiceImpl implements CommentService {
     public Comment getCommentById(Long commentId, Long userId) {
         Optional<Comment> commentOpt = repository.findById(commentId);
         Comment comment = commentOpt.orElseThrow(() -> {
-            log.warn("CommentServiceImpl: getCommentById — Comment with id {} does  not exist", commentId);
+            log.warn("CommentServiceImpl: getCommentById — comment with id {} does  not exist", commentId);
             throw new ObjectNotFountException("Comment with id " + commentId + " does  not exist");
         });
         if (!comment.getAuthor().getId().equals(userId)) {
-            log.warn("CommentServiceImpl: getCommentById — User with id {} does not author of comment with id {}",
+            log.warn("CommentServiceImpl: getCommentById — user with id {} does not author of comment with id {}",
                     userId, commentId);
             throw new ConflictException("User with  id " + userId + " does not author of comment with id " + commentId);
         }
-        log.warn("CommentServiceImpl: getCommentById — Comment with id {} was received", commentId);
+        log.warn("CommentServiceImpl: getCommentById — comment with id {} was received", commentId);
         return comment;
     }
 
@@ -176,14 +176,14 @@ public class CommentServiceImpl implements CommentService {
         Optional<Request> requestOpt = Optional.ofNullable(requestService.getRequestByUserIdAndEventId(userId, eventId));
         Request request = requestOpt.orElseThrow(() -> {
             log.warn("CommentServiceImpl: validateUsersRequestAndEvent — " +
-                    "User with id {} does not submit application for participation in event with id {}", userId, eventId);
+                    "user with id {} does not submit application for participation in event with id {}", userId, eventId);
             throw new ConflictException(String.format("User with id %d does not submit application " +
                     "for participation in event with id %d", userId, eventId));
         });
 
         if (!request.getStatus().equals(Status.CONFIRMED)) {
             log.error("CommentServiceImpl: validateUsersRequestAndEvent — " +
-                    "User cannot put comment if application for participation was not confirmed");
+                    "user cannot put comment if application for participation was not confirmed");
             throw new ConflictException("User cannot put comment if application for participation was not confirmed");
         }
     }

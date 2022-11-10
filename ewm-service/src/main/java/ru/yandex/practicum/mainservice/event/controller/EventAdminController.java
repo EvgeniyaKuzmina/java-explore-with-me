@@ -54,7 +54,7 @@ public class EventAdminController {
                                                 @RequestParam(required = false) String rangeEnd,
                                                 @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventAdminController: getAllEvent — Received request to get list of all events by params");
+        log.info("EventAdminController: getAllEvent — received request to get list of all events by params");
         EventParam param = createParam(usersId, categoriesId, states, rangeStart, rangeEnd);
 
         int page = from / size;
@@ -83,7 +83,7 @@ public class EventAdminController {
 
     @PutMapping(value = {"/{eventId}"})
     public EventFullDto updateEventByAdmin(@Valid @RequestBody AdminUpdateEventRequest eventDto, @PathVariable Long eventId) {
-        log.info("EventAdminController: updateEventByAdmin — Received request to update events by admin");
+        log.info("EventAdminController: updateEventByAdmin — received request to update events by admin");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
@@ -93,7 +93,7 @@ public class EventAdminController {
 
     @PatchMapping(value = {"/{eventId}/publish"})
     public EventFullDto publishEvent(@PathVariable Long eventId) {
-        log.info("EventAdminController: publishEvent — Received request to publish event");
+        log.info("EventAdminController: publishEvent — received request to publish event");
         Event event = service.publishedEventByAdmin(eventId);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);
@@ -101,7 +101,7 @@ public class EventAdminController {
 
     @PatchMapping(value = {"/{eventId}/reject"})
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
-        log.info("EventAdminController: rejectEvent — Received request to reject event");
+        log.info("EventAdminController: rejectEvent — received request to reject event");
         Event event = service.rejectedEventByAdmin(eventId);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
         return EventMapper.toEventFullDto(event, comments);

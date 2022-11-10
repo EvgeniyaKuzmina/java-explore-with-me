@@ -41,7 +41,7 @@ public class EventServiceImpl implements EventService {
     public Event createEvent(Event event, Long userid) {
         LocalDateTime publishedTime = LocalDateTime.now();
         if (event.getEventDate().isBefore(publishedTime.plusHours(2))) {
-            log.error("Not possible create event if event date  earlier current data time");
+            log.error("not possible create event if event date  earlier current data time");
             throw new ConflictException("Not possible create event if event date  earlier current data time");
         }
         event.setCreatedOn(LocalDateTime.now());
@@ -49,7 +49,7 @@ public class EventServiceImpl implements EventService {
         User user = userService.getUserById(userid);
         event.setInitiator(user);
         event = repository.save(event);
-        log.info("EventServiceImpl: createEvent — Event was added {}.", event);
+        log.info("EventServiceImpl: createEvent — event was added {}.", event);
         return event;
     }
 
@@ -62,11 +62,11 @@ public class EventServiceImpl implements EventService {
             event.setState(Status.PENDING);
         }
         if (event.getState() != Status.PENDING) {
-            log.error("EventServiceImpl: updateEventByInitiator — Not possible to change event");
+            log.error("EventServiceImpl: updateEventByInitiator — not possible to change event");
             throw new ConflictException("Not possible to change event");
         }
         if (event.getEventDate().isBefore(publishedTime.plusHours(2))) {
-            log.error("EventServiceImpl: updateEventByInitiator — Not possible to change event if event date earlier current date and time");
+            log.error("EventServiceImpl: updateEventByInitiator — not possible to change event if event date earlier current date and time");
             throw new ConflictException("Not possible to change event if event date earlier current date and time");
         }
         event = updateEvent(updEvent, updEvent.getId());
@@ -79,7 +79,7 @@ public class EventServiceImpl implements EventService {
         validateUserIdAndEventId(eventId, userId);
         Event event = getEventById(eventId);
         if (event.getState() != Status.PENDING) {
-            log.error("EventServiceImpl: cancelEventByInitiator — Not possible to cancel event");
+            log.error("EventServiceImpl: cancelEventByInitiator — not possible to cancel event");
             throw new ConflictException("Not possible to cancel event");
         }
         event.setState(Status.CANCELED);
@@ -91,7 +91,7 @@ public class EventServiceImpl implements EventService {
     public Collection<Event> getAllEventsByInitiatorId(Long userId, Pageable page) {
         userService.getUserById(userId);
         Collection<Event> events = repository.findByInitiatorId(userId, page).toList();
-        log.info("EventServiceImpl: getAllEventsByInitiatorId —  events was received");
+        log.info("EventServiceImpl: getAllEventsByInitiatorId — events was received");
         return updViewInEventList(events);
     }
 
@@ -120,12 +120,12 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(eventId);
         if (event.getEventDate().isBefore(publishedTime.plusHours(1)) ||
                 event.getEventDate().isEqual(publishedTime.plusMinutes(59))) {
-            log.error("EventServiceImpl: publishedEventByAdmin — Not possible to publish event if event date earlier current date and time");
+            log.error("EventServiceImpl: publishedEventByAdmin — not possible to publish event if event date earlier current date and time");
             throw new ConflictException("Not possible to publish event if event date earlier current date and time");
         }
 
         if (event.getState() != Status.PENDING) {
-            log.error("EventServiceImpl: publishedEventByAdmin — Not possible to publish event");
+            log.error("EventServiceImpl: publishedEventByAdmin — not possible to publish event");
             throw new ConflictException("Not possible to publish event");
         }
         event.setState(Status.PUBLISHED);
@@ -138,7 +138,7 @@ public class EventServiceImpl implements EventService {
     public Event rejectedEventByAdmin(Long eventId) {
         Event event = getEventById(eventId);
         if (event.getState() == Status.PUBLISHED) {
-            log.error("EventServiceImpl: rejectedEventByAdmin — Not possible to cancel published event");
+            log.error("EventServiceImpl: rejectedEventByAdmin — not possible to cancel published event");
             throw new ConflictException("Not possible to cancel published event");
         }
         event.setState(Status.CANCELED);
@@ -150,11 +150,11 @@ public class EventServiceImpl implements EventService {
     public Event getEventById(Long eventId) {
         Optional<Event> eventOpt = repository.findById(eventId);
         Event event = eventOpt.orElseThrow(() -> {
-            log.warn("EventServiceImpl: getEventById — Event with id {} does not exist", eventId);
-            return new ObjectNotFountException(" Event with id " + eventId + " does not exist");
+            log.warn("EventServiceImpl: getEventById — event with id {} does not exist", eventId);
+            return new ObjectNotFountException("Event with id " + eventId + " does not exist");
         });
 
-        log.info("EventServiceImpl: getEventById — Event with id {} was gotten", eventId);
+        log.info("EventServiceImpl: getEventById — event with id {} was gotten", eventId);
         return updViewInEvent(event);
     }
 
@@ -169,7 +169,7 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId); // проверяем что существует пользователь с таким eventId
         Event event = getEventById(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("EventServiceImpl: validateUserIdAndEventId — User with id {} does not author of event with id {}.", userId, event.getId());
+            log.error("EventServiceImpl: validateUserIdAndEventId — user with id {} does not author of event with id {}.", userId, event.getId());
             throw new ConflictException(String.format("User with id %d does not author of event with id %d.",
                     userId, event.getId()));
         }
@@ -300,6 +300,7 @@ public class EventServiceImpl implements EventService {
                             .sorted(Comparator.comparing(Event::getViews))
                             .collect(Collectors.toList());
                 default:
+                    log.warn("EventServiceImpl: makeSort — invalid sorting value entered");
                     throw new ArgumentNotValidException("Invalid sorting value entered");
             }
         }

@@ -55,7 +55,7 @@ public class EventPublicController {
                                                  @RequestParam(required = false) String sort,
                                                  @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventPublicController: getAllEvent — Received request to get list of all events by params");
+        log.info("EventPublicController: getAllEvent — received request to get list of all events by params");
         EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
@@ -68,7 +68,7 @@ public class EventPublicController {
 
     @GetMapping(value = {"/{id}"})
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
-        log.info("EventPublicController: getEventById — Received request to get list of event by id");
+        log.info("EventPublicController: getEventById — received request to get list of event by id");
         Event event = service.getEventById(id);
         client.addStatistic(request);
         Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());

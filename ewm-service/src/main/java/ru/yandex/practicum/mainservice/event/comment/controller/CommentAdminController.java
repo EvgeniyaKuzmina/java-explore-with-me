@@ -35,14 +35,14 @@ public class CommentAdminController {
 
     @PatchMapping(value = {"/{commentId}/publish"})
     public CommentDto publishComment(@PathVariable Long commentId) {
-        log.info("CommentAdminController: publishComment — Received request on publish comment");
+        log.info("CommentAdminController: publishComment — received request on publish comment");
         Comment comment = service.changeStatusForCommentByAdmin(commentId, Status.PUBLISHED);
         return CommentMapper.toCommentDto(comment);
     }
 
     @PatchMapping(value = {"/{commentId}/reject"})
     public CommentDto rejectComment(@PathVariable Long commentId) {
-        log.info("CommentAdminController: rejectComment — Received request on reject comment");
+        log.info("CommentAdminController: rejectComment — received request on reject comment");
         Comment comment = service.changeStatusForCommentByAdmin(commentId, Status.REJECTED);
         return CommentMapper.toCommentDto(comment);
     }
@@ -57,7 +57,7 @@ public class CommentAdminController {
         Pageable pageable = PageRequest.of(page, size);
 
         if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
-            log.warn("CommentPublicController: getAllCommentsByStatus — Unknown sort type");
+            log.warn("CommentPublicController: getAllCommentsByStatus — unknown sort type");
             throw new IllegalArgumentException("Unknown sort type: " + sort);
         }
 
@@ -67,7 +67,7 @@ public class CommentAdminController {
         } else {
             Status status = Status.from(state);
             if (status != Status.PUBLISHED && status != Status.REJECTED && status != Status.PENDING) {
-                log.warn("CommentPublicController: getAllCommentsByStatus — Unknown state");
+                log.warn("CommentPublicController: getAllCommentsByStatus — unknown state");
                 throw new IllegalArgumentException("Unknown state: " + state);
             }
             comment = service.getByStatusSortedByCreatedDate(status, sort, pageable);
@@ -80,7 +80,7 @@ public class CommentAdminController {
 
     @GetMapping(value = {"/{commentId}"})
     public CommentDto getCommentById(@PathVariable Long commentId) {
-        log.info("CommentPublicController: getCommentById —   Received request to get comment by id {} ", commentId);
+        log.info("CommentPublicController: getCommentById — received request to get comment by id {} ", commentId);
         Comment comment = service.getCommentById(commentId);
         return CommentMapper.toCommentDto(comment);
     }
