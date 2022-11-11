@@ -35,7 +35,7 @@ public class CompilationAdminController {
 
     @PostMapping
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto compilationDto) {
-        log.info("CompilationAdminController: createCompilation — получен запрос на создание новой подборки событий");
+        log.info("CompilationAdminController: createCompilation — received request to create new compilation");
         Collection<Long> eventsId = new ArrayList<>(compilationDto.getEvents());
         Collection<Event> events = eventService.getEventByIdIn(eventsId);
         Compilation compilation = CompilationMapper.toCompilationFromNewCompilationDto(compilationDto, events);
@@ -44,35 +44,35 @@ public class CompilationAdminController {
 
     @PatchMapping(value = {"{compId}/events/{eventId}"})
     public CompilationDto addEventToCompilation(@Valid @PathVariable Long compId, @PathVariable Long eventId) {
-        log.info("CompilationAdminController: addEventToCompilation — получен запрос на добавление события в подборку событий");
+        log.info("CompilationAdminController: addEventToCompilation — received request to add event to compilation");
         Compilation compilation = service.addEventToCompilation(eventId, compId);
         return CompilationMapper.toCompilationDto(compilation);
     }
 
     @DeleteMapping(value = {"{compId}/events/{eventId}"})
     public CompilationDto deleteEventFromCompilation(@Valid @PathVariable Long compId, @PathVariable Long eventId) {
-        log.info("CompilationAdminController: deleteEventFromCompilation — получен запрос на удаление события из подборки");
+        log.info("CompilationAdminController: deleteEventFromCompilation — received request to delete event from compilation");
         Compilation compilation = service.deleteEventFromCompilation(eventId, compId);
         return CompilationMapper.toCompilationDto(compilation);
     }
 
     @PatchMapping(value = {"{compId}/pin"})
     public CompilationDto pinCompilation(@Valid @PathVariable Long compId) {
-        log.info("CompilationAdminController: pinCompilation — получен запрос на закрепление подборки на главной странице");
+        log.info("CompilationAdminController: pinCompilation — received request to pin compilation on the main page");
         Compilation compilation = service.pinCompilation(true, compId);
         return CompilationMapper.toCompilationDto(compilation);
     }
 
     @DeleteMapping(value = {"{compId}/pin"})
     public CompilationDto unpinCompilation(@Valid @PathVariable Long compId) {
-        log.info("CompilationAdminController: unpinCompilation — получен запрос на открепление подборки на главной странице");
+        log.info("CompilationAdminController: unpinCompilation — received request to unpin compilation on the main page");
         Compilation compilation = service.unpinCompilation(false, compId);
         return CompilationMapper.toCompilationDto(compilation);
     }
 
     @DeleteMapping(value = {"/{id}"})
     public void removeCompilation(@PathVariable Long id) {
-        log.info("CompilationAdminController: removeCompilation — получен запрос на удаление подборки");
+        log.info("CompilationAdminController: removeCompilation — received request to delete compilation");
         service.removeCompilation(id);
     }
 }

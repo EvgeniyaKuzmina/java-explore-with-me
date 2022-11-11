@@ -31,14 +31,14 @@ public class CategoryAdminController {
 
     @PostMapping
     public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto categoryDto) {
-        log.info("CategoryAdminController: createCategory — получен запрос на создание категории");
+        log.info("CategoryAdminController: createCategory — received request to create category");
         Category category = CategoryMapper.toCategoryFromNewCategoryDto(categoryDto);
         return CategoryMapper.toCategoryDto(service.createCategory(category));
     }
 
     @PatchMapping
     public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        log.info("CategoryAdminController: updateCategory — получен запрос на обновление категории");
+        log.info("CategoryAdminController: updateCategory — received request to update category");
         Category category = CategoryMapper.toCategory(categoryDto);
         category = service.updateCategory(category);
         return CategoryMapper.toCategoryDto(category);
@@ -46,7 +46,7 @@ public class CategoryAdminController {
 
     @DeleteMapping(value = {"/{id}"})
     public void removeCategoryById(@PathVariable @NonNull Long id) {
-        log.info("CategoryAdminController: removeCategoryById — получен запрос на удаление категории");
+        log.info("CategoryAdminController: removeCategoryById — received request to delete category");
         service.removeCategory(id);
     }
 }

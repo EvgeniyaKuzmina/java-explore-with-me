@@ -35,7 +35,7 @@ public class CompilationPublicController {
 
     @GetMapping(value = {"/{id}"})
     public CompilationDto getCompilationById(@PathVariable Long id) {
-        log.info("CompilationPublicController: getCompilationById — получен запрос на получение подборки событий по id");
+        log.info("CompilationPublicController: getCompilationById — received request to get compilation by id");
         Compilation compilation = service.getCompilationById(id);
         return CompilationMapper.toCompilationDto(compilation);
     }
@@ -44,7 +44,7 @@ public class CompilationPublicController {
     public Collection<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned,
                                                          @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("CompilationPublicController: getAllCompilations — получен запрос на получение списка всех подборок");
+        log.info("CompilationPublicController: getAllCompilations — received request to get all compilations");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<CompilationDto> allCompilationDto = new ArrayList<>();
