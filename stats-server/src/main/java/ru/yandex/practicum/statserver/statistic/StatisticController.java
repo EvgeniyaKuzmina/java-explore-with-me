@@ -29,7 +29,7 @@ public class StatisticController {
 
     @PostMapping(value = "/hit")
     public void addStatistic(@Valid @RequestBody EndpointHit endpointHit) {
-        log.info("StatisticController: addStatistic — получен запрос на сохранение статистики");
+        log.info("StatisticController: addStatistic — received request to add view");
         Statistic statistic = StatisticMapper.toStatistic(endpointHit);
         service.addNewHit(statistic);
     }
@@ -38,7 +38,7 @@ public class StatisticController {
     public Collection<ViewStats> getStatistic(@RequestParam String start, @RequestParam String end,
                                               @RequestParam(required = false) Collection<String> uris,
                                               @RequestParam(defaultValue = "false") Boolean unique) {
-        log.info("StatisticController: getStatistic — получен запрос на получение статистики");
+        log.info("StatisticController: getStatistic — received request to get statistic");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
         LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);

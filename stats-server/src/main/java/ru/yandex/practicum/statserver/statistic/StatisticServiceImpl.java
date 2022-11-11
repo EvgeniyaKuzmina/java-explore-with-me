@@ -22,7 +22,7 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public Statistic addNewHit(Statistic statistic) {
         statistic = repository.save(statistic);
-        log.info("StatisticServiceImpl: addNewHit — информация о просмотре добавлена");
+        log.info("StatisticServiceImpl: addNewHit — information about view was added");
         return statistic;
     }
 
