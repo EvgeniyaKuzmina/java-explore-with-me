@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.client.EventClient;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
 import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
@@ -34,11 +36,13 @@ public class EventPublicController {
     private static final String SIZE = "10";
     private final EventService service;
     private final EventClient client;
+    private final CommentService commentService;
 
     @Autowired
-    public EventPublicController(EventService service, EventClient client) {
+    public EventPublicController(EventService service, EventClient client, CommentService commentService) {
         this.service = service;
         this.client = client;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -51,14 +55,12 @@ public class EventPublicController {
                                                  @RequestParam(required = false) String sort,
                                                  @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-
-        log.info("EventPublicController: getAllEvent — получен запрос на получение списка событий");
+        log.info("EventPublicController: getAllEvent — received request to get list of all events by params");
         EventParam param = creatParam(text, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<Event> events = service.getEventsByPublicParams(param, pageable);
-        log.info(events.toString());
         Collection<EventShortDto> eventsShortDto = new ArrayList<>();
         events.forEach(e -> eventsShortDto.add(EventMapper.toEventShortDto(e)));
         return eventsShortDto;
@@ -66,10 +68,11 @@ public class EventPublicController {
 
     @GetMapping(value = {"/{id}"})
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
-        log.info("EventPublicController: getEventById — получен запрос на получение события по id");
+        log.info("EventPublicController: getEventById — received request to get list of event by id");
         Event event = service.getEventById(id);
-        client.addStatistic(request); // сохранение статистики в сервисе статистики
-        return EventMapper.toEventFullDto(event);
+        client.addStatistic(request);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     private EventParam creatParam(String text,
@@ -93,7 +96,7 @@ public class EventPublicController {
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
         Optional.ofNullable(onlyAvailable).ifPresent(param::setOnlyAvailable);
         Optional.ofNullable(sort).ifPresent(param::setSort);
-        log.info("EventPublicController: creatParam — параметры запроса преобразованы в объект EventParam");
+        log.info("EventPublicController: creatParam — params of request was converted to EventParam");
         return param;
     }
 }

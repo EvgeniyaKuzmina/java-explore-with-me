@@ -30,20 +30,20 @@ public class RequestPrivateController {
 
     @PostMapping
     public RequestDto createRequest(@PathVariable @NotNull Long userId, @RequestParam @NotNull Long eventId) {
-        log.info("RequestPrivateController: createRequest — получен запрос на создание запроса на участие");
+        log.info("RequestPrivateController: createRequest — received request to create request to participation");
         return RequestMapper.toRequestDto(service.createRequest(userId, eventId));
     }
 
     @PatchMapping(value = {"/{requestId}/cancel"})
     public RequestDto deleteRequest(@Valid @PathVariable @NotNull Long userId, @PathVariable @NotNull Long requestId) {
-        log.info("RequestPrivateController: deleteRequest — получен запрос на удаление запроса на участие");
+        log.info("RequestPrivateController: deleteRequest — received request to delete request to participation");
         Request request = service.cancelRequest(userId, requestId);
         return RequestMapper.toRequestDto(request);
     }
 
     @GetMapping
     public Collection<RequestDto> getAllRequestsByUserId(@PathVariable @NotNull Long userId) {
-        log.info("RequestPrivateController: deleteRequest — получен запрос на получение списка всех заявок на участие по id пользователя");
+        log.info("RequestPrivateController: deleteRequest — received request to get list of requests to participation by author id");
         Collection<RequestDto> allRequestDto = new ArrayList<>();
         Collection<Request> allRequests = service.getAllRequestsByUserId(userId);
         allRequests.forEach(r -> allRequestDto.add(RequestMapper.toRequestDto(r)));

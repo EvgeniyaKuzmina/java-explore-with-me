@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.CategoryService;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.dto.NewEventDto;
 import ru.yandex.practicum.mainservice.event.dto.UpdateEventDto;
 import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
 import ru.yandex.practicum.mainservice.event.model.Event;
-import ru.yandex.practicum.mainservice.exception.ConflictException;
 import ru.yandex.practicum.mainservice.request.RequestService;
 import ru.yandex.practicum.mainservice.request.dto.RequestDto;
 import ru.yandex.practicum.mainservice.request.mapper.RequestMapper;
@@ -22,9 +23,9 @@ import ru.yandex.practicum.mainservice.request.model.Request;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * класс контроллер для работы с приватным API событий
@@ -39,72 +40,83 @@ public class EventPrivateController {
     private final EventService service;
     private final RequestService requestService;
     private final CategoryService categoryService;
+    private final CommentService commentService;
 
     @Autowired
-    public EventPrivateController(EventService service, RequestService requestService, CategoryService categoryService) {
+    public EventPrivateController(EventService service, RequestService requestService, CategoryService categoryService, CommentService commentService) {
         this.service = service;
         this.requestService = requestService;
         this.categoryService = categoryService;
+        this.commentService = commentService;
     }
 
     @PostMapping
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto eventDto, @PathVariable Long userId) {
-        log.info("EventPrivateController: createEvent — получен запрос на создание события");
+        log.info("EventPrivateController: createEvent — received request to create event");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromNewDto(eventDto, category);
-        LocalDateTime publishedTime = LocalDateTime.now();
-        if (event.getEventDate().isBefore(publishedTime.plusHours(2))) {
-            log.error("Нельзя опубликовать событие, дата начала которого ранее текущего времени");
-            throw new ConflictException("Нельзя опубликовать событие, дата начала которого ранее текущего времени");
-        }
-
         event = service.createEvent(event, userId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = List.of();
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @PatchMapping
     public EventFullDto updateEvent(@Valid @RequestBody UpdateEventDto eventDto, @PathVariable Long userId) {
-        log.info("EventPrivateController: updateEvent — получен запрос на обновление события");
+        log.info("EventPrivateController: updateEvent — received request to update event");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromUpdateDto(eventDto, category);
         event = service.updateEventByInitiator(event, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @GetMapping
     public Collection<EventFullDto> getEventsByInitiator(@PathVariable Long userId, @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventPrivateController: getEventsByInitiator — получен запрос от инициатора на списка событий");
+        log.info("EventPrivateController: getEventsByInitiator — received request from author to get list of events");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        Collection<Event> event = service.getAllEventsByInitiatorId(userId, pageable);
+        Collection<Event> events = service.getAllEventsByInitiatorId(userId, pageable);
         Collection<EventFullDto> eventsDto = new ArrayList<>();
-        event.forEach(e -> eventsDto.add(EventMapper.toEventFullDto(e)));
+        Collection<Long> eventsId = new ArrayList<>();
+        events.forEach(e -> eventsId.add(e.getId()));
 
+        Collection<Comment> comments = commentService.getPublishedByListEventId(eventsId);
+        Collection<Comment> commentsByEventId = new ArrayList<>();
+        for (Event e : events) {
+            if (!comments.isEmpty()) {
+                for (Comment c : comments) {
+                    if (e.getId().equals(c.getEvent().getId())) {
+                        commentsByEventId.add(c);
+                    }
+                }
+            }
+            eventsDto.add(EventMapper.toEventFullDto(e, commentsByEventId));
+            commentsByEventId.clear();
+        }
         return eventsDto;
     }
 
     @GetMapping(value = "/{eventId}")
     public EventFullDto getEventByIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
-        log.info("EventPrivateController: getEventByIdAndInitiatorId — получен запрос от инициатора на получение события по id");
+        log.info("EventPrivateController: getEventByIdAndInitiatorId — received request from author to get event by id");
         Event event = service.getEventByIdAndInitiatorId(eventId, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @PatchMapping(value = "/{eventId}")
     public EventFullDto cancelEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId) {
-        log.info("EventPrivateController: cancelEventByInitiator — получен запрос на отмену события");
+        log.info("EventPrivateController: cancelEventByInitiator — received request to cancel event");
         Event event = service.cancelEventByInitiator(eventId, userId);
-
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @GetMapping(value = "/{eventId}/requests")
     public Collection<RequestDto> getRequestsByEventIdAndInitiatorId(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("EventPrivateController: getRequestsByEventIdAndInitiatorId — " +
-                "получен запрос на получение информации о запросах на участие в событии текущего пользователя");
+                "received request to get request to participation in events current user");
         Event event = service.getEventById(eventId);
         Collection<Request> requests = requestService.getRequestsByEventId(event, userId);
         Collection<RequestDto> requestsDto = new ArrayList<>();
@@ -116,7 +128,7 @@ public class EventPrivateController {
     @PatchMapping(value = "/{eventId}/requests/{reqId}/confirm")
     public RequestDto confirmRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
         log.info("EventPrivateController: confirmRequestToEventByInitiator — " +
-                "получен запрос на подтверждение чужой заявки на участие в событии текущего пользователя");
+                "received request to confirm request to participation in the event of the current user");
         Event event = service.getEventById(eventId);
         Request request = requestService.confirmRequestForEvent(event, userId, reqId);
 
@@ -126,7 +138,7 @@ public class EventPrivateController {
     @PatchMapping(value = "/{eventId}/requests/{reqId}/reject")
     public RequestDto rejectRequestToEventByInitiator(@PathVariable Long userId, @PathVariable Long eventId, @PathVariable Long reqId) {
         log.info("EventPrivateController: rejectRequestToEventByInitiator — " +
-                "получен запрос на отклонение чужой заявки на участие в событии текущего пользователя");
+                "received request to reject request to participation in the event of the current user");
         Event event = service.getEventById(eventId);
         Request request = requestService.rejectRequestForEvent(event, userId, reqId);
 

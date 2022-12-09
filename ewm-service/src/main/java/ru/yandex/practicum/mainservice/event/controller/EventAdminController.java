@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.CategoryService;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.EventService;
+import ru.yandex.practicum.mainservice.event.comment.CommentService;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.mainservice.event.dto.EventFullDto;
 import ru.yandex.practicum.mainservice.event.mapper.EventMapper;
@@ -35,11 +37,13 @@ public class EventAdminController {
     private static final String SIZE = "10";
     private final EventService service;
     private final CategoryService categoryService;
+    private final CommentService commentService;
 
     @Autowired
-    public EventAdminController(EventService service, CategoryService categoryService) {
+    public EventAdminController(EventService service, CategoryService categoryService, CommentService commentService) {
         this.service = service;
         this.categoryService = categoryService;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -50,38 +54,57 @@ public class EventAdminController {
                                                 @RequestParam(required = false) String rangeEnd,
                                                 @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("EventAdminController: getAllEvent — получен запрос на получение списка всех событий");
+        log.info("EventAdminController: getAllEvent — received request to get list of all events by params");
         EventParam param = createParam(usersId, categoriesId, states, rangeStart, rangeEnd);
 
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
+
         Collection<Event> events = service.getEventsByAdminParams(param, pageable);
         Collection<EventFullDto> eventFullDto = new ArrayList<>();
-        events.forEach(e -> eventFullDto.add(EventMapper.toEventFullDto(e)));
+        Collection<Long> eventsId = new ArrayList<>();
+        events.forEach(e -> eventsId.add(e.getId()));
+
+        Collection<Comment> comments = commentService.getPublishedByListEventId(eventsId);
+        Collection<Comment> commentsByEventId = new ArrayList<>();
+        for (Event e : events) {
+            if (!comments.isEmpty()) {
+                for (Comment c : comments) {
+                    if (e.getId().equals(c.getEvent().getId())) {
+                        commentsByEventId.add(c);
+                    }
+                }
+            }
+            eventFullDto.add(EventMapper.toEventFullDto(e, commentsByEventId));
+            commentsByEventId.clear();
+        }
         return eventFullDto;
     }
 
     @PutMapping(value = {"/{eventId}"})
     public EventFullDto updateEventByAdmin(@Valid @RequestBody AdminUpdateEventRequest eventDto, @PathVariable Long eventId) {
-        log.info("EventAdminController: updateEventByAdmin — получен запрос на обновление события админом");
+        log.info("EventAdminController: updateEventByAdmin — received request to update events by admin");
         Category category = categoryService.getCategoryById(eventDto.getCategory());
         Event event = EventMapper.toEventFromAdminUpdDto(eventDto, category);
         event = service.updateEventByAdmin(event, eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @PatchMapping(value = {"/{eventId}/publish"})
     public EventFullDto publishEvent(@PathVariable Long eventId) {
-        log.info("EventAdminController: publishEvent — получен запрос на публикацию события");
+        log.info("EventAdminController: publishEvent — received request to publish event");
         Event event = service.publishedEventByAdmin(eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     @PatchMapping(value = {"/{eventId}/reject"})
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
-        log.info("EventAdminController: rejectEvent — получен запрос на отклонение события");
+        log.info("EventAdminController: rejectEvent — received request to reject event");
         Event event = service.rejectedEventByAdmin(eventId);
-        return EventMapper.toEventFullDto(event);
+        Collection<Comment> comments = commentService.getPublishedByEventId(event.getId());
+        return EventMapper.toEventFullDto(event, comments);
     }
 
     private EventParam createParam(List<Long> usersId,
@@ -89,14 +112,13 @@ public class EventAdminController {
                                    List<String> states,
                                    String rangeStart,
                                    String rangeEnd) {
-
         EventParam param = new EventParam();
         Optional.ofNullable(usersId).ifPresent(param::setUsersId);
         Optional.ofNullable(categoriesId).ifPresent(param::setCategoriesId);
         Optional.ofNullable(states).ifPresent(param::setStates);
         Optional.ofNullable(rangeStart).ifPresent(param::setRangeStart);
         Optional.ofNullable(rangeEnd).ifPresent(param::setRangeEnd);
-        log.info("EventAdminController: createParam — параметры запроса преобразованы в объект EventParam");
+        log.info("EventAdminController: createParam — params of request was converted to EventParam");
         return param;
     }
 }

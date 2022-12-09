@@ -2,11 +2,16 @@ package ru.yandex.practicum.mainservice.event.mapper;
 
 import ru.yandex.practicum.mainservice.category.mapper.CategoryMapper;
 import ru.yandex.practicum.mainservice.category.model.Category;
+import ru.yandex.practicum.mainservice.event.comment.dto.CommentShortDto;
+import ru.yandex.practicum.mainservice.event.comment.mapper.CommentMapper;
+import ru.yandex.practicum.mainservice.event.comment.model.Comment;
 import ru.yandex.practicum.mainservice.event.dto.*;
 import ru.yandex.practicum.mainservice.event.location.mapper.LocationMapper;
 import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.user.mapper.UserMapper;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 public class EventMapper {
@@ -29,7 +34,24 @@ public class EventMapper {
         return eventDto;
     }
 
-    public static EventFullDto toEventFullDto(Event event) {
+    public static EventShortDtoForComment toEventShortDtoForComment(Event event) {
+        EventShortDtoForComment eventDto = EventShortDtoForComment.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .annotation(event.getAnnotation())
+                .paid(event.getPaid())
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequest())
+                .views(event.getViews())
+                .build();
+        Optional.ofNullable(event.getEventDate()).ifPresent(eventDto::setEventDate);
+        return eventDto;
+    }
+
+    public static EventFullDto toEventFullDto(Event event, Collection<Comment> comments) {
+        Collection<CommentShortDto> commentDto = new ArrayList<>();
+        comments.forEach(c -> commentDto.add(CommentMapper.toCommentShortDto(c)));
         EventFullDto ev = EventFullDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
@@ -42,7 +64,7 @@ public class EventMapper {
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequest())
                 .views(event.getViews())
-                .comments(event.getComments())
+                .comments(commentDto)
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
                 .build();

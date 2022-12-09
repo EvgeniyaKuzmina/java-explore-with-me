@@ -8,7 +8,7 @@ import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.request.model.Request;
 import ru.yandex.practicum.mainservice.status.Status;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * класс репозиторий для работы с БД запросов на участие в мероприятиях
@@ -18,17 +18,17 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     /**
      * получение всех заявок по id создателя
      */
-    List<Request> findByRequesterId(Long id);
+    Collection<Request> findByRequesterId(Long id);
 
     /**
-     * получение всех заявок по id события с указанным статусом
+     * получение заявки по id создателя и id события
      */
-    List<Request> findByEventIdAndStatus(Long id, Status status);
+    Request findByRequesterIdAndEventId(Long userId, Long eventId);
 
     /**
      * получение всех заявок по id события
      */
-    List<Request> findByEventId(Long id);
+    Collection<Request> findByEventId(Long id);
 
     /**
      * изменение статуса всех заявок с указанным статусом и указанным id event

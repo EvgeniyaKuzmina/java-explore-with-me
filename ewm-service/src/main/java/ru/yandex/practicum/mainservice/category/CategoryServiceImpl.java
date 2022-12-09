@@ -25,12 +25,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(Category category) {
         try {
-            log.info("CategoryServiceImpl: createCategory — Добавлена категория {}.", category);
-            return repository.save(category);
+            category = repository.save(category);
+            log.info("CategoryServiceImpl: createCategory — category was added {}.", category);
+            return category;
         } catch (DataIntegrityViolationException e) {
-            log.error("CategoryServiceImpl: createCategory — Категория с таким названием {} уже существует.",
+            log.error("CategoryServiceImpl: createCategory — category was name {} already exist",
                     category.getName());
-            throw new ConflictException(String.format("Категория с таким названием %s уже существует.",
+            throw new ConflictException(String.format("Category was name %s already exist",
                     category.getName()));
         }
     }
@@ -41,38 +42,37 @@ public class CategoryServiceImpl implements CategoryService {
         Optional.ofNullable(updCategory.getName()).ifPresent(category::setName);
 
         try {
-            log.info("CategoryServiceImpl: updateCategory — Обновлена категория {}.", category);
+            log.info("CategoryServiceImpl: updateCategory — category was updated {}.", category);
             return repository.save(category);
         } catch (DataIntegrityViolationException e) {
-            log.error("CategoryServiceImpl: updateCategory — Категория с таким названием {} уже существует.", updCategory.getName());
-            throw new ConflictException(String.format("Категория с таким названием %s уже существует.",
+            log.error("CategoryServiceImpl: updateCategory — category was name {} already exist", updCategory.getName());
+            throw new ConflictException(String.format("Category was name %s already exist",
                     updCategory.getName()));
         }
     }
 
     @Override
     public void removeCategory(Long id) {
-        getCategoryById(id); // проверка, что категория с указанным id есть
-        log.info("CategoryServiceImpl: removeCategory — Категория с указанным id {} удалена", id);
+        getCategoryById(id);
         repository.deleteById(id);
+        log.info("CategoryServiceImpl: removeCategory — category with id {} was deleted", id);
     }
 
     @Override
     public Collection<Category> getAllCategory(Pageable pageable) {
         Collection<Category> categories = repository.findAll(pageable).toList();
-        log.info("CategoryServiceImpl: getAllCategory — получен список всех категорий");
+        log.info("CategoryServiceImpl: getAllCategory — list of categories was received");
         return categories;
     }
 
     @Override
     public Category getCategoryById(Long id) {
-        Optional<Category> category = repository.findById(id);
-        category.orElseThrow(() -> {
-            log.warn("CategoryServiceImpl: getCategoryById — Категории с указанным id {} нет", id);
-            throw new ObjectNotFountException("Категории с указанным id " + id + " нет");
+        Optional<Category> categoryOpt = repository.findById(id);
+        Category category = categoryOpt.orElseThrow(() -> {
+            log.warn("CategoryServiceImpl: getCategoryById — category with id {} not exist", id);
+            throw new ObjectNotFountException("Category with id " + id + " not exist");
         });
-
-        log.info("CategoryServiceImpl: getCategoryById — Категория с указанным id {} получена", id);
-        return category.get();
+        log.info("CategoryServiceImpl: getCategoryById —  category with id {} was received", id);
+        return category;
     }
 }

@@ -36,14 +36,14 @@ public class UserController {
 
     @PostMapping
     public UserDto createUser(@Valid @RequestBody NewUserDto newUserDto) {
-        log.info("UserController: createUser — получен запрос на создание пользователя");
+        log.info("UserController: createUser — received request to create user");
         User user = UserMapper.toUserFromNewUserDto(newUserDto);
         return UserMapper.toUserDto(service.createUser(user));
     }
 
     @PatchMapping(value = {"/{id}"})
     public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long id) {
-        log.info("UserController: updateUser — получен запрос на обновление пользователя");
+        log.info("UserController: updateUser — received request to update user");
         User user = UserMapper.toUser(userDto);
         user = service.updateUser(user, id);
         return UserMapper.toUserDto(user);
@@ -51,13 +51,13 @@ public class UserController {
 
     @DeleteMapping(value = {"/{id}"})
     public void removeUser(@PathVariable Long id) {
-        log.info("UserController: removeUser — получен запрос на удаление пользователя");
+        log.info("UserController: removeUser — received request to delete user");
         service.removeUser(id);
     }
 
     @GetMapping(value = {"/{id}"})
     public UserDto getUserById(@PathVariable Long id) {
-        log.info("UserController: getUserById — получен запрос на получение пользователя по id");
+        log.info("UserController: getUserById — received request to get user by id");
         User user = service.getUserById(id);
         return UserMapper.toUserDto(user);
     }
@@ -66,7 +66,7 @@ public class UserController {
     public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = FROM) @PositiveOrZero Integer from,
                                            @RequestParam(defaultValue = SIZE) @Positive Integer size) {
-        log.info("UserController: getAllUsers — получен запрос на списка всех пользователей");
+        log.info("UserController: getAllUsers — received request to get list of users by ids");
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         Collection<UserDto> allUsersDto = new ArrayList<>();

@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainservice.event.comment.model;
 
 import lombok.*;
 import ru.yandex.practicum.mainservice.event.model.Event;
+import ru.yandex.practicum.mainservice.status.Status;
 import ru.yandex.practicum.mainservice.user.model.User;
 
 import javax.persistence.*;
@@ -35,5 +36,9 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
     @Column(name = "created", nullable = false)
-    private LocalDateTime creat;
+    private LocalDateTime created;
+    @JoinColumn(name = "status")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.PENDING;
 }

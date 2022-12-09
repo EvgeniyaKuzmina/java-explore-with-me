@@ -63,6 +63,11 @@ public interface EventService {
     Event getEventById(Long eventId);
 
     /**
+     * получение списка событий по id событий
+     */
+    Collection<Event> getEventByIdIn(Collection<Long> eventId);
+
+    /**
      * обновление всех полей события
      */
     Event updateEvent(Event updEvent, Long eventId);

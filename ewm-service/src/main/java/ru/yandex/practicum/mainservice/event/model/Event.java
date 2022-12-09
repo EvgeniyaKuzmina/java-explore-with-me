@@ -52,7 +52,8 @@ public class Event {
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @Column(name = "views")
-    private Long views;
+    @Builder.Default
+    private Long views = 0L;
     @OneToOne
     @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
@@ -68,7 +69,8 @@ public class Event {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
     @Column(name = "confirmed_requests")
-    private Integer confirmedRequest;
+    @Builder.Default
+    private Integer confirmedRequest = 0;
     @Column(name = "participant_limit", nullable = false)
     private Integer participantLimit;
     @Column(name = "request_moderation", nullable = false)
