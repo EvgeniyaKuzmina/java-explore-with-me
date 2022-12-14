@@ -1,5 +1,7 @@
-## java-explore-with-me
-# Application where you can add different events and another users can become participant of these events.
+# java-explore-with-me
+## Application where you can add different events and another users can become participant of these events.
+
+Spring Boot, Hibernate, Maven, H2, Lombok
 
 Application has three sides:
 1. public
