@@ -37,6 +37,15 @@ Admin can public event or rejected, and can modify events.
 
 Admin can see comments with different status (PENDING, REJECTED or PUBLISHED). All comments should be published or rejected by Admin.
 
+----
+
+Specification main service: ewm-main-service-spec.json
+
+Specification statistics service: ewm-stats-service.json
+
+For work with specification you will need Swagger
+
+To deploy an application based on a docker container, use the command docker-compose up
 
 
 Link to Pull requests https://github.com/EvgeniyaKuzmina/java-explore-with-me/pull/1 
