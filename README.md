@@ -1,7 +1,8 @@
 # java-explore-with-me
-## Application where you can add different events and another users can become participant of these events.
 
 SpringBoot, Maven, Lombok, PostgreSQL, Docker, Hibernate
+
+## Application where you can add different events and another users can become participant of these events.
 
 Application has three sides:
 1. public
