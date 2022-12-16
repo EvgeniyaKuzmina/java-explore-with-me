@@ -47,5 +47,6 @@ For work with specification you will need Swagger
 
 To deploy an application based on a docker container, use the command docker-compose up
 
+In the plan, add tests to the project
 
 Link to Pull requests https://github.com/EvgeniyaKuzmina/java-explore-with-me/pull/1 
